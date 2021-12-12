@@ -4,3 +4,4 @@ configs/.env
 .vscode/
 log/
 rabbitBackup/
+main

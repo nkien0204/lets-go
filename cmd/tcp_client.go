@@ -6,8 +6,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func runClient() {
-	cfg := configs.InitConfigs()
+func runClient(cfg *configs.Cfg) {
 	SendQueue := make(chan amqp.Publishing, 100)
 	for {
 		// Handle for TCP reconnection case

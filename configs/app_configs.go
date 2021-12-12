@@ -26,7 +26,7 @@ type TcpClientConfig struct {
 
 func InitConfigs() *Cfg {
 	logger := log.Logger()
-	err := godotenv.Load("../.env")
+	err := godotenv.Load()
 	if err != nil {
 		logger.Error("error while loading .env file")
 	}

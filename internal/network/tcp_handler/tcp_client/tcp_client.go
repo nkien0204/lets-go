@@ -19,7 +19,7 @@ import (
 )
 
 func Run(SendQueue chan amqp.Publishing, cfg *configs.Cfg) {
-	tcpServerUrl := cfg.TcpClient.ServerName
+	tcpServerUrl := cfg.TcpClient.TcpServerUrl
 	rabbitServerUrl := cfg.Rabbit.Host
 	rabbitServerQueue := cfg.Rabbit.Queue
 

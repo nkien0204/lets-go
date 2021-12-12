@@ -10,7 +10,7 @@ require (
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
-	github.com/nkien0204/protobuf v0.0.0-20211212015328-add185d903f4
+	github.com/nkien0204/protobuf v0.0.0-20211212155559-c474e6014405
 	github.com/streadway/amqp v1.0.0
 	go.uber.org/zap v1.19.1
 	google.golang.org/protobuf v1.27.1 // indirect
