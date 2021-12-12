@@ -2,11 +2,12 @@ package rbitmq
 
 import (
 	"bufio"
+	"os"
+	"time"
+
+	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
-	"os"
-	"github.com/nkien0204/projectTemplate/log"
-	"time"
 )
 
 type PublisherCfg struct {
@@ -106,7 +107,7 @@ func (c *producer) publishListener() {
 			); err != nil {
 				logger.Error("rabbitmq: publish failed", zap.Error(err))
 				if err := c.backup.writeToBackupFile(message); err != nil {
-					logger.Error("error while writing to backup file", zap.String("name", BackupFileName), zap.Error(err))
+					logger.Error("error while writing to backup file", zap.Error(err))
 					continue
 				}
 				logger.Info("wrote a message to backup file")
@@ -172,7 +173,7 @@ func (c *producer) sendBackupData() {
 	for scanner.Scan() {
 		message, err := c.backup.readFromBackupFile(scanner)
 		if err != nil {
-			logger.Error("error while reading from backup file", zap.String("name", BackupFileName), zap.Error(err), zap.Int("messIndex", messageIndex))
+			logger.Error("error while reading from backup file", zap.Error(err), zap.Int("messIndex", messageIndex))
 			return
 		}
 		c.queueSend <- message

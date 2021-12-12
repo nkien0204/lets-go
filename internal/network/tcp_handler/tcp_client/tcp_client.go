@@ -1,6 +1,9 @@
 package tcp_client
 
 import (
+	"github.com/golang/protobuf/proto"
+	"github.com/nkien0204/protobuf/build/proto/events"
+	"github.com/nkien0204/projectTemplate/configs"
 	"bufio"
 	"encoding/binary"
 	"fmt"
@@ -10,19 +13,18 @@ import (
 
 	"go.uber.org/zap"
 	"net"
-	"os"
-	"github.com/nkien0204/projectTemplate/log"
-	"github.com/nkien0204/projectTemplate/network/rabbitmq/rbitmq"
+	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/projectTemplate/internal/network/rabbitmq/rbitmq"
 	"time"
 )
 
-func Run(SendQueue chan amqp.Publishing) {
-	tcpServerUrl := os.Getenv("TCP_SERVER_URL")
-	rabbitServerUrl := os.Getenv("RABBITMQ_HOST")
-	rabbitServerQueue := os.Getenv("RABBITMQ_QUEUE")
+func Run(SendQueue chan amqp.Publishing, cfg *configs.Cfg) {
+	tcpServerUrl := cfg.TcpClient.ServerName
+	rabbitServerUrl := cfg.Rabbit.Host
+	rabbitServerQueue := cfg.Rabbit.Queue
 
 	log.Logger().Info("Init rabbitmq server")
-	rabbitBackup := rbitmq.NewRabbitBackupHandler()
+	rabbitBackup := rbitmq.NewRabbitBackupHandler(cfg)
 	rabbitServer := rbitmq.NewProducer(rabbitServerUrl, rabbitServerQueue, SendQueue, nil, rabbitBackup)
 	if !isRabbitRunning {
 		go rabbitServer.Start()
@@ -31,20 +33,20 @@ func Run(SendQueue chan amqp.Publishing) {
 
 	client, err := InitClient(tcpServerUrl)
 	if err != nil {
-		log.Logger().Warn("Connection refused, try to reconnect NVR controller...")
+		log.Logger().Warn("Connection refused, try to reconnect to controller...")
 		time.Sleep(5 * time.Second)
 		return
 	}
 	defer client.conn.Close()
 	// Send register request
-	registEvent := commands.GetRegistCmd()
-	if registEvent == nil {
-		log.Logger().Error("error while creating registEvent")
-		time.Sleep(5 * time.Second)
-		return
-	}
-	registMessage := client.PackingMessage(registEvent)
-	client.SendPacket(registMessage)
+	// registEvent := commands.GetRegistCmd()
+	// if registEvent == nil {
+	// 	log.Logger().Error("error while creating registEvent")
+	// 	time.Sleep(5 * time.Second)
+	// 	return
+	// }
+	// registMessage := client.PackingMessage(registEvent)
+	// client.SendPacket(registMessage)
 	client.ReceivePackets(SendQueue)
 
 	log.Logger().Info("start connecting to cheetah server", zap.String("cheetah", tcpServerUrl))
@@ -90,7 +92,7 @@ func (client *Client) SendPacket(packet []uint8) {
 	logger.Info("send packet successfully")
 }
 
-func (client *Client) PackingMessage(event *vms.NVRInternalMessageEvent) []uint8 {
+func (client *Client) PackingMessage(event *events.InternalMessageEvent) []uint8 {
 	msgRes, _ := proto.Marshal(event)
 	output := make([]uint8, len(msgRes)+4)
 	binary.LittleEndian.PutUint32(output[0:4], uint32(len(msgRes)))
@@ -147,7 +149,7 @@ func (client *Client) onData(data []byte, byteLen int, SendQueue chan amqp.Publi
 			break
 		}
 		// decode protobuf message
-		event := vms.NVRInternalMessageEvent{}
+		event := events.InternalMessageEvent{}
 		err := proto.Unmarshal(client.ReceivedBuf[eatenByte+4:msgLenEnd], &event)
 		if err != nil {
 			logger.Error("unmarshal failed")
@@ -155,7 +157,7 @@ func (client *Client) onData(data []byte, byteLen int, SendQueue chan amqp.Publi
 			break
 		}
 		eatenByte = msgLenEnd
-		logger.Info("got message: ", zap.String("message_type", event.MsgType.String()))
+		logger.Info("got message: ", zap.String("message_type", event.EventType.String()))
 
 		client.GetCommand(&event, SendQueue)
 	}
@@ -171,21 +173,10 @@ func (client *Client) onData(data []byte, byteLen int, SendQueue chan amqp.Publi
 	log.Logger().Info("after execute ", zap.Int("remain_size", client.ReceivedLen))
 }
 
-func (client *Client) GetCommand(event *vms.NVRInternalMessageEvent, SendQueue chan amqp.Publishing) {
-	switch event.GetMsgType() {
-	case vms.NVRCommandType_PING_PONG_EVENT:
-		pingPongEvent := commands.GetPingPongCmd()
-		packet := client.PackingMessage(&pingPongEvent)
-		client.SendPacket(packet)
-	case vms.NVRCommandType_START_RECORD_REQ:
-		commands.StartRecordReq(event, SendQueue)
-	case vms.NVRCommandType_STOP_RECORD_REQ:
-		commands.StopRecordReq(event, SendQueue)
-	case vms.NVRCommandType_REGISTER_NVR_RES:
-		recording.NvrId = commands.GetNvrId(event)
-		utils.Statistics.NvrId = recording.NvrId
-	case vms.NVRCommandType_UPDATE_RECORD_TIME_REQ:
-		commands.UpdateRecordTimeReq(event, SendQueue)
+func (client *Client) GetCommand(event *events.InternalMessageEvent, SendQueue chan amqp.Publishing) {
+	switch event.GetEventType() {
+	case events.EventType_HEART_BEAT:
+
 	default:
 		logger := log.Logger()
 		logger.Warn("Command not found")

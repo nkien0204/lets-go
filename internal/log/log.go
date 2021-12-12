@@ -1,6 +1,8 @@
 package log
 
 import (
+	"fmt"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap/zapcore"
 	"io"
 	"os"
@@ -47,6 +49,11 @@ func Logger() *zap.Logger {
 }
 
 func initZapLogger() *zap.Logger {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("load env error")
+		return nil
+	}
 	mode := os.Getenv("SYSTEM_MODE")
 	var encoder zapcore.Encoder
 	if strings.ToLower(mode) == "prod" || strings.ToLower(mode) == "production" {

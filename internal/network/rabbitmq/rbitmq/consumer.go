@@ -1,7 +1,7 @@
 package rbitmq
 
 import (
-	"github.com/nkien0204/projectTemplate/log"
+	"github.com/nkien0204/projectTemplate/internal/log"
 	"time"
 
 	"github.com/streadway/amqp"
