@@ -19,7 +19,7 @@ type Client struct {
 
 type Server struct {
 	address string // Address to open connection: localhost:9999
-	
+
 }
 
 var isRabbitRunning bool = false

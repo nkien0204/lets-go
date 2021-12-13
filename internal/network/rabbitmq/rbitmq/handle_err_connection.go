@@ -1,18 +1,18 @@
 package rbitmq
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/nkien0204/protobuf/build/proto/events"
-	"github.com/nkien0204/projectTemplate/configs"
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/proto"
+	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/protobuf/build/proto/events"
 
 	"github.com/streadway/amqp"
 
+	"github.com/nkien0204/projectTemplate/internal/log"
 	"os"
 	"path/filepath"
-	"github.com/nkien0204/projectTemplate/internal/log"
 	"time"
 
 	"go.uber.org/zap"
@@ -25,7 +25,7 @@ type RabbitBackupHandler struct {
 	file         *os.File
 	index        int
 	backupStatus bool
-	cfg configs.RabbitConfig
+	cfg          configs.RabbitConfig
 }
 
 type BackupObj struct {
@@ -38,7 +38,7 @@ func NewRabbitBackupHandler(cfg *configs.Cfg) (handler *RabbitBackupHandler) {
 		index:        0,     // total of messages in the backup file
 		backupStatus: false, // true: need to send backup data to controller first, false: do nothing
 		fileName:     fmt.Sprintf("%s/%s", cfg.Rabbit.BackupFolder, cfg.Rabbit.BackupFileName),
-		cfg: cfg.Rabbit,
+		cfg:          cfg.Rabbit,
 	}
 	os.Mkdir(cfg.Rabbit.BackupFolder, 0775)
 	info, err := os.Stat(cfg.Rabbit.BackupFolder + "/" + cfg.Rabbit.BackupFileName)
@@ -144,9 +144,7 @@ func transformData(rawData []byte) (fileStruct string, err error) {
 
 func convProto2JsonMess(protoMess *events.InternalMessageEvent) (fileStruct *BackupObj) {
 	// mess := protoMess.GetFileCompletedEv()
-	fileStruct = &BackupObj{
-		
-	}
+	fileStruct = &BackupObj{}
 	return
 }
 

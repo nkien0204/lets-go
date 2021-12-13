@@ -1,20 +1,20 @@
 package tcp_client
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/nkien0204/protobuf/build/proto/events"
-	"github.com/nkien0204/projectTemplate/configs"
 	"bufio"
 	"encoding/binary"
 	"fmt"
 	"github.com/gofrs/uuid"
+	"github.com/golang/protobuf/proto"
+	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/protobuf/build/proto/events"
 
 	"github.com/streadway/amqp"
 
-	"go.uber.org/zap"
-	"net"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/rabbitmq/rbitmq"
+	"go.uber.org/zap"
+	"net"
 	"time"
 )
 
@@ -171,14 +171,4 @@ func (client *Client) onData(data []byte, byteLen int, SendQueue chan amqp.Publi
 		client.ReceivedLen = 0
 	}
 	log.Logger().Info("after execute ", zap.Int("remain_size", client.ReceivedLen))
-}
-
-func (client *Client) GetCommand(event *events.InternalMessageEvent, SendQueue chan amqp.Publishing) {
-	switch event.GetEventType() {
-	case events.EventType_HEART_BEAT:
-
-	default:
-		logger := log.Logger()
-		logger.Warn("Command not found")
-	}
 }

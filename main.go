@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/nkien0204/projectTemplate/cmd"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"os"
-	"github.com/nkien0204/projectTemplate/cmd"
 )
 
 func main() {

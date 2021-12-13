@@ -2,20 +2,20 @@ package tcp_server
 
 import (
 	"github.com/gofrs/uuid"
-	"google.golang.org/protobuf/proto"
 	"github.com/nkien0204/projectTemplate/configs"
-	
-	"encoding/binary"
-	"github.com/nkien0204/protobuf/build/proto/events"
-	"io"
+	"google.golang.org/protobuf/proto"
+
 	"bufio"
-	"go.uber.org/zap"
+	"encoding/binary"
 	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/protobuf/build/proto/events"
+	"go.uber.org/zap"
+	"io"
 	"net"
 )
 
 func NewTcpServer(cfg *configs.Cfg) *Server {
-	return &Server {
+	return &Server{
 		address: cfg.TcpClient.TcpServerUrl,
 	}
 }
@@ -35,16 +35,17 @@ func (s *Server) Listen() {
 			logger.Error("error while accepting connection", zap.Error(err))
 			return
 		}
-		
+
 		uId, _ := uuid.NewV4()
 		client := &Client{
 			conn:        conn,
 			Server:      s,
 			ReceivedBuf: make([]byte, DefaultPacketSize),
 			ReceivedLen: 0,
-			UUID: uId.String(),
+			UUID:        uId.String(),
 		}
 		logger.Info("new incoming client: accepted", zap.String("uuid", client.UUID))
+		s.handleHeartBeat(client)
 		go client.listen()
 	}
 }
@@ -78,42 +79,17 @@ func (c *Client) listen() {
 
 func (s *Server) onClientConnectionClosed(c *Client, err error) {
 	log.Logger().With(zap.String("err", err.Error())).Warn("client closed")
-	event := events.InternalMessageEvent {
+	event := events.InternalMessageEvent{
 		EventType: events.EventType_LOST_CONNECTION,
-		MsgOneOf: &events.InternalMessageEvent_LostConnectionEvent {
-			LostConnectionEvent: &events.LostConnectionEvent {
+		MsgOneOf: &events.InternalMessageEvent_LostConnectionEvent{
+			LostConnectionEvent: &events.LostConnectionEvent{
 				ClientName: c.Name,
 				ClientUuid: c.UUID,
 			},
 		},
 		Token: "",
 	}
-	s.dispatch(&event)
-}
-
-func (s *Server) dispatch(event *events.InternalMessageEvent) {
-	logger := log.Logger()
-	logger.Info("got message: ", zap.String("message_type", event.EventType.String()))
-	switch event.GetEventType() {
-	case events.EventType_LOST_CONNECTION:
-		s.handleLostConnection(event)
-	case events.EventType_HEART_BEAT:
-		s.handleHeartBeat(event)
-	default:
-		log.Logger().Warn("this command is not support right now")
-	}
-}
-
-func (s *Server) handleLostConnection (event *events.InternalMessageEvent) {
-	logger := log.Logger()
-	logger.Info("lost connection")
-	// todo
-}
-
-func (s *Server) handleHeartBeat (event *events.InternalMessageEvent) {
-	logger := log.Logger()
-	logger.Info("heart beat event")
-	// todo
+	s.dispatch(c, &event)
 }
 
 func (s *Server) onNewMessage(client *Client, data []byte, byteLen int) {
@@ -147,7 +123,7 @@ func (s *Server) onNewMessage(client *Client, data []byte, byteLen int) {
 		}
 		eatenByte = msgLenEnd
 
-		s.dispatch(&event)
+		s.dispatch(client, &event)
 	}
 	if eatenByte != 0 && eatenByte < client.ReceivedLen {
 		copy(client.ReceivedBuf[0:client.ReceivedLen-eatenByte], client.ReceivedBuf[eatenByte:client.ReceivedLen])
@@ -159,4 +135,12 @@ func (s *Server) onNewMessage(client *Client, data []byte, byteLen int) {
 		client.ReceivedLen = 0
 	}
 	log.Logger().Info("after execute ", zap.Int("remain_size", client.ReceivedLen))
+}
+
+func (s *Server) PackingMessage(event *events.InternalMessageEvent) []uint8 {
+	msgRes, _ := proto.Marshal(event)
+	output := make([]uint8, len(msgRes)+4)
+	binary.LittleEndian.PutUint32(output[0:4], uint32(len(msgRes)))
+	copy(output[4:], msgRes)
+	return output
 }
