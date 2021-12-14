@@ -4,6 +4,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/nkien0204/projectTemplate/configs"
 	"google.golang.org/protobuf/proto"
+	"time"
 
 	"bufio"
 	"encoding/binary"
@@ -14,9 +15,12 @@ import (
 	"net"
 )
 
+var TcpServer *Server
+
 func NewTcpServer(cfg *configs.Cfg) *Server {
 	return &Server{
 		address: cfg.TcpClient.TcpServerUrl,
+		clients: make(map[string]*Client),
 	}
 }
 
@@ -38,12 +42,14 @@ func (s *Server) Listen() {
 
 		uId, _ := uuid.NewV4()
 		client := &Client{
-			conn:        conn,
-			Server:      s,
-			ReceivedBuf: make([]byte, DefaultPacketSize),
-			ReceivedLen: 0,
-			UUID:        uId.String(),
+			conn:         conn,
+			Server:       s,
+			ReceivedBuf:  make([]byte, DefaultPacketSize),
+			ReceivedLen:  0,
+			UUID:         uId.String(),
+			LastTimeSeen: time.Now(),
 		}
+		s.clients[client.UUID] = client
 		logger.Info("new incoming client: accepted", zap.String("uuid", client.UUID))
 		s.handleHeartBeat(client)
 		go client.listen()

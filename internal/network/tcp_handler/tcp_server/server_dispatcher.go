@@ -22,11 +22,13 @@ func (s *Server) dispatch(c *Client, event *events.InternalMessageEvent) {
 
 func (s *Server) handleLostConnection(event *events.InternalMessageEvent) {
 	logger := log.Logger()
-	logger.Info("lost connection")
-	// todo
+	uuid := event.GetLostConnectionEvent().GetClientUuid()
+	logger.Info("lost connection", zap.String("uuid", uuid))
+	delete(s.clients, uuid)
 }
 
 func (s *Server) handleHeartBeat(client *Client) {
+	client.LastTimeSeen = time.Now()
 	go func() {
 		logger := log.Logger()
 		logger.Info("send heart beat message")
@@ -40,7 +42,6 @@ func (s *Server) handleHeartBeat(client *Client) {
 			Token: "",
 		}
 		evByte := s.PackingMessage(&heartBeatEv)
-
 		client.conn.Write(evByte)
 	}()
 }

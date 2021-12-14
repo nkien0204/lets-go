@@ -6,6 +6,7 @@ import (
 )
 
 func runServer(cfg *configs.Cfg) {
-	server := tcp_server.NewTcpServer(cfg)
-	server.Listen()
+	go tcp_server.RunTcpTimer()
+	tcp_server.TcpServer = tcp_server.NewTcpServer(cfg)
+	tcp_server.TcpServer.Listen()
 }
