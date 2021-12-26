@@ -23,8 +23,8 @@ func (s *Server) dispatch(c *Client, event *events.InternalMessageEvent) {
 func (s *Server) handleLostConnection(event *events.InternalMessageEvent) {
 	logger := log.Logger()
 	uuid := event.GetLostConnectionEvent().GetClientUuid()
-	logger.Info("lost connection", zap.String("uuid", uuid))
 	delete(s.clients, uuid)
+	logger.Info("lost connection", zap.String("uuid", uuid), zap.Int("num of clients", len(s.clients)))
 }
 
 func (s *Server) handleHeartBeat(client *Client) {

@@ -50,7 +50,7 @@ func (s *Server) Listen() {
 			LastTimeSeen: time.Now(),
 		}
 		s.clients[client.UUID] = client
-		logger.Info("new incoming client: accepted", zap.String("uuid", client.UUID))
+		logger.Info("new incoming client: accepted", zap.String("uuid", client.UUID), zap.Int("num of cliens", len(s.clients)))
 		s.handleHeartBeat(client)
 		go client.listen()
 	}

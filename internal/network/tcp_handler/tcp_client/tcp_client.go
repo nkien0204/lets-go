@@ -23,12 +23,14 @@ func Run(SendQueue chan amqp.Publishing, cfg *configs.Cfg) {
 	rabbitServerUrl := cfg.Rabbit.Host
 	rabbitServerQueue := cfg.Rabbit.Queue
 
-	log.Logger().Info("Init rabbitmq server")
-	rabbitBackup := rbitmq.NewRabbitBackupHandler(cfg)
-	rabbitServer := rbitmq.NewProducer(rabbitServerUrl, rabbitServerQueue, SendQueue, nil, rabbitBackup)
-	if !isRabbitRunning {
-		go rabbitServer.Start()
-		isRabbitRunning = true
+	if rabbitServerUrl != "" {
+		log.Logger().Info("Init rabbitmq server")
+		rabbitBackup := rbitmq.NewRabbitBackupHandler(cfg)
+		rabbitServer := rbitmq.NewProducer(rabbitServerUrl, rabbitServerQueue, SendQueue, nil, rabbitBackup)
+		if !isRabbitRunning {
+			go rabbitServer.Start()
+			isRabbitRunning = true
+		}
 	}
 
 	client, err := InitClient(tcpServerUrl)
