@@ -1,6 +1,4 @@
-go.mod
-go.sum
-configs/.env
+.env
 .vscode/
 log/
 rabbitBackup/
