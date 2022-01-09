@@ -1,25 +1,51 @@
 package tcp_server
 
 import (
+	"errors"
+	"io"
 	"net"
+	"sync"
 	"time"
 )
 
-const DefaultPacketSize int = 16384
+var tcpServerManager *ServerManager = &ServerManager{}
+
+// Payload type
+const (
+	BinaryType byte = iota
+	StringType
+)
+
+const MaxPacketSize uint32 = 10 << 20 // 10MBytes
+
+var ErrMaxPacketSize = errors.New("maximum packet size exceeded")
+
+type Payload interface {
+	io.ReaderFrom
+	io.WriterTo
+	Bytes() []byte
+	String() string
+}
+
+type ServerManager struct {
+	TcpServer *Server
+	Mutex     *sync.Mutex
+}
 
 type Client struct {
-	conn         net.Conn
+	Conn         net.Conn
 	Server       *Server
-	ReceivedBuf  []byte
-	ReceivedLen  int
 	Name         string
-	UUID         string
+	Uuid         string
 	LastTimeSeen time.Time
 }
 
 type Server struct {
-	address string // Address to open connection: localhost:9999
-	clients map[string]*Client
+	Address string // Address to open connection: localhost:9999
+	Clients map[string]*Client
 }
 
-var isRabbitRunning bool = false
+func init() {
+	tcpServerManager.TcpServer = nil
+	tcpServerManager.Mutex = &sync.Mutex{}
+}

@@ -22,7 +22,10 @@ type RabbitConfig struct {
 type TcpClientConfig struct {
 	TcpServerUrl string
 	ServerName   string
+	ClientName   string
 }
+
+var Config *Cfg
 
 func InitConfigs() *Cfg {
 	logger := log.Logger()
@@ -49,5 +52,6 @@ func LoadTcpClientConfig() TcpClientConfig {
 	return TcpClientConfig{
 		ServerName:   os.Getenv("SERVER_NAME"),
 		TcpServerUrl: os.Getenv("TCP_SERVER_URL"),
+		ClientName:   os.Getenv("CLIENT_NAME"),
 	}
 }
