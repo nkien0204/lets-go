@@ -31,8 +31,7 @@ func RunTcp() {
 
 func initClient(address string) (*Client, error) {
 	var client Client
-	CONNECT := address
-	c, err := net.Dial("tcp", CONNECT)
+	c, err := net.Dial("tcp", address)
 	if err != nil {
 		fmt.Println(err)
 		return &client, err

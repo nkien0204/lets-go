@@ -10,6 +10,7 @@ import (
 type Cfg struct {
 	Rabbit    RabbitConfig
 	TcpClient TcpClientConfig
+	TcpServer TcpServerConfig
 }
 
 type RabbitConfig struct {
@@ -25,6 +26,10 @@ type TcpClientConfig struct {
 	ClientName   string
 }
 
+type TcpServerConfig struct {
+	TcpPort string
+}
+
 var Config *Cfg
 
 func InitConfigs() *Cfg {
@@ -36,6 +41,7 @@ func InitConfigs() *Cfg {
 	return &Cfg{
 		Rabbit:    LoadRabbitConfig(),
 		TcpClient: LoadTcpClientConfig(),
+		TcpServer: LoadTcpServerConfig(),
 	}
 }
 
@@ -53,5 +59,11 @@ func LoadTcpClientConfig() TcpClientConfig {
 		ServerName:   os.Getenv("SERVER_NAME"),
 		TcpServerUrl: os.Getenv("TCP_SERVER_URL"),
 		ClientName:   os.Getenv("CLIENT_NAME"),
+	}
+}
+
+func LoadTcpServerConfig() TcpServerConfig {
+	return TcpServerConfig{
+		TcpPort: os.Getenv("TCP_PORT"),
 	}
 }
