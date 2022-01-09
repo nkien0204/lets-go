@@ -27,11 +27,7 @@ func GetServer() *ServerManager {
 				Address: configs.Config.TcpClient.TcpServerUrl,
 				Clients: make(map[string]*Client),
 			}
-		} else {
-			logger.Info("instance already existed")
 		}
-	} else {
-		logger.Info("instance already existed")
 	}
 	return tcpServerManager
 }
