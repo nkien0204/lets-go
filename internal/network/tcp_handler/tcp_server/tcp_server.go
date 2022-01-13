@@ -81,6 +81,7 @@ func (s *Server) initClient(conn net.Conn) (*Client, error) {
 func (c *Client) listen() {
 	logger := log.Logger()
 
+	defer c.Conn.Close()
 	for {
 		payload, err := c.decode(c.Conn)
 		if err != nil {
