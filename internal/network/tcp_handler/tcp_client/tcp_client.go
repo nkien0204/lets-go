@@ -4,15 +4,17 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/proto"
+	"io"
+
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/protobuf/build/proto/events"
-	"io"
+	"google.golang.org/protobuf/proto"
+
+	"net"
+	"time"
 
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"go.uber.org/zap"
-	"net"
-	"time"
 )
 
 func RunTcp() {

@@ -7,11 +7,12 @@ import (
 )
 
 func (client *Client) dispatch(event *events.InternalMessageEvent) {
+	logger := log.Logger()
+	logger.Info("get message: ", zap.String("message_type", event.EventType.String()))
 	switch event.GetEventType() {
 	case events.EventType_HEART_BEAT:
 		client.handleHeartBeatEv()
 	default:
-		logger := log.Logger()
 		logger.Warn("Command not found")
 	}
 }
