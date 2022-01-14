@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_client"
 	"github.com/spf13/cobra"
-	"github.com/streadway/amqp"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var runClientCmd = &cobra.Command{
@@ -18,10 +21,18 @@ func init() {
 }
 
 func runClient(cmd *cobra.Command, args []string) {
-	cfg := configs.InitConfigs()
-	SendQueue := make(chan amqp.Publishing, 100)
-	for {
-		// Handle for TCP reconnection case
-		tcp_client.Run(SendQueue, cfg)
-	}
+	configs.Config = configs.InitConfigs()
+
+	go func() {
+		for {
+			// Handle for TCP reconnection case
+			tcp_client.RunTcp()
+		}
+	}()
+
+	// graceful shutdown
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	<-signals
+	log.Logger().Warn("shutdown app")
 }

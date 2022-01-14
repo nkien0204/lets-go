@@ -1,12 +1,12 @@
 package tcp_server
 
 import (
+	"errors"
 	"github.com/gofrs/uuid"
 	"github.com/nkien0204/projectTemplate/configs"
 	"google.golang.org/protobuf/proto"
 	"time"
 
-	"bufio"
 	"encoding/binary"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/protobuf/build/proto/events"
@@ -15,22 +15,30 @@ import (
 	"net"
 )
 
-var TcpServer *Server
-
-func NewTcpServer(cfg *configs.Cfg) *Server {
-	return &Server{
-		address: cfg.TcpClient.TcpServerUrl,
-		clients: make(map[string]*Client),
+// Singleton pattern
+func GetServer() *ServerManager {
+	logger := log.Logger()
+	if tcpServerManager.TcpServer == nil {
+		tcpServerManager.Mutex.Lock()
+		defer tcpServerManager.Mutex.Unlock()
+		if tcpServerManager.TcpServer == nil {
+			logger.Info("created instance")
+			tcpServerManager.TcpServer = &Server{
+				Address: configs.Config.TcpServer.TcpPort,
+				Clients: make(map[string]*Client),
+			}
+		}
 	}
+	return tcpServerManager
 }
 
-func (s *Server) Listen() {
-	listener, err := net.Listen("tcp", s.address)
+func (s *ServerManager) Listen() {
+	listener, err := net.Listen("tcp", s.TcpServer.Address)
 	if err != nil {
 		log.Logger().With(zap.Error(err)).Fatal("Error starting TCP server.")
 	}
 	defer listener.Close()
-	logger := log.Logger().With(zap.String("address", s.address))
+	logger := log.Logger().With(zap.String("address", s.TcpServer.Address))
 	logger.Info("tcp server is started")
 	for {
 		logger.Info("waiting new incoming client ...")
@@ -40,46 +48,59 @@ func (s *Server) Listen() {
 			return
 		}
 
-		uId, _ := uuid.NewV4()
-		client := &Client{
-			conn:         conn,
-			Server:       s,
-			ReceivedBuf:  make([]byte, DefaultPacketSize),
-			ReceivedLen:  0,
-			UUID:         uId.String(),
-			LastTimeSeen: time.Now(),
+		client, err := s.initClient(conn)
+		if err != nil {
+			logger.Error("error while initializing new client", zap.Error(err))
+			continue
 		}
-		s.clients[client.UUID] = client
-		logger.Info("new incoming client: accepted", zap.String("uuid", client.UUID), zap.Int("num of clients", len(s.clients)))
-		s.handleHeartBeat(client)
+		s.TcpServer.Clients[client.Uuid] = client
+		logger.Info("new incoming client: accepted", zap.String("uuid", client.Uuid), zap.Int("num of clients", len(s.TcpServer.Clients)))
+		s.TcpServer.handleHeartBeat(client)
 		go client.listen()
 	}
 }
 
+func (s *ServerManager) initClient(conn net.Conn) (*Client, error) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+
+	logger := log.Logger()
+	uId, err := uuid.NewV4()
+	if err != nil {
+		logger.Error("error while initializing new uuid", zap.Error(err))
+		return nil, err
+	}
+	client := &Client{
+		Name:         conn.RemoteAddr().String(),
+		Conn:         conn,
+		Server:       s.TcpServer,
+		Uuid:         uId.String(),
+		LastTimeSeen: time.Now(),
+	}
+	return client, nil
+}
+
 // Read client data from channel
 func (c *Client) listen() {
-	log.Logger().Info("begin read")
-	reader := bufio.NewReader(c.conn)
-	tempBuf := make([]byte, DefaultPacketSize)
+	logger := log.Logger()
+
+	defer c.Conn.Close()
 	for {
-		n, err := reader.Read(tempBuf)
+		payload, err := c.decode(c.Conn)
 		if err != nil {
-			if err != io.EOF {
-				log.Logger().With(zap.Error(err)).Info("read error: eof")
-			}
-			_ = c.conn.Close()
+			logger.Error("error while decoding packet", zap.Error(err))
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
 
-		if n == 0 {
-			log.Logger().Info("read failed!")
-			_ = c.conn.Close()
+		event := events.InternalMessageEvent{}
+		err = proto.Unmarshal(payload.Bytes(), &event)
+		if err != nil {
+			logger.Error("unmarshal failed", zap.Error(err))
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
-
-		c.Server.onNewMessage(c, tempBuf, n)
+		c.Server.dispatch(c, &event)
 	}
 }
 
@@ -90,7 +111,7 @@ func (s *Server) onClientConnectionClosed(c *Client, err error) {
 		MsgOneOf: &events.InternalMessageEvent_LostConnectionEvent{
 			LostConnectionEvent: &events.LostConnectionEvent{
 				ClientName: c.Name,
-				ClientUuid: c.UUID,
+				ClientUuid: c.Uuid,
 			},
 		},
 		Token: "",
@@ -98,55 +119,52 @@ func (s *Server) onClientConnectionClosed(c *Client, err error) {
 	s.dispatch(c, &event)
 }
 
-func (s *Server) onNewMessage(client *Client, data []byte, byteLen int) {
-	logger := log.Logger().With(zap.Int("byteLen", byteLen))
-	logger.Info("received")
-	client.ReceivedBuf = make([]byte, byteLen)
-	copy(client.ReceivedBuf[client.ReceivedLen:], data)
-	client.ReceivedLen += byteLen
-	var eatenByte = 0
-	for eatenByte < client.ReceivedLen {
-		msgLen := binary.LittleEndian.Uint32(client.ReceivedBuf[eatenByte : eatenByte+4])
-		if msgLen > 1500 { //saint check
-			client.ReceivedLen = 0
-			break
-		}
-		if eatenByte == client.ReceivedLen {
-			break
-		}
+func (c *Client) encode(event *events.InternalMessageEvent, typ byte) (Payload, error) {
+	logger := log.Logger()
 
-		msgLenEnd := eatenByte + int(msgLen) + int(4)
-		if msgLenEnd > client.ReceivedLen {
-			break
-		}
-		// decode protobuf message
-		event := events.InternalMessageEvent{}
-		err := proto.Unmarshal(client.ReceivedBuf[eatenByte+4:msgLenEnd], &event)
-		if err != nil {
-			logger.Error("unmarshal failed")
-			client.ReceivedLen = 0
-			break
-		}
-		eatenByte = msgLenEnd
+	rawByte, err := proto.Marshal(event)
+	if err != nil {
+		logger.Error("error while marshaling event")
+		return nil, err
+	}
 
-		s.dispatch(client, &event)
+	var payload Payload
+	switch typ {
+	case BinaryType:
+		rawPayload := Binary(rawByte)
+		payload = &rawPayload
+	case StringType:
+		rawPayload := String(rawByte)
+		payload = &rawPayload
+	default:
+		// Binary type for default
+		rawPayload := Binary(rawByte)
+		payload = &rawPayload
 	}
-	if eatenByte != 0 && eatenByte < client.ReceivedLen {
-		copy(client.ReceivedBuf[0:client.ReceivedLen-eatenByte], client.ReceivedBuf[eatenByte:client.ReceivedLen])
-		log.Logger().Info("shrink memory buffer")
-	}
-	client.ReceivedLen = client.ReceivedLen - eatenByte
-	if client.ReceivedLen < 0 {
-		logger.Error("ReceivedLen error", zap.Int("receivedLen", client.ReceivedLen), zap.Int("eatenByte", eatenByte))
-		client.ReceivedLen = 0
-	}
-	log.Logger().Info("after execute ", zap.Int("remain_size", client.ReceivedLen))
+
+	return payload, nil
 }
 
-func (s *Server) PackingMessage(event *events.InternalMessageEvent) []uint8 {
-	msgRes, _ := proto.Marshal(event)
-	output := make([]uint8, len(msgRes)+4)
-	binary.LittleEndian.PutUint32(output[0:4], uint32(len(msgRes)))
-	copy(output[4:], msgRes)
-	return output
+func (c *Client) decode(r io.Reader) (Payload, error) {
+	var typ byte
+	err := binary.Read(r, binary.BigEndian, &typ)
+	if err != nil {
+		return nil, err
+	}
+
+	var payload Payload
+	switch typ {
+	case BinaryType:
+		payload = new(Binary)
+	case StringType:
+		payload = new(String)
+	default:
+		return nil, errors.New("unknown type")
+	}
+
+	_, err = payload.ReadFrom(r)
+	if err != nil {
+		return nil, err
+	}
+	return payload, nil
 }

@@ -1,25 +1,35 @@
 package tcp_client
 
 import (
+	"errors"
+	"io"
 	"net"
 	"time"
 )
 
-const DefaultPacketSize int = 16384
+const (
+	BinaryType byte = iota
+	StringType
+)
+
+const MaxPacketSize uint32 = 10 << 20 // 10MBytes
+
+var ErrMaxPacketSize = errors.New("maximum packet size exceeded")
+
+type Payload interface {
+	io.ReaderFrom
+	io.WriterTo
+	Bytes() []byte
+	String() string
+}
 
 type Client struct {
-	conn         net.Conn
+	Conn         net.Conn
 	Server       *Server
-	ReceivedBuf  []byte
-	ReceivedLen  int
 	Name         string
-	UUID         string
 	LastTimeSeen time.Time
 }
 
 type Server struct {
-	address string // Address to open connection: localhost:9999
-
+	Address string // Address to open connection: localhost:9999
 }
-
-var isRabbitRunning bool = false

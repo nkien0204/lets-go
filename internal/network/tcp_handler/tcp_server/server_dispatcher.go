@@ -23,16 +23,13 @@ func (s *Server) dispatch(c *Client, event *events.InternalMessageEvent) {
 func (s *Server) handleLostConnection(event *events.InternalMessageEvent) {
 	logger := log.Logger()
 	uuid := event.GetLostConnectionEvent().GetClientUuid()
-	delete(s.clients, uuid)
-	logger.Info("lost connection", zap.String("uuid", uuid), zap.Int("num of clients", len(s.clients)))
+	delete(s.Clients, uuid)
+	logger.Info("lost connection", zap.String("uuid", uuid), zap.Int("num of clients", len(s.Clients)))
 }
 
 func (s *Server) handleHeartBeat(client *Client) {
 	client.LastTimeSeen = time.Now()
 	go func() {
-		logger := log.Logger()
-		logger.Info("send heart beat message")
-
 		time.Sleep(10 * time.Second)
 		heartBeatEv := events.InternalMessageEvent{
 			EventType: events.EventType_HEART_BEAT,
@@ -41,7 +38,11 @@ func (s *Server) handleHeartBeat(client *Client) {
 			},
 			Token: "",
 		}
-		evByte := s.PackingMessage(&heartBeatEv)
-		client.conn.Write(evByte)
+		heartBeatPayload, err := client.encode(&heartBeatEv, BinaryType)
+		if err != nil {
+			log.Logger().Error("error while encoding payload", zap.Error(err))
+			return
+		}
+		heartBeatPayload.WriteTo(client.Conn)
 	}()
 }

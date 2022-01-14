@@ -15,10 +15,11 @@ func RunTcpTimer() {
 		select {
 		case <-ticker.C:
 			now := time.Now()
-			for k, v := range TcpServer.clients {
+			serverManager := GetServer()
+			for k, v := range serverManager.TcpServer.Clients {
 				if now.Sub(v.LastTimeSeen) >= Timeout*time.Second {
 					logger.Warn("timeout", zap.String("uuid", k))
-					v.conn.Close()
+					v.Conn.Close()
 				}
 			}
 		}

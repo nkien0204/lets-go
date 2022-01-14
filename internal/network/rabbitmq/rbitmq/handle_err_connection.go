@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/protobuf/build/proto/events"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/streadway/amqp"
 
