@@ -23,7 +23,7 @@ func init() {
 func runServer(cmd *cobra.Command, args []string) {
 	configs.Config = configs.InitConfigs()
 	ServerManager := tcp_server.GetServer()
-	go ServerManager.TcpServer.Listen()
+	go ServerManager.Listen()
 	go tcp_server.RunTcpTimer()
 
 	// graceful shutdown

@@ -32,13 +32,13 @@ func GetServer() *ServerManager {
 	return tcpServerManager
 }
 
-func (s *Server) Listen() {
-	listener, err := net.Listen("tcp", s.Address)
+func (s *ServerManager) Listen() {
+	listener, err := net.Listen("tcp", s.TcpServer.Address)
 	if err != nil {
 		log.Logger().With(zap.Error(err)).Fatal("Error starting TCP server.")
 	}
 	defer listener.Close()
-	logger := log.Logger().With(zap.String("address", s.Address))
+	logger := log.Logger().With(zap.String("address", s.TcpServer.Address))
 	logger.Info("tcp server is started")
 	for {
 		logger.Info("waiting new incoming client ...")
@@ -53,14 +53,17 @@ func (s *Server) Listen() {
 			logger.Error("error while initializing new client", zap.Error(err))
 			continue
 		}
-		s.Clients[client.Uuid] = client
-		logger.Info("new incoming client: accepted", zap.String("uuid", client.Uuid), zap.Int("num of clients", len(s.Clients)))
-		s.handleHeartBeat(client)
+		s.TcpServer.Clients[client.Uuid] = client
+		logger.Info("new incoming client: accepted", zap.String("uuid", client.Uuid), zap.Int("num of clients", len(s.TcpServer.Clients)))
+		s.TcpServer.handleHeartBeat(client)
 		go client.listen()
 	}
 }
 
-func (s *Server) initClient(conn net.Conn) (*Client, error) {
+func (s *ServerManager) initClient(conn net.Conn) (*Client, error) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+
 	logger := log.Logger()
 	uId, err := uuid.NewV4()
 	if err != nil {
@@ -70,7 +73,7 @@ func (s *Server) initClient(conn net.Conn) (*Client, error) {
 	client := &Client{
 		Name:         conn.RemoteAddr().String(),
 		Conn:         conn,
-		Server:       s,
+		Server:       s.TcpServer,
 		Uuid:         uId.String(),
 		LastTimeSeen: time.Now(),
 	}
