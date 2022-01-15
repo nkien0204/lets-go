@@ -2,6 +2,8 @@ package tcp_server
 
 import (
 	"encoding/binary"
+	"github.com/nkien0204/projectTemplate/internal/log"
+	"go.uber.org/zap"
 	"io"
 )
 
@@ -16,13 +18,16 @@ func (s *String) String() string {
 }
 
 func (s *String) WriteTo(w io.Writer) (int64, error) {
+	logger := log.Logger()
 	err := binary.Write(w, binary.BigEndian, StringType) // 1-byte type
 	if err != nil {
+		logger.Error("binary write stringType failed", zap.Error(err))
 		return 0, err
 	}
 	var n int64 = 1
 	err = binary.Write(w, binary.BigEndian, uint32(len(*s))) // 4-byte len
 	if err != nil {
+		logger.Error("binary write len failed", zap.Error(err))
 		return n, err
 	}
 	n += 4
@@ -42,9 +47,11 @@ func (s *String) ReadFrom(r io.Reader) (int64, error) {
 	// 	return n, errors.New("invalid string")
 	// }
 
+	logger := log.Logger()
 	var len uint32
 	err := binary.Read(r, binary.BigEndian, &len) // 4-byte len
 	if err != nil {
+		logger.Error("binary read len failed", zap.Error(err))
 		return n, err
 	}
 	n += 4
@@ -52,6 +59,7 @@ func (s *String) ReadFrom(r io.Reader) (int64, error) {
 	buf := make([]byte, len)
 	o, err := r.Read(buf) // Value
 	if err != nil {
+		logger.Error("read buff failed", zap.Error(err))
 		return n, err
 	}
 	*s = String(buf)

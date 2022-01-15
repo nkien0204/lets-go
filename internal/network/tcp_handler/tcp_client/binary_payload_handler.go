@@ -3,6 +3,9 @@ package tcp_client
 import (
 	"encoding/binary"
 	"io"
+
+	"github.com/nkien0204/projectTemplate/internal/log"
+	"go.uber.org/zap"
 )
 
 type Binary []byte
@@ -16,13 +19,16 @@ func (b *Binary) String() string {
 }
 
 func (b *Binary) WriteTo(w io.Writer) (int64, error) {
+	logger := log.Logger()
 	err := binary.Write(w, binary.BigEndian, BinaryType) // 1-byte type
 	if err != nil {
+		logger.Error("binary write type failed", zap.Error(err))
 		return 0, err
 	}
 	var n int64 = 1
 	err = binary.Write(w, binary.BigEndian, uint32(len(*b))) // 4-byte len
 	if err != nil {
+		logger.Error("binary write len failed", zap.Error(err))
 		return n, err
 	}
 	n += 4
@@ -42,13 +48,16 @@ func (b *Binary) ReadFrom(r io.Reader) (int64, error) {
 	// 	return n, errors.New("invalid binary")
 	// }
 
+	logger := log.Logger()
 	var len uint32
 	err := binary.Read(r, binary.BigEndian, &len) // 4-byte len
 	if err != nil {
+		logger.Error("binary read len failed", zap.Error(err))
 		return n, err
 	}
 	n += 4
 	if len > MaxPacketSize {
+		logger.Error("exceed max packet size")
 		return n, ErrMaxPacketSize
 	}
 
