@@ -29,6 +29,7 @@ func serveProxy(proxyServer net.Listener, dstAddresses []string) {
 			logger.Error("accept proxy conn failed", zap.Error(err))
 			return
 		}
+		logger.Info("get a new connection", zap.String("address", conn.RemoteAddr().String()))
 
 		go func(from net.Conn) {
 			defer from.Close()

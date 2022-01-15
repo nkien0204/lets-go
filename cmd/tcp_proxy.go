@@ -25,7 +25,7 @@ func runProxy(cmd *cobra.Command, args []string) {
 	logger := log.Logger()
 	configs.Config = configs.InitConfigs()
 
-	if err := tcp_proxy.EstablishProxy([]string{"0.0.0.0:9001"}); err != nil {
+	if err := tcp_proxy.EstablishProxy([]string{"0.0.0.0:9100"}); err != nil {
 		logger.Error("establish proxy failed", zap.Error(err))
 	}
 
