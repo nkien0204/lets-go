@@ -146,9 +146,11 @@ func (c *Client) encode(event *events.InternalMessageEvent, typ byte) (Payload, 
 }
 
 func (c *Client) decode(r io.Reader) (Payload, error) {
+	logger := log.Logger()
 	var typ byte
 	err := binary.Read(r, binary.BigEndian, &typ)
 	if err != nil {
+		logger.Error("binary read failed")
 		return nil, err
 	}
 
@@ -164,6 +166,7 @@ func (c *Client) decode(r io.Reader) (Payload, error) {
 
 	_, err = payload.ReadFrom(r)
 	if err != nil {
+		logger.Error("payload readFrom failed")
 		return nil, err
 	}
 	return payload, nil

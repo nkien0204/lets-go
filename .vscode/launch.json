@@ -19,6 +19,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["serve", "client"]
+        },
+        {
+            "name": "run proxy",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve", "proxy"]
         }
     ]
 }

@@ -8,9 +8,10 @@ import (
 )
 
 type Cfg struct {
-	Rabbit    RabbitConfig
-	TcpClient TcpClientConfig
-	TcpServer TcpServerConfig
+	Rabbit         RabbitConfig
+	TcpClient      TcpClientConfig
+	TcpServer      TcpServerConfig
+	TcpProxyServer TcpProxyServerConfig
 }
 
 type RabbitConfig struct {
@@ -30,6 +31,10 @@ type TcpServerConfig struct {
 	TcpPort string
 }
 
+type TcpProxyServerConfig struct {
+	ProxyAddress string
+}
+
 var Config *Cfg
 
 func InitConfigs() *Cfg {
@@ -39,13 +44,14 @@ func InitConfigs() *Cfg {
 		logger.Error("error while loading .env file")
 	}
 	return &Cfg{
-		Rabbit:    LoadRabbitConfig(),
-		TcpClient: LoadTcpClientConfig(),
-		TcpServer: LoadTcpServerConfig(),
+		Rabbit:         loadRabbitConfig(),
+		TcpClient:      loadTcpClientConfig(),
+		TcpServer:      loadTcpServerConfig(),
+		TcpProxyServer: loadProxyServerConfig(),
 	}
 }
 
-func LoadRabbitConfig() RabbitConfig {
+func loadRabbitConfig() RabbitConfig {
 	return RabbitConfig{
 		BackupFileName: os.Getenv("BACKUP_FILE_NAME"),
 		BackupFolder:   os.Getenv("BACKUP_FOLDER"),
@@ -54,7 +60,7 @@ func LoadRabbitConfig() RabbitConfig {
 	}
 }
 
-func LoadTcpClientConfig() TcpClientConfig {
+func loadTcpClientConfig() TcpClientConfig {
 	return TcpClientConfig{
 		ServerName:   os.Getenv("SERVER_NAME"),
 		TcpServerUrl: os.Getenv("TCP_SERVER_URL"),
@@ -62,8 +68,14 @@ func LoadTcpClientConfig() TcpClientConfig {
 	}
 }
 
-func LoadTcpServerConfig() TcpServerConfig {
+func loadTcpServerConfig() TcpServerConfig {
 	return TcpServerConfig{
 		TcpPort: os.Getenv("TCP_PORT"),
+	}
+}
+
+func loadProxyServerConfig() TcpProxyServerConfig {
+	return TcpProxyServerConfig{
+		ProxyAddress: os.Getenv("PROXY_ADDRESS"),
 	}
 }
