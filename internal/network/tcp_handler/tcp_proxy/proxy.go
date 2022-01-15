@@ -54,7 +54,9 @@ func proxy(from io.Reader, to io.Writer) error {
 	toReader, toIsReader := to.(io.Reader)
 
 	if toIsReader && fromIsWriter {
-		go func() { io.Copy(fromWriter, toReader) }()
+		go func() {
+			io.Copy(fromWriter, toReader)
+		}()
 	}
 	_, err := io.Copy(to, from)
 	return err
