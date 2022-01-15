@@ -8,7 +8,7 @@ import (
 	"net"
 )
 
-func EstablishProxy(dstAddresses []string) error {
+func EstablishProxy(dstAddress string) error {
 	logger := log.Logger()
 	proxyServer, err := net.Listen("tcp", configs.Config.TcpProxyServer.ProxyAddress)
 	if err != nil {
@@ -16,12 +16,12 @@ func EstablishProxy(dstAddresses []string) error {
 		return err
 	}
 
-	go serveProxy(proxyServer, dstAddresses)
+	go serveProxy(proxyServer, dstAddress)
 
 	return nil
 }
 
-func serveProxy(proxyServer net.Listener, dstAddresses []string) {
+func serveProxy(proxyServer net.Listener, dstAddress string) {
 	logger := log.Logger()
 	for {
 		conn, err := proxyServer.Accept()
@@ -34,18 +34,16 @@ func serveProxy(proxyServer net.Listener, dstAddresses []string) {
 		go func(from net.Conn) {
 			defer from.Close()
 
-			for _, dstAddr := range dstAddresses {
-				to, err := net.Dial("tcp", dstAddr)
-				if err != nil {
-					logger.Error("proxy dial failed", zap.Error(err))
-					return
-				}
-				defer to.Close()
+			to, err := net.Dial("tcp", dstAddress)
+			if err != nil {
+				logger.Error("proxy dial failed", zap.Error(err))
+				return
+			}
+			defer to.Close()
 
-				err = proxy(from, to)
-				if err != nil && err != io.EOF {
-					logger.Error("error while serving proxy", zap.Error(err))
-				}
+			err = proxy(from, to)
+			if err != nil && err != io.EOF {
+				logger.Error("error while serving proxy", zap.Error(err))
 			}
 		}(conn)
 	}
