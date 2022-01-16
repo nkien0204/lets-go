@@ -11,7 +11,7 @@ func (client *Client) dispatch(event *events.InternalMessageEvent) {
 	logger.Info("get message: ", zap.String("message_type", event.EventType.String()))
 	switch event.GetEventType() {
 	case events.EventType_HEART_BEAT:
-		client.handleHeartBeatEv()
+		go client.handleHeartBeatEv()
 	default:
 		logger.Warn("Command not found")
 	}
