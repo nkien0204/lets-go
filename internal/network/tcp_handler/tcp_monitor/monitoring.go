@@ -1,10 +1,10 @@
 package tcp_monitor
 
 import (
-	"os"
-	"net"
 	"io"
 	"log"
+	"net"
+	"os"
 )
 
 type Monitor struct {

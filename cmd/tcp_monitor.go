@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_monitor"
 	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_monitor"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"

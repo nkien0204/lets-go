@@ -33,11 +33,11 @@ type ServerManager struct {
 }
 
 type Client struct {
-	Conn         net.Conn
-	Server       *Server
-	Name         string
-	Uuid         string
-	LastTimeSeen time.Time
+	Conn          net.Conn
+	ServerManager *ServerManager
+	Name          string
+	Uuid          string
+	LastTimeSeen  time.Time
 }
 
 type Server struct {

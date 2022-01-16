@@ -38,8 +38,8 @@ func (s *ServerManager) Listen() {
 		log.Logger().With(zap.Error(err)).Fatal("Error starting TCP server.")
 	}
 	defer listener.Close()
-	logger := log.Logger().With(zap.String("address", s.TcpServer.Address))
-	logger.Info("tcp server is started")
+	logger := log.Logger()
+	logger.Info("tcp server is started", zap.String("listening address", s.TcpServer.Address))
 	for {
 		logger.Info("waiting new incoming client ...")
 		conn, err := listener.Accept()
@@ -53,9 +53,10 @@ func (s *ServerManager) Listen() {
 			logger.Error("error while initializing new client", zap.Error(err))
 			continue
 		}
-		s.TcpServer.Clients[client.Uuid] = client
-		logger.Info("new incoming client: accepted", zap.String("uuid", client.Uuid), zap.Int("num of clients", len(s.TcpServer.Clients)))
-		s.TcpServer.handleHeartBeat(client)
+		logger.Info("new incoming client: accepted",
+			zap.String("uuid", client.Uuid),
+			zap.String("address", conn.RemoteAddr().String()),
+			zap.Int("num of clients", len(s.TcpServer.Clients)))
 		go client.listen()
 	}
 }
@@ -71,12 +72,14 @@ func (s *ServerManager) initClient(conn net.Conn) (*Client, error) {
 		return nil, err
 	}
 	client := &Client{
-		Name:         conn.RemoteAddr().String(),
-		Conn:         conn,
-		Server:       s.TcpServer,
-		Uuid:         uId.String(),
-		LastTimeSeen: time.Now(),
+		Name:          conn.RemoteAddr().String(),
+		Conn:          conn,
+		ServerManager: s,
+		Uuid:          uId.String(),
+		LastTimeSeen:  time.Now(),
 	}
+	s.TcpServer.Clients[client.Uuid] = client
+	go s.TcpServer.handleHeartBeat(client)
 	return client, nil
 }
 
@@ -89,7 +92,7 @@ func (c *Client) listen() {
 		payload, err := c.decode(c.Conn)
 		if err != nil {
 			logger.Error("error while decoding packet", zap.Error(err))
-			c.Server.onClientConnectionClosed(c, err)
+			c.ServerManager.onClientConnectionClosed(c, err)
 			return
 		}
 
@@ -97,14 +100,14 @@ func (c *Client) listen() {
 		err = proto.Unmarshal(payload.Bytes(), &event)
 		if err != nil {
 			logger.Error("unmarshal failed", zap.Error(err))
-			c.Server.onClientConnectionClosed(c, err)
+			c.ServerManager.onClientConnectionClosed(c, err)
 			return
 		}
-		c.Server.dispatch(c, &event)
+		c.ServerManager.dispatch(c, &event)
 	}
 }
 
-func (s *Server) onClientConnectionClosed(c *Client, err error) {
+func (s *ServerManager) onClientConnectionClosed(c *Client, err error) {
 	log.Logger().With(zap.String("err", err.Error())).Warn("client closed")
 	event := events.InternalMessageEvent{
 		EventType: events.EventType_LOST_CONNECTION,
