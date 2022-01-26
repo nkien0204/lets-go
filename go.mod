@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/gofrs/uuid v4.2.0+incompatible
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/joho/godotenv v1.4.0
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
@@ -17,6 +16,6 @@ require (
 	github.com/streadway/amqp v1.0.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	google.golang.org/grpc v1.44.0 // indirect
+	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
 )
