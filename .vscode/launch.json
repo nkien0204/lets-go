@@ -27,6 +27,30 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["serve", "proxy"]
+        },
+        {
+            "name": "run monitor",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve", "monitor"]
+        },
+        {
+            "name": "run grpc server",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve", "grpc_server"]
+        },
+        {
+            "name": "run grpc client",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve", "grpc_client"]
         }
     ]
 }
