@@ -4,12 +4,13 @@ import (
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_server"
+	"go.uber.org/zap"
 )
 
 func Start() {
-	configs.Config = configs.InitConfigs()
-	if configs.Config == nil {
-		log.Logger().Error("could not get configs")
+	var err error
+	if configs.Config, err = configs.InitConfigs(); err != nil {
+		log.Logger().Error("could not get configs", zap.Error(err))
 		return
 	}
 	ServerManager := tcp_server.GetServer()
