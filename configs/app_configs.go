@@ -51,7 +51,7 @@ func InitConfigs() *Cfg {
 	}
 }
 
-func loadRabbitConfig() RabbitConfig {
+func LoadRabbitConfig() RabbitConfig {
 	return RabbitConfig{
 		BackupFileName: os.Getenv("BACKUP_FILE_NAME"),
 		BackupFolder:   os.Getenv("BACKUP_FOLDER"),
