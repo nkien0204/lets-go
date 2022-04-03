@@ -44,14 +44,14 @@ func InitConfigs() *Cfg {
 		logger.Error("error while loading .env file")
 	}
 	return &Cfg{
-		Rabbit:         LoadRabbitConfig(),
+		Rabbit:         loadRabbitConfig(),
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
 		TcpProxyServer: loadProxyServerConfig(),
 	}
 }
 
-func LoadRabbitConfig() RabbitConfig {
+func loadRabbitConfig() RabbitConfig {
 	return RabbitConfig{
 		BackupFileName: os.Getenv("BACKUP_FILE_NAME"),
 		BackupFolder:   os.Getenv("BACKUP_FOLDER"),
