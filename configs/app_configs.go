@@ -44,7 +44,7 @@ func InitConfigs() *Cfg {
 		logger.Error("error while loading .env file")
 	}
 	return &Cfg{
-		Rabbit:         loadRabbitConfig(),
+		Rabbit:         LoadRabbitConfig(),
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
 		TcpProxyServer: loadProxyServerConfig(),
