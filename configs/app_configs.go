@@ -42,6 +42,7 @@ func InitConfigs() *Cfg {
 	err := godotenv.Load()
 	if err != nil {
 		logger.Error("error while loading .env file")
+		return nil
 	}
 	return &Cfg{
 		Rabbit:         loadRabbitConfig(),
