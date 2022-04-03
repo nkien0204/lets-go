@@ -15,5 +15,5 @@ func Start() {
 	}
 	ServerManager := tcp_server.GetServer()
 	go ServerManager.Listen()
-	go tcp_server.RunTcpTimer()
+	tcp_server.RunTcpTimer()
 }
