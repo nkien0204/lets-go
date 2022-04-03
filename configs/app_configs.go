@@ -37,19 +37,19 @@ type TcpProxyServerConfig struct {
 
 var Config *Cfg
 
-func InitConfigs() *Cfg {
+func InitConfigs() (*Cfg, error) {
 	logger := log.Logger()
 	err := godotenv.Load()
 	if err != nil {
 		logger.Error("error while loading .env file")
-		return nil
+		return nil, err
 	}
 	return &Cfg{
 		Rabbit:         loadRabbitConfig(),
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
 		TcpProxyServer: loadProxyServerConfig(),
-	}
+	}, nil
 }
 
 func loadRabbitConfig() RabbitConfig {

@@ -5,6 +5,7 @@ import (
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_client"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,7 +22,11 @@ func init() {
 }
 
 func runClient(cmd *cobra.Command, args []string) {
-	configs.Config = configs.InitConfigs()
+	var err error
+	if configs.Config, err = configs.InitConfigs(); err != nil {
+		log.Logger().Error("runClient failed", zap.Error(err))
+		return
+	}
 
 	go func() {
 		for {
