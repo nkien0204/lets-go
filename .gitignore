@@ -5,3 +5,5 @@ test/cluster/app1/app1
 test/cluster/app2/app2
 test/cluster/app3/app3
 test/cluster/app4/app4
+.vscode/
+.idea/
