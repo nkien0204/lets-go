@@ -32,20 +32,20 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bm.yaml)")
-
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().String("system-mode", "dev", "dev mode")
-	rootCmd.PersistentFlags().String("system-jwt-sign-key", "JyMHo70MNMeQAIfSwpak", "jwt sign key")
-	rootCmd.PersistentFlags().String("log-mode", "json", "Default log mode")
-	rootCmd.PersistentFlags().Bool("log-gorm", false, "default disable gorm log")
-	rootCmd.PersistentFlags().String("log-level", "info", "Default log level")
-
-	_ = viper.BindPFlag("system-mode", rootCmd.PersistentFlags().Lookup("system-mode"))
-	_ = viper.BindPFlag("system-jwt-sign-key", rootCmd.PersistentFlags().Lookup("system-jwt-sign-key"))
-	_ = viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level"))
-	_ = viper.BindPFlag("log-mode", rootCmd.PersistentFlags().Lookup("log-mode"))
-	_ = viper.BindPFlag("log-gorm", rootCmd.PersistentFlags().Lookup("log-gorm"))
+	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bm.yaml)")
+	//
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.PersistentFlags().String("system-mode", "dev", "dev mode")
+	//rootCmd.PersistentFlags().String("system-jwt-sign-key", "JyMHo70MNMeQAIfSwpak", "jwt sign key")
+	//rootCmd.PersistentFlags().String("log-mode", "json", "Default log mode")
+	//rootCmd.PersistentFlags().Bool("log-gorm", false, "default disable gorm log")
+	//rootCmd.PersistentFlags().String("log-level", "info", "Default log level")
+	//
+	//_ = viper.BindPFlag("system-mode", rootCmd.PersistentFlags().Lookup("system-mode"))
+	//_ = viper.BindPFlag("system-jwt-sign-key", rootCmd.PersistentFlags().Lookup("system-jwt-sign-key"))
+	//_ = viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level"))
+	//_ = viper.BindPFlag("log-mode", rootCmd.PersistentFlags().Lookup("log-mode"))
+	//_ = viper.BindPFlag("log-gorm", rootCmd.PersistentFlags().Lookup("log-gorm"))
 }
 
 // initConfig reads in config file and ENV variables if set.

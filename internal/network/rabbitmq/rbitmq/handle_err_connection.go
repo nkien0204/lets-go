@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/nkien0204/projectTemplate/configs"
-	"github.com/nkien0204/protobuf/build/proto/events"
+	events "github.com/nkien0204/protobuf/build"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/streadway/amqp"

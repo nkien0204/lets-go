@@ -9,7 +9,7 @@ import (
 
 	"encoding/binary"
 	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/protobuf/build/proto/events"
+	events "github.com/nkien0204/protobuf/build"
 	"go.uber.org/zap"
 	"io"
 	"net"
