@@ -3,6 +3,7 @@ module github.com/nkien0204/projectTemplate
 go 1.16
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/joho/godotenv v1.4.0
 	github.com/jonboulle/clockwork v0.2.2 // indirect
@@ -14,6 +15,5 @@ require (
 	github.com/spf13/viper v1.10.1
 	github.com/streadway/amqp v1.0.0
 	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	google.golang.org/protobuf v1.28.0
 )

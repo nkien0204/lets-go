@@ -1,13 +1,5 @@
 package tftp
 
-import (
-	"bytes"
-	"encoding/binary"
-	"errors"
-	"io"
-	"strings"
-)
-
 const (
 	DatagramSize = 516 // the maximum supported datagram size
 	BlockSize    = 512 // the DatagramSize minus a 4-byte header

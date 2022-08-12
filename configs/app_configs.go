@@ -8,10 +8,15 @@ import (
 )
 
 type Cfg struct {
+	HttpServer		HttpServerConfig
 	Rabbit         RabbitConfig
 	TcpClient      TcpClientConfig
 	TcpServer      TcpServerConfig
 	TcpProxyServer TcpProxyServerConfig
+}
+
+type HttpServerConfig struct {
+	Address string
 }
 
 type RabbitConfig struct {
@@ -45,11 +50,18 @@ func InitConfigs() (*Cfg, error) {
 		return nil, err
 	}
 	return &Cfg{
+		HttpServer: loadHttpServerConfig(),
 		Rabbit:         loadRabbitConfig(),
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
 		TcpProxyServer: loadProxyServerConfig(),
 	}, nil
+}
+
+func loadHttpServerConfig() HttpServerConfig {
+	return HttpServerConfig{
+		Address: os.Getenv("HTTP_ADDR"),
+	}
 }
 
 func loadRabbitConfig() RabbitConfig {
