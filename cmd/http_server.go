@@ -28,7 +28,7 @@ func runHttpServer(cmd *cobra.Command, args []string) {
 		log.Logger().Error("init configs failed", zap.Error(err))
 		return
 	}
-	
+
 	server := http_handler.InitServer()
 	go server.ServeHttp()
 

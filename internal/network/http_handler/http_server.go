@@ -19,6 +19,8 @@ func InitServer() HttpServer {
 
 func (server *HttpServer) ServeHttp() {
 	http.HandleFunc("/sign-in", authN.SignIn)
+	http.HandleFunc("/welcome", authN.Welcome)
+	http.HandleFunc("/refresh", authN.Refresh)
 
 	if err := http.ListenAndServe(server.Address, nil); err != nil {
 		log.Logger().Fatal("ListenAndServe http server failed", zap.Error(err))

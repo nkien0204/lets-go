@@ -8,7 +8,7 @@ import (
 )
 
 type Cfg struct {
-	HttpServer		HttpServerConfig
+	HttpServer     HttpServerConfig
 	Rabbit         RabbitConfig
 	TcpClient      TcpClientConfig
 	TcpServer      TcpServerConfig
@@ -50,7 +50,7 @@ func InitConfigs() (*Cfg, error) {
 		return nil, err
 	}
 	return &Cfg{
-		HttpServer: loadHttpServerConfig(),
+		HttpServer:     loadHttpServerConfig(),
 		Rabbit:         loadRabbitConfig(),
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
