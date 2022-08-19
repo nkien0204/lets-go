@@ -92,7 +92,7 @@ func (c *Client) listen() {
 		payload, err := c.decode(c.Conn)
 		if err != nil {
 			logger.Error("error while decoding packet", zap.Error(err))
-			c.ServerManager.onClientConnectionClosed(c, err)
+			c.ServerManager.OnClientConnectionClosed(c, err)
 			return
 		}
 
@@ -100,14 +100,14 @@ func (c *Client) listen() {
 		err = proto.Unmarshal(payload.Bytes(), &event)
 		if err != nil {
 			logger.Error("unmarshal failed", zap.Error(err))
-			c.ServerManager.onClientConnectionClosed(c, err)
+			c.ServerManager.OnClientConnectionClosed(c, err)
 			return
 		}
 		c.ServerManager.dispatch(c, &event)
 	}
 }
 
-func (s *ServerManager) onClientConnectionClosed(c *Client, err error) {
+func (s *ServerManager) OnClientConnectionClosed(c *Client, err error) {
 	log.Logger().With(zap.String("err", err.Error())).Warn("client closed")
 	event := events.InternalMessageEvent{
 		EventType: events.EventType_LOST_CONNECTION,

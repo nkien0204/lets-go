@@ -4,37 +4,24 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"testing"
 
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_client"
-	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
 
-var runClientCmd = &cobra.Command{
-	Use:   "client",
-	Short: "start tcp client",
-	Run:   runClient,
-}
-
-func init() {
-	serveCmd.AddCommand(runClientCmd)
-}
-
-func runClient(cmd *cobra.Command, args []string) {
+func TestConnection(t *testing.T) {
 	var err error
 	if configs.Config, err = configs.InitConfigs(); err != nil {
 		log.Logger().Error("runClient failed", zap.Error(err))
 		return
 	}
 
-	go func() {
-		for {
-			// Handle for TCP reconnection case
-			tcp_client.RunTcp()
-		}
-	}()
+	for i := 0; i < 100; i++ {
+		go tcp_client.RunTcp()
+	}
 
 	// graceful shutdown
 	signals := make(chan os.Signal, 1)

@@ -26,6 +26,10 @@ func (s *ServerManager) handleLostConnection(event *events.InternalMessageEvent)
 
 	logger := log.Logger()
 	uuid := event.GetLostConnectionEvent().GetClientUuid()
+	if _, ok := s.TcpServer.Clients[uuid]; ok {
+		logger.Info("handleLostConnection need to close net.Conn", zap.String("uuid", uuid))
+		s.TcpServer.Clients[uuid].Conn.Close()
+	}
 	delete(s.TcpServer.Clients, uuid)
 	logger.Info("lost connection", zap.String("uuid", uuid), zap.Int("num of clients", len(s.TcpServer.Clients)))
 }
