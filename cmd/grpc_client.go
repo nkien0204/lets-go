@@ -7,7 +7,7 @@ import (
 
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/grpc/grpc_client"
+	"github.com/nkien0204/projectTemplate/internal/network/http_handler/grpc/grpc_client"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
