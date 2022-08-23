@@ -1,17 +1,20 @@
 package cmd
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/grpc/grpc_server"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/grpc/grpc_server"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var runGrpcServerCmd = &cobra.Command{
-	Use:   "grpc_server",
-	Short: "start grpc server feature",
+	Use:   "grpc-server",
+	Short: "start grpc server",
 	Run:   runGrpcServer,
 }
 
@@ -20,8 +23,14 @@ func init() {
 }
 
 func runGrpcServer(cmd *cobra.Command, args []string) {
+	logger := log.Logger()
+	var err error
+	configs.Config, err = configs.InitConfigs()
+	if err != nil {
+		logger.Fatal("configs.InitConfigs failed", zap.Error(err))
+	}
 	go func() {
-		server := grpc_server.GrpcServer{}
+		server := grpc_server.InitServer()
 		server.Start()
 	}()
 

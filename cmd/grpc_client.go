@@ -1,17 +1,20 @@
 package cmd
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/grpc/grpc_client"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/grpc/grpc_client"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var runGrpcClientCmd = &cobra.Command{
-	Use:   "grpc_client",
-	Short: "start grpc client feature",
+	Use:   "grpc-client",
+	Short: "start grpc client",
 	Run:   runGrpcClient,
 }
 
@@ -20,8 +23,14 @@ func init() {
 }
 
 func runGrpcClient(cmd *cobra.Command, args []string) {
+	logger := log.Logger()
+	var err error
+	configs.Config, err = configs.InitConfigs()
+	if err != nil {
+		logger.Fatal("configs.InitConfigs failed", zap.Error(err))
+	}
 	go func() {
-		client := grpc_client.GrpcClient{}
+		client := grpc_client.InitClient()
 		client.Start()
 	}()
 

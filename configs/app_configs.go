@@ -8,11 +8,21 @@ import (
 )
 
 type Cfg struct {
+	GrpcServer     GrpcServerConfig
+	GrpcClient     GrpcClientConfig
 	HttpServer     HttpServerConfig
 	Rabbit         RabbitConfig
 	TcpClient      TcpClientConfig
 	TcpServer      TcpServerConfig
 	TcpProxyServer TcpProxyServerConfig
+}
+
+type GrpcServerConfig struct {
+	Address string
+}
+
+type GrpcClientConfig struct {
+	ServerAddress string
 }
 
 type HttpServerConfig struct {
@@ -55,7 +65,21 @@ func InitConfigs() (*Cfg, error) {
 		TcpClient:      loadTcpClientConfig(),
 		TcpServer:      loadTcpServerConfig(),
 		TcpProxyServer: loadProxyServerConfig(),
+		GrpcServer:     loadGrpcServerConfig(),
+		GrpcClient:     loadGrpcClientConfig(),
 	}, nil
+}
+
+func loadGrpcServerConfig() GrpcServerConfig {
+	return GrpcServerConfig{
+		Address: os.Getenv("GRPC_ADDR"),
+	}
+}
+
+func loadGrpcClientConfig() GrpcClientConfig {
+	return GrpcClientConfig{
+		ServerAddress: os.Getenv("GRPC_SERVER"),
+	}
 }
 
 func loadHttpServerConfig() HttpServerConfig {
