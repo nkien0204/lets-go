@@ -51,7 +51,7 @@ func Logger() *zap.Logger {
 func initZapLogger() *zap.Logger {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("load env error")
+		fmt.Println("load env error: ", err.Error())
 		return nil
 	}
 	mode := os.Getenv("SYSTEM_MODE")

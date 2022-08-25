@@ -17,6 +17,7 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	github.com/streadway/amqp v1.0.0
+	github.com/stretchr/testify v1.8.0
 	go.mongodb.org/mongo-driver v1.10.1
 	go.uber.org/zap v1.19.1
 	google.golang.org/grpc v1.48.0

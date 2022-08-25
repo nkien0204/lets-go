@@ -63,7 +63,7 @@ func (g *GrpcClient) Start() {
 	}()
 
 	for {
-		res := events.RpcHeartBeatEvent {
+		res := events.RpcHeartBeatEvent{
 			Timestamp: time.Now().Unix(),
 		}
 		if err := stream.Send(&res); err != nil {
