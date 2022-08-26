@@ -2,8 +2,10 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/nkien0204/projectTemplate/internal/db/non_rdb/mongo/models"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,12 +22,12 @@ type MongoService struct {
 	Conn    *mongo.Client
 }
 
-type MyCollection struct {
-	Collection *mongo.Collection
+type MyCollection[T any] struct {
+	collection *mongo.Collection
 }
 
 func Init(address string) (*MongoService, error) {
-	// address = "mongodb://localhost:27017"
+	// address = "mongodb://user:pass@localhost:27017"
 	logger := log.Logger()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	// client, err := mongo.Connect(ctx, options.Client().ApplyURI(address))
@@ -66,62 +68,121 @@ func (m *MongoService) Close() error {
 	return nil
 }
 
-func (m *MongoService) GetCollection(databaseName string, collectionName string) *MyCollection {
-	return &MyCollection{m.Conn.Database(databaseName).Collection(collectionName)}
+
+// MUST handle error!
+//
+//Convert return interface into specific model ("models.Test" for example):
+//
+/*	
+	collectionInterface, err := mongoService.GetCollection(DatabaseName, models.TestCollectionName)
+	if err != nil {
+		t.Errorf("%v", err)
+		return
+	}
+	collection := collectionInterface.(*mongo.MyCollection[models.Test])
+*/
+func (m *MongoService) GetCollection(databaseName string, collectionName string) (interface{}, error) {
+	logger := log.Logger()
+	switch collectionName {
+	case models.TestCollectionName:
+		return &MyCollection[models.Test]{
+			collection: m.Conn.Database(databaseName).Collection(collectionName),
+		}, nil
+	default:
+		logger.Error("collection name not found", zap.String("name", collectionName))
+		return nil, errors.New("collection name not found")
+	}
 }
 
-func (m *MyCollection) InsertOne(document interface{}) error {
+// MUST handle error!
+func (m *MyCollection[T]) InsertOne(document T) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err := m.Collection.InsertOne(ctx, document)
+	_, err := m.collection.InsertOne(ctx, document)
 	return err
 }
 
-func (m *MyCollection) FindOneByObjectId(id primitive.ObjectID) *mongo.SingleResult {
+// MUST handle error!
+func (m *MyCollection[T]) InsertMany(document []T) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	return m.Collection.FindOne(ctx, bson.M{"_id": id})
+	dst := make([]interface{}, len(document))
+	for i := range document {
+		dst[i] = document[i]
+	}
+	_, err := m.collection.InsertMany(ctx, dst)
+	return err
 }
 
-// MUST handle error
-func (m *MyCollection) FindOneByIdString(id string) (*mongo.SingleResult, error) {
+// MUST handle error!
+func (m *MyCollection[T]) FindOneByObjectId(id primitive.ObjectID) (result T, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = m.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&result)
+	return result, err
+}
+
+// MUST handle error!
+func (m *MyCollection[T]) FindOneByIdString(id string) (result T, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return
 	}
-	result := m.Collection.FindOne(ctx, bson.M{"_id": objectId})
-	return result, result.Err()
+	err = m.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&result)
+	return
 }
 
-// MUST handle error.
-//
-// Implement when received cursor:
-//
-/*	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		cursor.Close(ctx)
-		cancel()
-	}()
+// MUST handle error!
+func (m *MyCollection[T]) Find(filter bson.D, opts ...*options.FindOptions) (result []T, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cursor, err := m.collection.Find(ctx, filter, opts...)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	result = make([]T, 0)
 	for cursor.Next(ctx) {
-		var document models.Test
-		err := cursor.Decode(&document)
+		var document T
+		err = cursor.Decode(&document)
 		if err != nil {
-			t.Errorf("%v", err.Error())
 			return
 		} else {
 			result = append(result, document)
 		}
 	}
-	if err := cursor.Err(); err != nil {
-		t.Errorf("%v", err)
-	} else {
-		t.Log("result: ", result)
-	}
-*/
-func (m *MyCollection) Find(filter bson.D, opts ...*options.FindOptions) (*mongo.Cursor, error) {
+	err = cursor.Err()
+	return
+}
+
+// MUST handle error!
+func (m *MyCollection[T]) UpdateOne(filter bson.M, update bson.M, opts ...*options.UpdateOptions) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	return m.Collection.Find(ctx, filter, opts...)
+	_, err := m.collection.UpdateOne(ctx, filter, bson.M{"$set": update}, opts...)
+	return err
+}
+
+// MUST handle error!
+func (m *MyCollection[T]) UpdateMany(filter bson.M, update bson.M, opts ...*options.UpdateOptions) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := m.collection.UpdateMany(ctx, filter, bson.M{"$set": update}, opts...)
+	return err
+}
+
+func (m *MyCollection[T]) DeleteOne(filter bson.M, opts ...*options.DeleteOptions) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := m.collection.DeleteOne(ctx, filter, opts...)
+	return err
+}
+
+func (m *MyCollection[T]) DeleteMany(filter bson.M, opts ...*options.DeleteOptions) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := m.collection.DeleteMany(ctx, filter, opts...)
+	return err
 }
