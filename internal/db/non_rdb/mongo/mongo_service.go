@@ -68,12 +68,11 @@ func (m *MongoService) Close() error {
 	return nil
 }
 
-
 // MUST handle error!
 //
 //Convert return interface into specific model ("models.Test" for example):
 //
-/*	
+/*
 	collectionInterface, err := mongoService.GetCollection(DatabaseName, models.TestCollectionName)
 	if err != nil {
 		t.Errorf("%v", err)

@@ -15,6 +15,11 @@ type Cfg struct {
 	TcpClient      TcpClientConfig
 	TcpServer      TcpServerConfig
 	TcpProxyServer TcpProxyServerConfig
+	Db             DbConfig
+}
+
+type DbConfig struct {
+	Addr string
 }
 
 type GrpcServerConfig struct {
@@ -67,7 +72,14 @@ func InitConfigs() (*Cfg, error) {
 		TcpProxyServer: loadProxyServerConfig(),
 		GrpcServer:     loadGrpcServerConfig(),
 		GrpcClient:     loadGrpcClientConfig(),
+		Db:             loadDbConfig(),
 	}, nil
+}
+
+func loadDbConfig() DbConfig {
+	return DbConfig{
+		Addr: os.Getenv("DB_ADDR"),
+	}
 }
 
 func loadGrpcServerConfig() GrpcServerConfig {
