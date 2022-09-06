@@ -132,14 +132,14 @@ func TestInsertMany(t *testing.T) {
 	}
 	update := []models.Test{
 		{
-			Id: primitive.NewObjectID(),
+			Id:           primitive.NewObjectID(),
 			AnotherField: "test3",
-			MyField: "TEST3",
+			MyField:      "TEST3",
 		},
 		{
-			Id: primitive.NewObjectID(),
+			Id:           primitive.NewObjectID(),
 			AnotherField: "test4",
-			MyField: "TEST4",
+			MyField:      "TEST4",
 		},
 	}
 	if err := collection.InsertMany(update); err != nil {
