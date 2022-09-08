@@ -22,7 +22,7 @@ go build -o go_layout main.go       #build to go_layout executive file
 - **Tcp proxy** server
 - **Tcp** (server and client)
 
-Please create `.env` file base on `.env.dev` to get all environment variables.
+Please create `.env` file base on `.env.sample` to get all environment variables.
 Run `./go_layout serve -h` for more detail.
 
 ## Some other utils
