@@ -13,8 +13,8 @@ import (
 )
 
 var runClientCmd = &cobra.Command{
-	Use:   "client",
-	Short: "start tcp client",
+	Use:   "tcp-client",
+	Short: ": Start tcp client",
 	Run:   runClient,
 }
 

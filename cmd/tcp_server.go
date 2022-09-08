@@ -13,7 +13,7 @@ import (
 
 var runServerCmd = &cobra.Command{
 	Use:   "tcp-server",
-	Short: "start tcp server",
+	Short: ": Start tcp server",
 	Run:   runServer,
 }
 

@@ -13,7 +13,7 @@ import (
 
 var runProxyCmd = &cobra.Command{
 	Use:   "proxy",
-	Short: "start proxy server",
+	Short: ": Start proxy server",
 	Run:   runProxy,
 }
 

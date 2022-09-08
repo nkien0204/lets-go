@@ -14,7 +14,7 @@ import (
 
 var runHttpServerCmd = &cobra.Command{
 	Use:   "http-server",
-	Short: "start http server",
+	Short: ": Start http server",
 	Run:   runHttpServer,
 }
 
