@@ -11,7 +11,7 @@ import (
 
 var runMonitorCmd = &cobra.Command{
 	Use:   "monitor",
-	Short: "start tcp monitor",
+	Short: ": Start tcp monitor",
 	Run:   runMonitor,
 }
 

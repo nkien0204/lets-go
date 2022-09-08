@@ -6,7 +6,7 @@ import (
 
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "start the application",
+	Short: "Start the application",
 	Run:   runServeCmd,
 }
 

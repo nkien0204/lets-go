@@ -1,1 +1,0 @@
-Web package for writing web application

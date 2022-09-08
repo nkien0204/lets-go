@@ -14,7 +14,7 @@ import (
 
 var runGrpcClientCmd = &cobra.Command{
 	Use:   "grpc-client",
-	Short: "start grpc client",
+	Short: ": Start grpc client",
 	Run:   runGrpcClient,
 }
 
