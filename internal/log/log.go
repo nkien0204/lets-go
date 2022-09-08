@@ -52,7 +52,7 @@ func initZapLogger() *zap.Logger {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("load env error: ", err.Error())
-		return nil
+		os.Exit(1)
 	}
 	mode := os.Getenv("SYSTEM_MODE")
 	var encoder zapcore.Encoder
