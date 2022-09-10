@@ -8,7 +8,8 @@ Environment: **Linux** only, **Go 1.18+**
 ```shell
 git clone https://github.com/nkien0204/go-project-layout.git
 cd go-project-layout
-go build -o go_layout main.go       #build to go_layout executive file
+go build -o go_layout main.go       # build to go_layout executive file
+cp .env.dev .env                    # create `.env` file base on `.env.sample` to get all environment variables.
 ```
 ##### Run the project
 ```shell
@@ -22,7 +23,6 @@ go build -o go_layout main.go       #build to go_layout executive file
 - **Tcp proxy** server
 - **Tcp** (server and client)
 
-Please create `.env` file base on `.env.sample` to get all environment variables.
 Run `./go_layout serve -h` for more detail.
 
 ## Some other utils
