@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"github.com/nkien0204/projectTemplate/configs"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_proxy"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 var runProxyCmd = &cobra.Command{
@@ -23,12 +23,6 @@ func init() {
 
 func runProxy(cmd *cobra.Command, args []string) {
 	logger := log.Logger()
-	var err error
-	if configs.Config, err = configs.InitConfigs(); err != nil {
-		logger.Error("init config failed", zap.Error(err))
-		return
-	}
-
 	if err := tcp_proxy.EstablishProxy("0.0.0.0:9100"); err != nil {
 		logger.Error("establish proxy failed", zap.Error(err))
 	}

@@ -14,7 +14,7 @@ type HttpServer struct {
 }
 
 func InitServer() HttpServer {
-	return HttpServer{Address: configs.Config.HttpServer.Address}
+	return HttpServer{Address: configs.GetConfigs().HttpServer.Address}
 }
 
 func (server *HttpServer) ServeHttp() {
