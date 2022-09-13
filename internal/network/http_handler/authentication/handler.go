@@ -7,11 +7,10 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"go.uber.org/zap"
 )
-
-var jwtKey = []byte("secret_key")
 
 var users = map[string]string{
 	"user1": "password1",
@@ -29,6 +28,7 @@ type Claims struct {
 }
 
 func SignIn(w http.ResponseWriter, r *http.Request) {
+	jwtKey := configs.GetConfigs().SecretKey.Key
 	var creds Credentials
 	logger := log.Logger()
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -69,6 +69,8 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	logger := log.Logger()
+	jwtKey := configs.GetConfigs().SecretKey.Key
+
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {
@@ -107,6 +109,7 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
 	// (BEGIN) The code uptil this point is the same as the first part of the `Welcome` route
+	jwtKey := configs.GetConfigs().SecretKey.Key
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		if err == http.ErrNoCookie {

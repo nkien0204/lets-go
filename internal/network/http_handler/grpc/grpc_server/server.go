@@ -19,7 +19,7 @@ type Server struct {
 
 func newServer() *Server {
 	return &Server{
-		Address: configs.Config.GrpcServer.Address,
+		Address: configs.GetConfigs().GrpcServer.Address,
 	}
 }
 

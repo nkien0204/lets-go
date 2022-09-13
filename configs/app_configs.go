@@ -2,9 +2,11 @@ package configs
 
 import (
 	"os"
+	"sync"
 
 	"github.com/joho/godotenv"
 	"github.com/nkien0204/projectTemplate/internal/log"
+	"go.uber.org/zap"
 )
 
 type Cfg struct {
@@ -16,6 +18,11 @@ type Cfg struct {
 	TcpServer      TcpServerConfig
 	TcpProxyServer TcpProxyServerConfig
 	Db             DbConfig
+	SecretKey      SecretKeyConfig
+}
+
+type SecretKeyConfig struct {
+	Key []byte
 }
 
 type DbConfig struct {
@@ -55,9 +62,22 @@ type TcpProxyServerConfig struct {
 	ProxyAddress string
 }
 
-var Config *Cfg
+var config *Cfg
+var once sync.Once
 
-func InitConfigs() (*Cfg, error) {
+// Singleton pattern
+func GetConfigs() *Cfg {
+	once.Do(func() {
+		var err error
+		if config, err = initConfigs(); err != nil {
+			log.Logger().Error("initConfigs failed", zap.Error(err))
+			panic(1)
+		}
+	})
+	return config
+}
+
+func initConfigs() (*Cfg, error) {
 	logger := log.Logger()
 	err := godotenv.Load()
 	if err != nil {
@@ -73,7 +93,14 @@ func InitConfigs() (*Cfg, error) {
 		GrpcServer:     loadGrpcServerConfig(),
 		GrpcClient:     loadGrpcClientConfig(),
 		Db:             loadDbConfig(),
+		SecretKey:      loadSecretKeyConfig(),
 	}, nil
+}
+
+func loadSecretKeyConfig() SecretKeyConfig {
+	return SecretKeyConfig{
+		Key: []byte(os.Getenv("SECRET_KEY")),
+	}
 }
 
 func loadDbConfig() DbConfig {

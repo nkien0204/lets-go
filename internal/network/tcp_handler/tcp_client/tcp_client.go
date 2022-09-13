@@ -18,7 +18,7 @@ import (
 )
 
 func RunTcp() {
-	tcpServerUrl := configs.Config.TcpClient.TcpServerUrl
+	tcpServerUrl := configs.GetConfigs().TcpClient.TcpServerUrl
 
 	client, err := initClient(tcpServerUrl)
 	if err != nil {
@@ -40,7 +40,7 @@ func initClient(address string) (*Client, error) {
 	}
 
 	client.Conn = c
-	client.Name = configs.Config.TcpClient.ClientName
+	client.Name = configs.GetConfigs().TcpClient.ClientName
 	client.LastTimeSeen = time.Now()
 	log.Logger().Info("server info", zap.String("address", client.Conn.RemoteAddr().String()))
 	return &client, nil

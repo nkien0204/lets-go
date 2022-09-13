@@ -24,7 +24,7 @@ func GetServer() *ServerManager {
 		if tcpServerManager.TcpServer == nil {
 			logger.Info("created instance")
 			tcpServerManager.TcpServer = &Server{
-				Address: configs.Config.TcpServer.TcpPort,
+				Address: configs.GetConfigs().TcpServer.TcpPort,
 				Clients: make(map[string]*Client),
 			}
 		}

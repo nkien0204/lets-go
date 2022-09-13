@@ -22,7 +22,7 @@ type GrpcClient struct {
 func InitClient() GrpcClient {
 	return GrpcClient{
 		Conn:          nil,
-		ServerAddress: configs.Config.GrpcClient.ServerAddress,
+		ServerAddress: configs.GetConfigs().GrpcClient.ServerAddress,
 	}
 }
 

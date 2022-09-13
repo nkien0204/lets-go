@@ -10,7 +10,7 @@ import (
 
 func EstablishProxy(dstAddress string) error {
 	logger := log.Logger()
-	proxyServer, err := net.Listen("tcp", configs.Config.TcpProxyServer.ProxyAddress)
+	proxyServer, err := net.Listen("tcp", configs.GetConfigs().TcpProxyServer.ProxyAddress)
 	if err != nil {
 		logger.Error("listen proxyServer failed", zap.Error(err))
 		return err
