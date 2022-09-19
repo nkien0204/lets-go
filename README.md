@@ -9,7 +9,7 @@ Environment: **Linux** only, **Go 1.18+**
 git clone https://github.com/nkien0204/lets-go.git
 cd lets-go
 go build -o lets-go main.go       # build to go_layout executive file
-cp .env.sample .env                 # create '.env' file base on '.env.sample' to get all environment variables.
+cp .env.sample .env               # create '.env' file base on '.env.sample' to get all environment variables.
 ```
 ##### Run the project
 ```shell
