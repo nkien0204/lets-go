@@ -1,4 +1,4 @@
-# Project layout for Go
+# Golang backend server
 
 Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server` and `Database driver` (MongoDb and MySQL).
 
@@ -6,14 +6,14 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 Environment: **Linux** only, **Go 1.18+**
 
 ```shell
-git clone https://github.com/nkien0204/go-project-layout.git
-cd go-project-layout
-go build -o go_layout main.go       # build to go_layout executive file
+git clone https://github.com/nkien0204/lets-go.git
+cd lets-go
+go build -o lets-go main.go       # build to go_layout executive file
 cp .env.sample .env                 # create '.env' file base on '.env.sample' to get all environment variables.
 ```
 ##### Run the project
 ```shell
-./go_layout serve [sub_command]
+./lets-go serve [sub_command]
 ```
 
 ##### Some kind of features:
