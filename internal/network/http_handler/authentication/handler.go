@@ -2,7 +2,6 @@ package authentication
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -47,31 +46,30 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	// just for testing
 	expectedPassword, ok := users[creds.Username]
 	if !ok || expectedPassword != creds.Password {
-		logger.Error("")
-		w.WriteHeader(http.StatusUnauthorized)
+		logger.Error("username or password is not correct")
+		responses.CustomResponse(w, responses.ResAuthFailed, "wrong username or password", nil)
 		return
 	}
 
 	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), creds.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Error("generate accessToken failed")
+		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
 	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), creds.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Error("generate refreshToken failed")
+		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)
 		return
 	}
 
-	res := responses.ResponseForm{
-		Code:    responses.ResOk,
-		Message: "ok",
-		Data: map[string]string{
-			AccessTokenKey:  accessToken,
-			RefreshTokenKey: refreshToken,
-		},
+	logger.Info("sign-in successfully", zap.String("accessToken", accessToken), zap.String("refreshToken", refreshToken))
+	data := map[string]string{
+		AccessTokenKey:  accessToken,
+		RefreshTokenKey: refreshToken,
 	}
-	json.NewEncoder(w).Encode(res)
+	responses.CustomResponse(w, responses.ResOk, "ok", data)
 }
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
@@ -87,23 +85,28 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
 			logger.Error("invalid signature", zap.Error(err))
-			w.WriteHeader(http.StatusUnauthorized)
+			responses.CustomResponse(w, responses.ResInvalidSignature, "invalid signature", nil)
 			return
 		}
 		logger.Error("parse token failed", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
+		responses.CustomResponse(w, responses.ResParseTokenFailed, "parse token failed", nil)
 		return
 	}
 	if !tkn.Valid {
 		logger.Error("invalid token")
-		w.WriteHeader(http.StatusUnauthorized)
+		responses.CustomResponse(w, responses.ResInvalidToken, "invalid token", nil)
 		return
 	}
 
-	w.Write([]byte(fmt.Sprintf("Welcome %s!, expire time left: %ds", claims.Username, claims.ExpiresAt-time.Now().Unix())))
+	data := map[string]interface{}{
+		"username":         claims.Username,
+		"expire time left": claims.ExpiresAt - time.Now().Unix(),
+	}
+	responses.CustomResponse(w, responses.ResOk, "ok", data)
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
+	logger := log.Logger()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 	tknStr := r.Header.Get(RefreshTokenKey)
 	claims := &Claims{}
@@ -112,42 +115,50 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
+			logger.Error("invalid signature", zap.Error(err))
+			responses.CustomResponse(w, responses.ResInvalidSignature, "invalid signature", nil)
 			return
 		}
-		w.WriteHeader(http.StatusBadRequest)
+		logger.Error("parse token failed", zap.Error(err))
+		responses.CustomResponse(w, responses.ResParseTokenFailed, "parse token failed", nil)
 		return
 	}
 	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
+		logger.Error("invalid token", zap.Error(err))
+		responses.CustomResponse(w, responses.ResInvalidToken, "invalid token", nil)
+		return
+	}
+
+	if time.Unix(claims.ExpiresAt, 0).After(time.Now()) {
+		logger.Error("no need to refresh token", zap.Error(err))
+		responses.CustomResponse(w, responses.ResInvalidToken, "no need to refresh token", nil)
 		return
 	}
 
 	if time.Unix(claims.ExpiresAt, 0).Add(time.Duration(RefreshAllowTime) * time.Second).Before(time.Now()) {
-		w.WriteHeader(http.StatusBadRequest)
+		logger.Error("refresh token was expired", zap.Error(err))
+		responses.CustomResponse(w, responses.ResTokenExpired, "refresh token was expired", nil)
 		return
 	}
 
 	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), claims.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Error("generate accessToken failed")
+		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
 	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), claims.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Error("generate refreshToken failed")
+		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)
 		return
 	}
 
-	res := responses.ResponseForm{
-		Code:    responses.ResOk,
-		Message: "ok",
-		Data: map[string]string{
-			AccessTokenKey:  accessToken,
-			RefreshTokenKey: refreshToken,
-		},
+	data := map[string]string{
+		AccessTokenKey:  accessToken,
+		RefreshTokenKey: refreshToken,
 	}
-	json.NewEncoder(w).Encode(res)
+	responses.CustomResponse(w, responses.ResOk, "ok", data)
 }
 
 func generateToken(jwtKey []byte, expirationTime time.Time, username string) (string, error) {
