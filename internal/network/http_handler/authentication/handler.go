@@ -9,6 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nkien0204/projectTemplate/configs"
 	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/projectTemplate/internal/network/http_handler/responses"
 	"go.uber.org/zap"
 )
 
@@ -62,8 +63,15 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Add(AccessTokenKey, accessToken)
-	w.Header().Add(RefreshTokenKey, refreshToken)
+	res := responses.ResponseForm{
+		Code:    responses.ResOk,
+		Message: "ok",
+		Data: map[string]string{
+			AccessTokenKey:  accessToken,
+			RefreshTokenKey: refreshToken,
+		},
+	}
+	json.NewEncoder(w).Encode(res)
 }
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
@@ -131,8 +139,15 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Add(AccessTokenKey, accessToken)
-	w.Header().Add(RefreshTokenKey, refreshToken)
+	res := responses.ResponseForm{
+		Code:    responses.ResOk,
+		Message: "ok",
+		Data: map[string]string{
+			AccessTokenKey:  accessToken,
+			RefreshTokenKey: refreshToken,
+		},
+	}
+	json.NewEncoder(w).Encode(res)
 }
 
 func generateToken(jwtKey []byte, expirationTime time.Time, username string) (string, error) {
