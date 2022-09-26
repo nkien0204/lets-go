@@ -12,6 +12,11 @@ import (
 	"go.uber.org/zap"
 )
 
+const RefreshAllowTime int = 30
+const TokenExpireTime int = 45
+const AccessTokenKey string = "AccessToken"
+const RefreshTokenKey string = "RefreshToken"
+
 var users = map[string]string{
 	"user1": "password1",
 	"user2": "password2",
@@ -38,6 +43,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// just for testing
 	expectedPassword, ok := users[creds.Username]
 	if !ok || expectedPassword != creds.Password {
 		logger.Error("")
@@ -45,45 +51,27 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(45 * time.Second)
-	claims := &Claims{
-		Username: creds.Username,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
+	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), creds.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), creds.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-	})
+	w.Header().Add(AccessTokenKey, accessToken)
+	w.Header().Add(RefreshTokenKey, refreshToken)
 }
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
 	logger := log.Logger()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			logger.Error("no cookie on request", zap.Error(err))
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		logger.Error("get cookie failed", zap.Error(err))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	tknStr := r.Header.Get(AccessTokenKey)
 
-	tknStr := cookie.Value
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
@@ -108,18 +96,8 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
-	// (BEGIN) The code uptil this point is the same as the first part of the `Welcome` route
 	jwtKey := configs.GetConfigs().SecretKey.Key
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := cookie.Value
+	tknStr := r.Header.Get(RefreshTokenKey)
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
@@ -137,24 +115,38 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Until(time.Unix(claims.ExpiresAt, 0)) > 30*time.Second {
+	if time.Unix(claims.ExpiresAt, 0).Add(time.Duration(RefreshAllowTime) * time.Second).Before(time.Now()) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// Now, create a new token for the current use, with a renewed expiration time
-	expirationTime := time.Now().Add(45 * time.Second)
-	claims.ExpiresAt = expirationTime.Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), claims.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), claims.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
-	})
+	w.Header().Add(AccessTokenKey, accessToken)
+	w.Header().Add(RefreshTokenKey, refreshToken)
+}
+
+func generateToken(jwtKey []byte, expirationTime time.Time, username string) (string, error) {
+	claims := &Claims{
+		Username: username,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }
