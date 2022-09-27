@@ -7,20 +7,18 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql"
+	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql/models"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/http_handler/responses"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
-const RefreshAllowTime int = 30
-const TokenExpireTime int = 45
+const AccessTokenExpireTime = time.Duration(2) * time.Hour
+const RefreshTokenExpireTime = time.Duration(24) * time.Hour
 const AccessTokenKey string = "AccessToken"
 const RefreshTokenKey string = "RefreshToken"
-
-var users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
-}
 
 type Credentials struct {
 	Username string `json:"user_name"`
@@ -43,21 +41,29 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// just for testing
-	expectedPassword, ok := users[creds.Username]
-	if !ok || expectedPassword != creds.Password {
+	var userModel models.User
+	dbService := mysql.GetMysqlConnection()
+	if result := dbService.Db.Table(models.UsersTable).Where("username = ?", creds.Username).First(&userModel); result.Error != nil {
+		logger.Error("find user failed", zap.Error(result.Error))
+		responses.CustomResponse(w, responses.ResRetrieveFailed, "find user failed", nil)
+		return
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(userModel.Password), []byte(creds.Password)) != nil {
 		logger.Error("username or password is not correct")
 		responses.CustomResponse(w, responses.ResAuthFailed, "wrong username or password", nil)
 		return
 	}
 
-	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), creds.Username)
+	accessTokenExpireTime := time.Now().Add(AccessTokenExpireTime)
+	accessToken, err := generateToken(jwtKey, accessTokenExpireTime, creds.Username)
 	if err != nil {
 		logger.Error("generate accessToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
-	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), creds.Username)
+	refreshTokenExpireTime := time.Now().Add(RefreshTokenExpireTime)
+	refreshToken, err := generateToken(jwtKey, refreshTokenExpireTime, creds.Username)
 	if err != nil {
 		logger.Error("generate refreshToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)
@@ -129,25 +135,21 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt, 0).After(time.Now()) {
+	if (time.Until(time.Unix(claims.ExpiresAt, 0))) > (RefreshTokenExpireTime - AccessTokenExpireTime) {
 		logger.Error("no need to refresh token", zap.Error(err))
 		responses.CustomResponse(w, responses.ResInvalidToken, "no need to refresh token", nil)
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt, 0).Add(time.Duration(RefreshAllowTime) * time.Second).Before(time.Now()) {
-		logger.Error("refresh token was expired", zap.Error(err))
-		responses.CustomResponse(w, responses.ResTokenExpired, "refresh token was expired", nil)
-		return
-	}
-
-	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), claims.Username)
+	accessTokenExpireTime := time.Now().Add(AccessTokenExpireTime)
+	accessToken, err := generateToken(jwtKey, accessTokenExpireTime, claims.Username)
 	if err != nil {
 		logger.Error("generate accessToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
-	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), claims.Username)
+	refreshTokenExpireTime := time.Now().Add(RefreshTokenExpireTime)
+	refreshToken, err := generateToken(jwtKey, refreshTokenExpireTime, claims.Username)
 	if err != nil {
 		logger.Error("generate refreshToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)

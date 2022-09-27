@@ -12,6 +12,7 @@ const ResInvalidSignature = 1003
 const ResParseTokenFailed = 1004
 const ResInvalidToken = 1005
 const ResTokenExpired = 1006
+const ResRetrieveFailed = 1007
 
 type ResponseForm struct {
 	Code    int         `json:"code"`
