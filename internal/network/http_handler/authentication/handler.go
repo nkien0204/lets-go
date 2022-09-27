@@ -7,20 +7,18 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql"
+	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql/models"
 	"github.com/nkien0204/projectTemplate/internal/log"
 	"github.com/nkien0204/projectTemplate/internal/network/http_handler/responses"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const RefreshAllowTime int = 30
 const TokenExpireTime int = 45
 const AccessTokenKey string = "AccessToken"
 const RefreshTokenKey string = "RefreshToken"
-
-var users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
-}
 
 type Credentials struct {
 	Username string `json:"user_name"`
@@ -43,9 +41,15 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// just for testing
-	expectedPassword, ok := users[creds.Username]
-	if !ok || expectedPassword != creds.Password {
+	var userModel models.User
+	dbService := mysql.GetMysqlConnection()
+	if result := dbService.Db.Table(models.UsersTable).Where("username = ?", creds.Username).First(&userModel); result.Error != nil {
+		logger.Error("find user failed", zap.Error(result.Error))
+		responses.CustomResponse(w, responses.ResRetrieveFailed, "find user failed", nil)
+		return
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(userModel.Password), []byte(creds.Password)) != nil {
 		logger.Error("username or password is not correct")
 		responses.CustomResponse(w, responses.ResAuthFailed, "wrong username or password", nil)
 		return

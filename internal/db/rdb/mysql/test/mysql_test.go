@@ -8,20 +8,16 @@ import (
 )
 
 func TestInitConnection(t *testing.T) {
-	mysqlService, err := mysql.InitMysqlConnection("ntkien11:1@tcp(127.0.0.1:3306)/classicmodels")
-	if err != nil {
-		t.Errorf("mysql.InitMysqlConnection: %v", err.Error())
-		return
-	}
+	mysqlService := mysql.GetMysqlConnection()
+	// if err != nil {
+	// 	t.Errorf("mysql.InitMysqlConnection: %v", err.Error())
+	// 	return
+	// }
 	t.Logf("init connection successfully: %v", mysqlService.Address)
 }
 
 func TestGetPayments(t *testing.T) {
-	mysqlService, err := mysql.InitMysqlConnection("ntkien11:1@tcp(127.0.0.1:3306)/classicmodels")
-	if err != nil {
-		t.Errorf("mysql.InitMysqlConnection: %v", err.Error())
-		return
-	}
+	mysqlService := mysql.GetMysqlConnection()
 
 	var payment []models.Payment
 	if result := mysqlService.Db.Table(models.PaymentsTable).Limit(10).Offset(10).Find(&payment); result.Error != nil {
