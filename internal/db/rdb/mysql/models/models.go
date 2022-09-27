@@ -15,9 +15,9 @@ type Payment struct {
 }
 
 type User struct {
-	Id string `gorm:"column:id"`
+	Id       string `gorm:"column:id"`
 	FullName string `gorm:"column:full_name"`
 	UserName string `gorm:"column:username"`
 	Password string `gorm:"column:password"`
-	Role int	`gorm:"column:role"`
+	Role     int    `gorm:"column:role"`
 }

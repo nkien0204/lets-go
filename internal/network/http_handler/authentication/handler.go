@@ -15,8 +15,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const RefreshAllowTime int = 30
-const TokenExpireTime int = 45
+const AccessTokenExpireTime = time.Duration(2) * time.Hour
+const RefreshTokenExpireTime = time.Duration(24) * time.Hour
 const AccessTokenKey string = "AccessToken"
 const RefreshTokenKey string = "RefreshToken"
 
@@ -55,13 +55,15 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), creds.Username)
+	accessTokenExpireTime := time.Now().Add(AccessTokenExpireTime)
+	accessToken, err := generateToken(jwtKey, accessTokenExpireTime, creds.Username)
 	if err != nil {
 		logger.Error("generate accessToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
-	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), creds.Username)
+	refreshTokenExpireTime := time.Now().Add(RefreshTokenExpireTime)
+	refreshToken, err := generateToken(jwtKey, refreshTokenExpireTime, creds.Username)
 	if err != nil {
 		logger.Error("generate refreshToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)
@@ -133,25 +135,21 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt, 0).After(time.Now()) {
+	if (time.Until(time.Unix(claims.ExpiresAt, 0))) > (RefreshTokenExpireTime - AccessTokenExpireTime) {
 		logger.Error("no need to refresh token", zap.Error(err))
 		responses.CustomResponse(w, responses.ResInvalidToken, "no need to refresh token", nil)
 		return
 	}
 
-	if time.Unix(claims.ExpiresAt, 0).Add(time.Duration(RefreshAllowTime) * time.Second).Before(time.Now()) {
-		logger.Error("refresh token was expired", zap.Error(err))
-		responses.CustomResponse(w, responses.ResTokenExpired, "refresh token was expired", nil)
-		return
-	}
-
-	accessToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime)*time.Second), claims.Username)
+	accessTokenExpireTime := time.Now().Add(AccessTokenExpireTime)
+	accessToken, err := generateToken(jwtKey, accessTokenExpireTime, claims.Username)
 	if err != nil {
 		logger.Error("generate accessToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate accessToken failed", nil)
 		return
 	}
-	refreshToken, err := generateToken(jwtKey, time.Now().Add(time.Duration(TokenExpireTime+RefreshAllowTime)*time.Second), claims.Username)
+	refreshTokenExpireTime := time.Now().Add(RefreshTokenExpireTime)
+	refreshToken, err := generateToken(jwtKey, refreshTokenExpireTime, claims.Username)
 	if err != nil {
 		logger.Error("generate refreshToken failed")
 		responses.CustomResponse(w, responses.ResGenTokenFailed, "generate refreshToken failed", nil)
