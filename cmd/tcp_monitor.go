@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_monitor"
-	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_monitor"
+	"github.com/spf13/cobra"
 )
 
 var runMonitorCmd = &cobra.Command{

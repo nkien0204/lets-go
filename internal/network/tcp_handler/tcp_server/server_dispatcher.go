@@ -1,10 +1,11 @@
 package tcp_server
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
+	"time"
+
+	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
 	"go.uber.org/zap"
-	"time"
 )
 
 func (s *ServerManager) dispatch(c *Client, event *events.InternalMessageEvent) {

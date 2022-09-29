@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/nkien0204/projectTemplate/configs"
+	"github.com/nkien0204/lets-go/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"google.golang.org/protobuf/proto"
 
 	"net"
 	"time"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/lets-go/internal/log"
 	"go.uber.org/zap"
 )
 

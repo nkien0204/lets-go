@@ -1,11 +1,12 @@
 package tcp_proxy
 
 import (
-	"github.com/nkien0204/projectTemplate/configs"
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"go.uber.org/zap"
 	"io"
 	"net"
+
+	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/log"
+	"go.uber.org/zap"
 )
 
 func EstablishProxy(dstAddress string) error {
