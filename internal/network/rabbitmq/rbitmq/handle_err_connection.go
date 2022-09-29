@@ -4,16 +4,18 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/nkien0204/projectTemplate/configs"
+
+	"github.com/nkien0204/lets-go/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/streadway/amqp"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/nkien0204/lets-go/internal/log"
 
 	"go.uber.org/zap"
 )

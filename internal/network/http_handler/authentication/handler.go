@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/nkien0204/projectTemplate/configs"
-	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql"
-	"github.com/nkien0204/projectTemplate/internal/db/rdb/mysql/models"
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/http_handler/responses"
+	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/db/rdb/mysql"
+	"github.com/nkien0204/lets-go/internal/db/rdb/mysql/models"
+	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/lets-go/internal/network/http_handler/responses"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )

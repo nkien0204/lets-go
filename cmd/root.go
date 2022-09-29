@@ -15,8 +15,8 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:              "projectTemplate",
-	Short:            "projectTemplate command line tool",
+	Use:              "lets-go",
+	Short:            "lets-go command line tool",
 	TraverseChildren: true,
 }
 
@@ -67,7 +67,7 @@ func initConfig() {
 		viper.SetConfigName(".env")
 	}
 
-	viper.SetEnvPrefix("projectTemplate")
+	viper.SetEnvPrefix("lets-go")
 	replacer := strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	viper.AutomaticEnv() // read in environment variables that match

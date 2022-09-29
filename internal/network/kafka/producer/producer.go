@@ -3,7 +3,7 @@ package producer
 import (
 	"context"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )

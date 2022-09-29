@@ -1,9 +1,10 @@
 package udp_client
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"go.uber.org/zap"
 	"net"
+
+	"github.com/nkien0204/lets-go/internal/log"
+	"go.uber.org/zap"
 )
 
 func RunUdpClient(serverAddr net.Addr) error {
