@@ -2,6 +2,7 @@ package configs
 
 import (
 	"os"
+	"strconv"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -19,6 +20,7 @@ type Cfg struct {
 	TcpProxyServer TcpProxyServerConfig
 	Db             DbConfig
 	SecretKey      SecretKeyConfig
+	Kafka          KafkaConfig
 }
 
 type SecretKeyConfig struct {
@@ -46,6 +48,13 @@ type RabbitConfig struct {
 	Queue          string
 	BackupFileName string
 	BackupFolder   string
+}
+
+type KafkaConfig struct {
+	Addr      string
+	Topic     string
+	Group     string
+	Partition int
 }
 
 type TcpClientConfig struct {
@@ -94,7 +103,21 @@ func initConfigs() (*Cfg, error) {
 		GrpcClient:     loadGrpcClientConfig(),
 		Db:             loadDbConfig(),
 		SecretKey:      loadSecretKeyConfig(),
+		Kafka:          loadKafkaConfig(),
 	}, nil
+}
+
+func loadKafkaConfig() KafkaConfig {
+	intPartition, err := strconv.Atoi(os.Getenv("KAFKA_PARTITION"))
+	if err != nil {
+		panic(err)
+	}
+	return KafkaConfig{
+		Addr:      os.Getenv("KAFKA_ADDR"),
+		Topic:     os.Getenv("KAFKA_TOPIC"),
+		Group:     os.Getenv("KAFKA_GROUP"),
+		Partition: intPartition,
+	}
 }
 
 func loadSecretKeyConfig() SecretKeyConfig {

@@ -9,56 +9,56 @@ import (
 )
 
 const BATCH_MIN_BYTES = 10e3 // 10kB
-const BATCH_MAX_BYTES = 1e6  // 1MB
+const BATCH_MAX_BYTES = 10e6 // 10MB
 
 type Consumer struct {
 	KafkaAddr string
 	Topic     string
 	Partition int
 	Group     string
-	batch     *kafka.Batch
-	conn      *kafka.Conn
+	reader    *kafka.Reader
 }
 
-func InitConsumer(addr, topic, group string, partition int) (*Consumer, error) {
-	logger := log.Logger()
-	conn, err := kafka.DialLeader(context.Background(), "tcp", addr, topic, partition)
-	if err != nil {
-		logger.Error("DialLeader failed", zap.Error(err))
-		return nil, err
-	}
-	batch := conn.ReadBatch(BATCH_MIN_BYTES, BATCH_MAX_BYTES)
+func InitConsumer(addr, topic, group string, partition int) *Consumer {
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:  []string{addr},
+		GroupID:  group,
+		Topic:    topic,
+		MinBytes: BATCH_MIN_BYTES,
+		MaxBytes: BATCH_MAX_BYTES,
+	})
 
 	return &Consumer{
 		KafkaAddr: addr,
 		Topic:     topic,
 		Partition: partition,
 		Group:     group,
-		batch:     batch,
-		conn:      conn,
-	}, nil
+		reader:    r,
+	}
 }
 
-func (c *Consumer) ConsumeEvent(event chan []byte) {
-	b := make([]byte, BATCH_MIN_BYTES) // 10KB max per message
+func (c *Consumer) ConsumeEvent(messageChan chan kafka.Message) {
+	logger := log.Logger()
+	if messageChan == nil {
+		logger.Error("consume nil channel")
+		return
+	}
 	for {
-		n, err := c.batch.Read(b)
+		m, err := c.reader.ReadMessage(context.Background())
 		if err != nil {
+			logger.Error("reader.ReadMessage failed", zap.Error(err))
+			close(messageChan)
 			break
 		}
-		event <- b[:n]
-		// fmt.Println(string(b[:n]))
+		messageChan <- m
+		// fmt.Printf("message at topic/partition/offset %v/%v/%v: %s = %s\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value))
 	}
 }
 
 func (c *Consumer) Stop() {
 	logger := log.Logger()
-	if err := c.batch.Close(); err != nil {
-		logger.Error("batch.Close failed", zap.Error(err))
-		return
-	}
 
-	if err := c.conn.Close(); err != nil {
-		logger.Error("conn.Close failed", zap.Error(err))
+	if err := c.reader.Close(); err != nil {
+		logger.Error("reader.Close failed", zap.Error(err))
 	}
 }
