@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/lets-go/internal/log"
 	"go.uber.org/zap"
 )
 

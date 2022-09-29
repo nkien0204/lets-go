@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/nkien0204/projectTemplate/internal/db/non_rdb/mongo/models"
-	"github.com/nkien0204/projectTemplate/internal/log"
+	"github.com/nkien0204/lets-go/internal/db/non_rdb/mongo/models"
+	"github.com/nkien0204/lets-go/internal/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

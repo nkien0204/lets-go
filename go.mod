@@ -1,4 +1,4 @@
-module github.com/nkien0204/projectTemplate
+module github.com/nkien0204/lets-go
 
 go 1.18
 

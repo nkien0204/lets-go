@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/http_handler/grpc/grpc_server"
+	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/lets-go/internal/network/http_handler/grpc/grpc_server"
 	"github.com/spf13/cobra"
 )
 

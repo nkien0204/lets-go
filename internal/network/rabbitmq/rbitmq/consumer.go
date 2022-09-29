@@ -1,8 +1,9 @@
 package rbitmq
 
 import (
-	"github.com/nkien0204/projectTemplate/internal/log"
 	"time"
+
+	"github.com/nkien0204/lets-go/internal/log"
 
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"

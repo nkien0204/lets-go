@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/nkien0204/projectTemplate/cmd"
+	"github.com/nkien0204/lets-go/cmd"
 )
 
 func main() {

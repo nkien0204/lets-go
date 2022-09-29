@@ -2,17 +2,19 @@ package tcp_server
 
 import (
 	"errors"
-	"github.com/gofrs/uuid"
-	"github.com/nkien0204/projectTemplate/configs"
-	"google.golang.org/protobuf/proto"
 	"time"
 
+	"github.com/gofrs/uuid"
+	"github.com/nkien0204/lets-go/configs"
+	"google.golang.org/protobuf/proto"
+
 	"encoding/binary"
-	"github.com/nkien0204/projectTemplate/internal/log"
-	events "github.com/nkien0204/protobuf/build"
-	"go.uber.org/zap"
 	"io"
 	"net"
+
+	"github.com/nkien0204/lets-go/internal/log"
+	events "github.com/nkien0204/protobuf/build"
+	"go.uber.org/zap"
 )
 
 // Singleton pattern

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nkien0204/projectTemplate/configs"
-	"github.com/nkien0204/projectTemplate/internal/network/kafka/consumer"
+	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/network/kafka/consumer"
 	"github.com/segmentio/kafka-go"
 )
 

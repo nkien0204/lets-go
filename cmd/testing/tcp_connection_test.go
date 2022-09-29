@@ -6,8 +6,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/nkien0204/projectTemplate/internal/log"
-	"github.com/nkien0204/projectTemplate/internal/network/tcp_handler/tcp_client"
+	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_client"
 )
 
 func TestConnection(t *testing.T) {
