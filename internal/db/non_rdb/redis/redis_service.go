@@ -12,8 +12,8 @@ type RedisService struct {
 func InitRedisConnection(addr, password string) *RedisService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Password: password, // no password set
-		DB:       0,        // use default DB
+		Password: password,
+		DB:       0,
 	})
 
 	return &RedisService{
