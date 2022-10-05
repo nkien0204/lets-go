@@ -21,6 +21,12 @@ type Cfg struct {
 	Db             DbConfig
 	SecretKey      SecretKeyConfig
 	Kafka          KafkaConfig
+	Redis          RedisConfig
+}
+
+type RedisConfig struct {
+	Addr     string
+	Password string
 }
 
 type SecretKeyConfig struct {
@@ -104,6 +110,7 @@ func initConfigs() (*Cfg, error) {
 		Db:             loadDbConfig(),
 		SecretKey:      loadSecretKeyConfig(),
 		Kafka:          loadKafkaConfig(),
+		Redis:          loadRedisConfig(),
 	}, nil
 }
 
@@ -176,5 +183,12 @@ func loadTcpServerConfig() TcpServerConfig {
 func loadProxyServerConfig() TcpProxyServerConfig {
 	return TcpProxyServerConfig{
 		ProxyAddress: os.Getenv("PROXY_ADDRESS"),
+	}
+}
+
+func loadRedisConfig() RedisConfig {
+	return RedisConfig{
+		Addr:     os.Getenv("REDIS_ADDR"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 	}
 }
