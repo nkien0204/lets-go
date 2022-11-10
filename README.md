@@ -23,7 +23,7 @@ cp .env.sample .env               # create '.env' file base on '.env.sample' to 
 - **Tcp proxy** server
 - **Tcp** (server and client)
 
-Run `./go_layout serve -h` for more detail.
+Run `./lets-go serve -h` for more detail.
 
 ## Some other utils
 - **Logging**: when running, log will auto generate to keep track about status of program. See in `log` directory
