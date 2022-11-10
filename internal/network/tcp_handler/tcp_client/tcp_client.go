@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"google.golang.org/protobuf/proto"
 
