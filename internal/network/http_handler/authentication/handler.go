@@ -9,8 +9,8 @@ import (
 	"github.com/nkien0204/lets-go/internal/configs"
 	"github.com/nkien0204/lets-go/internal/db/rdb/mysql"
 	"github.com/nkien0204/lets-go/internal/db/rdb/mysql/models"
-	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/nkien0204/lets-go/internal/network/http_handler/responses"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,7 +33,7 @@ type Claims struct {
 func SignIn(w http.ResponseWriter, r *http.Request) {
 	jwtKey := configs.GetConfigs().SecretKey.Key
 	var creds Credentials
-	logger := log.Logger()
+	logger := rolling.New()
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		logger.Error("decode request failed", zap.Error(err))
@@ -79,7 +79,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func Welcome(w http.ResponseWriter, r *http.Request) {
-	logger := log.Logger()
+	logger := rolling.New()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 
 	tknStr := r.Header.Get(AccessTokenKey)
@@ -112,7 +112,7 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
-	logger := log.Logger()
+	logger := rolling.New()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 	tknStr := r.Header.Get(RefreshTokenKey)
 	claims := &Claims{}

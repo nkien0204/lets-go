@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_proxy"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -22,7 +22,7 @@ func init() {
 }
 
 func runProxy(cmd *cobra.Command, args []string) {
-	logger := log.Logger()
+	logger := rolling.New()
 	if err := tcp_proxy.EstablishProxy("0.0.0.0:9100"); err != nil {
 		logger.Error("establish proxy failed", zap.Error(err))
 	}
@@ -31,5 +31,5 @@ func runProxy(cmd *cobra.Command, args []string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-signals
-	log.Logger().Warn("shutdown app")
+	rolling.New().Warn("shutdown app")
 }

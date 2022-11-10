@@ -6,8 +6,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_client"
+	"github.com/nkien0204/rolling-logger/rolling"
 )
 
 func TestConnection(t *testing.T) {
@@ -19,5 +19,5 @@ func TestConnection(t *testing.T) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-signals
-	log.Logger().Warn("shutdown app")
+	rolling.New().Warn("shutdown app")
 }

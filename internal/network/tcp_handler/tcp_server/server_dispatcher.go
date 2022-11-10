@@ -3,13 +3,13 @@ package tcp_server
 import (
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
 func (s *ServerManager) dispatch(c *Client, event *events.InternalMessageEvent) {
-	logger := log.Logger().With(zap.String("uuid", c.Uuid))
+	logger := rolling.New().With(zap.String("uuid", c.Uuid))
 	logger.Info("got message: ", zap.String("message_type", event.EventType.String()))
 	switch event.GetEventType() {
 	case events.EventType_LOST_CONNECTION:
@@ -17,7 +17,7 @@ func (s *ServerManager) dispatch(c *Client, event *events.InternalMessageEvent) 
 	case events.EventType_HEART_BEAT:
 		go s.TcpServer.handleHeartBeat(c)
 	default:
-		log.Logger().Warn("this command is not support right now")
+		rolling.New().Warn("this command is not support right now")
 	}
 }
 
@@ -25,7 +25,7 @@ func (s *ServerManager) handleLostConnection(event *events.InternalMessageEvent)
 	s.Mutex.Lock()
 	defer s.Mutex.Unlock()
 
-	logger := log.Logger()
+	logger := rolling.New()
 	uuid := event.GetLostConnectionEvent().GetClientUuid()
 	if _, ok := s.TcpServer.Clients[uuid]; ok {
 		logger.Info("handleLostConnection need to close net.Conn", zap.String("uuid", uuid))
@@ -47,7 +47,7 @@ func (s *Server) handleHeartBeat(client *Client) {
 	}
 	heartBeatPayload, err := client.encode(&heartBeatEv, BinaryType)
 	if err != nil {
-		log.Logger().Error("error while encoding payload", zap.Error(err))
+		rolling.New().Error("error while encoding payload", zap.Error(err))
 		return
 	}
 	heartBeatPayload.WriteTo(client.Conn)

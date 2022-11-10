@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -28,7 +28,7 @@ func InitServer() *Server {
 }
 
 func (g *Server) Start() {
-	logger := log.Logger()
+	logger := rolling.New()
 	lis, err := net.Listen("tcp", g.Address)
 	if err != nil {
 		logger.Fatal("failed to listen: ", zap.Error(err))
@@ -40,7 +40,7 @@ func (g *Server) Start() {
 }
 
 func (g *Server) PingPong(stream events.RouteGuide_PingPongServer) error {
-	logger := log.Logger()
+	logger := rolling.New()
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {

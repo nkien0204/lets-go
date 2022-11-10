@@ -1,13 +1,13 @@
 package tcp_client
 
 import (
-	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
 func (client *Client) dispatch(event *events.InternalMessageEvent) {
-	logger := log.Logger()
+	logger := rolling.New()
 	logger.Info("get message: ", zap.String("message_type", event.EventType.String()))
 	switch event.GetEventType() {
 	case events.EventType_HEART_BEAT:
@@ -18,7 +18,7 @@ func (client *Client) dispatch(event *events.InternalMessageEvent) {
 }
 
 func (client *Client) handleHeartBeatEv() {
-	logger := log.Logger()
+	logger := rolling.New()
 	logger.Info("send heart beat message")
 	heartBeatEv := events.InternalMessageEvent{
 		EventType: events.EventType_HEART_BEAT,

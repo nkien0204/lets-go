@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/nkien0204/lets-go/internal/network/http_handler/grpc/grpc_client"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,7 @@ func init() {
 }
 
 func runGrpcClient(cmd *cobra.Command, args []string) {
-	logger := log.Logger()
+	logger := rolling.New()
 	go func() {
 		client := grpc_client.InitClient()
 		client.Start()

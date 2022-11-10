@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/nkien0204/lets-go/internal/db/non_rdb/mongo/models"
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -28,7 +28,7 @@ type MyCollection[T any] struct {
 
 func Init(address string) (*MongoService, error) {
 	// address = "mongodb://user:pass@localhost:27017"
-	logger := log.Logger()
+	logger := rolling.New()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	// client, err := mongo.Connect(ctx, options.Client().ApplyURI(address))
 	client, err := mongo.NewClient(options.Client().ApplyURI(address))
@@ -58,7 +58,7 @@ func Init(address string) (*MongoService, error) {
 }
 
 func (m *MongoService) Close() error {
-	logger := log.Logger()
+	logger := rolling.New()
 	logger.Warn("close mongo connection", zap.String("address", m.Address))
 	defer m.cancel()
 	if err := m.Conn.Disconnect(m.ctx); err != nil {
@@ -81,7 +81,7 @@ func (m *MongoService) Close() error {
 	collection := collectionInterface.(*mongo.MyCollection[models.Test])
 */
 func (m *MongoService) GetCollection(databaseName string, collectionName string) (interface{}, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	switch collectionName {
 	case models.TestCollectionName:
 		return &MyCollection[models.Test]{

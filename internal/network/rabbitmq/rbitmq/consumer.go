@@ -3,8 +3,7 @@ package rbitmq
 import (
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/log"
-
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 )
@@ -49,7 +48,7 @@ func NewConsumer(amqpServerUrl string, queueName string, queue chan amqp.Deliver
 }
 
 func (c *consumer) Start() {
-	logger := log.Logger().With(zap.String("queue", c.queueName))
+	logger := rolling.New().With(zap.String("queue", c.queueName))
 	for {
 		// Create a new RabbitMQ connection.
 		var err error
@@ -88,7 +87,7 @@ func (c *consumer) Start() {
 			c.cfg.args,      // arguments
 		)
 		if err != nil {
-			log.Logger().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
+			rolling.New().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
 			return
 		}
 		c.consumerListener(messages)
@@ -96,7 +95,7 @@ func (c *consumer) Start() {
 }
 
 func (c *consumer) consumerListener(messages <-chan amqp.Delivery) {
-	logger := log.Logger().With(zap.String("queue", c.queueName))
+	logger := rolling.New().With(zap.String("queue", c.queueName))
 	err := make(chan *amqp.Error)
 	for {
 		select {

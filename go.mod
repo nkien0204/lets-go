@@ -14,7 +14,7 @@ require (
 	github.com/spf13/viper v1.10.1
 	github.com/streadway/amqp v1.0.0
 	go.mongodb.org/mongo-driver v1.10.1
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.23.0
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
 )
@@ -38,10 +38,11 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/klauspost/compress v1.15.7 // indirect
-	github.com/lestrrat-go/strftime v1.0.5 // indirect
+	github.com/lestrrat-go/strftime v1.0.6 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
+	github.com/nkien0204/rolling-logger v0.0.2
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect

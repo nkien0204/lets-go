@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/joho/godotenv"
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
@@ -85,7 +85,7 @@ func GetConfigs() *Cfg {
 	once.Do(func() {
 		var err error
 		if config, err = initConfigs(); err != nil {
-			log.Logger().Error("initConfigs failed", zap.Error(err))
+			rolling.New().Error("initConfigs failed", zap.Error(err))
 			panic(1)
 		}
 	})
@@ -93,7 +93,7 @@ func GetConfigs() *Cfg {
 }
 
 func initConfigs() (*Cfg, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	err := godotenv.Load()
 	if err != nil {
 		logger.Error("error while loading .env file")

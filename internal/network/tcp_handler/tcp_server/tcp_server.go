@@ -6,20 +6,20 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"
 
 	"encoding/binary"
 	"io"
 	"net"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
 	"go.uber.org/zap"
 )
 
 // Singleton pattern
 func GetServer() *ServerManager {
-	logger := log.Logger()
+	logger := rolling.New()
 	if tcpServerManager.TcpServer == nil {
 		tcpServerManager.Mutex.Lock()
 		defer tcpServerManager.Mutex.Unlock()
@@ -37,10 +37,10 @@ func GetServer() *ServerManager {
 func (s *ServerManager) Listen() {
 	listener, err := net.Listen("tcp", s.TcpServer.Address)
 	if err != nil {
-		log.Logger().With(zap.Error(err)).Fatal("Error starting TCP server.")
+		rolling.New().With(zap.Error(err)).Fatal("Error starting TCP server.")
 	}
 	defer listener.Close()
-	logger := log.Logger()
+	logger := rolling.New()
 	logger.Info("tcp server is started", zap.String("listening address", s.TcpServer.Address))
 	for {
 		logger.Info("waiting new incoming client ...")
@@ -67,7 +67,7 @@ func (s *ServerManager) initClient(conn net.Conn) (*Client, error) {
 	s.Mutex.Lock()
 	defer s.Mutex.Unlock()
 
-	logger := log.Logger()
+	logger := rolling.New()
 	uId, err := uuid.NewV4()
 	if err != nil {
 		logger.Error("error while initializing new uuid", zap.Error(err))
@@ -87,7 +87,7 @@ func (s *ServerManager) initClient(conn net.Conn) (*Client, error) {
 
 // Read client data from channel
 func (c *Client) listen() {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	defer c.Conn.Close()
 	for {
@@ -110,7 +110,7 @@ func (c *Client) listen() {
 }
 
 func (s *ServerManager) OnClientConnectionClosed(c *Client, err error) {
-	log.Logger().With(zap.String("err", err.Error())).Warn("client closed")
+	rolling.New().With(zap.String("err", err.Error())).Warn("client closed")
 	event := events.InternalMessageEvent{
 		EventType: events.EventType_LOST_CONNECTION,
 		MsgOneOf: &events.InternalMessageEvent_LostConnectionEvent{
@@ -125,7 +125,7 @@ func (s *ServerManager) OnClientConnectionClosed(c *Client, err error) {
 }
 
 func (c *Client) encode(event *events.InternalMessageEvent, typ byte) (Payload, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	rawByte, err := proto.Marshal(event)
 	if err != nil {
@@ -151,7 +151,7 @@ func (c *Client) encode(event *events.InternalMessageEvent, typ byte) (Payload, 
 }
 
 func (c *Client) decode(r io.Reader) (Payload, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	var typ byte
 	err := binary.Read(r, binary.BigEndian, &typ)
 	if err != nil {

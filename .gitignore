@@ -1,7 +1,6 @@
 log/
 rabbitBackup/
-main
 .vscode/
 .idea/
 .env
-lets-go
+bin/

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/log"
 	authN "github.com/nkien0204/lets-go/internal/network/http_handler/authentication"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
@@ -23,6 +23,6 @@ func (server *HttpServer) ServeHttp() {
 	http.HandleFunc("/refresh", authN.Refresh)
 
 	if err := http.ListenAndServe(server.Address, nil); err != nil {
-		log.Logger().Fatal("ListenAndServe http server failed", zap.Error(err))
+		rolling.New().Fatal("ListenAndServe http server failed", zap.Error(err))
 	}
 }

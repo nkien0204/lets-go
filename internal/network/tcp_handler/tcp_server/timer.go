@@ -4,14 +4,14 @@ import (
 	"errors"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
 const Timeout = 30 // seconds
 
 func RunTcpTimer() {
-	logger := log.Logger()
+	logger := rolling.New()
 	ticker := time.NewTicker(5 * time.Second)
 	for {
 		<-ticker.C

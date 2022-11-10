@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ func (b *Binary) String() string {
 }
 
 func (b *Binary) WriteTo(w io.Writer) (int64, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	err := binary.Write(w, binary.BigEndian, BinaryType) // 1-byte type
 	if err != nil {
 		logger.Error("binary write type failed", zap.Error(err))
@@ -48,7 +48,7 @@ func (b *Binary) ReadFrom(r io.Reader) (int64, error) {
 	// 	return n, errors.New("invalid binary")
 	// }
 
-	logger := log.Logger()
+	logger := rolling.New()
 	var len uint32
 	err := binary.Read(r, binary.BigEndian, &len) // 4-byte len
 	if err != nil {
