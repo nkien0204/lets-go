@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/configs"
 	"google.golang.org/protobuf/proto"
 
 	"encoding/binary"

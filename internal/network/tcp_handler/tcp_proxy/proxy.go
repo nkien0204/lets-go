@@ -4,7 +4,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/configs"
 	"github.com/nkien0204/lets-go/internal/log"
 	"go.uber.org/zap"
 )

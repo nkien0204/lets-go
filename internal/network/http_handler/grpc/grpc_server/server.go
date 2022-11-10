@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/nkien0204/lets-go/configs"
+	"github.com/nkien0204/lets-go/internal/configs"
 	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
 	"go.uber.org/zap"
