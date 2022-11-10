@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/log"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -27,7 +27,7 @@ func InitClient() GrpcClient {
 }
 
 func (g *GrpcClient) Start() {
-	logger := log.Logger()
+	logger := rolling.New()
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	conn, err := grpc.Dial(g.ServerAddress, opts...)

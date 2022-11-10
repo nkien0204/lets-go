@@ -6,12 +6,18 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/joho/godotenv"
 	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_client"
+	"github.com/nkien0204/rolling-logger/rolling"
 )
 
 func TestConnection(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+	number_clients := 100
+	for i := 0; i < number_clients; i++ {
 		go tcp_client.RunTcp()
 	}
 
@@ -19,5 +25,5 @@ func TestConnection(t *testing.T) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-signals
-	log.Logger().Warn("shutdown app")
+	rolling.New().Warn("shutdown app")
 }

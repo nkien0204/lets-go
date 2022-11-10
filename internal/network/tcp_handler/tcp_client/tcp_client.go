@@ -8,12 +8,12 @@ import (
 
 	"github.com/nkien0204/lets-go/internal/configs"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"
 
 	"net"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +22,7 @@ func RunTcp() {
 
 	client, err := initClient(tcpServerUrl)
 	if err != nil {
-		log.Logger().Warn("Connection refused, try to reconnect to controller...")
+		rolling.New().Warn("Connection refused, try to reconnect to controller...")
 		time.Sleep(5 * time.Second)
 		return
 	}
@@ -42,12 +42,12 @@ func initClient(address string) (*Client, error) {
 	client.Conn = c
 	client.Name = configs.GetConfigs().TcpClient.ClientName
 	client.LastTimeSeen = time.Now()
-	log.Logger().Info("server info", zap.String("address", client.Conn.RemoteAddr().String()))
+	rolling.New().Info("server info", zap.String("address", client.Conn.RemoteAddr().String()))
 	return &client, nil
 }
 
 func (client *Client) receivePackets() {
-	logger := log.Logger()
+	logger := rolling.New()
 	for {
 		payload, err := client.decode(client.Conn)
 		if err != nil {
@@ -66,7 +66,7 @@ func (client *Client) receivePackets() {
 }
 
 func (client *Client) encode(event *events.InternalMessageEvent, typ byte) (Payload, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	rawByte, err := proto.Marshal(event)
 	if err != nil {

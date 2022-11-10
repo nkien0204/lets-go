@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/log"
 	"github.com/nkien0204/lets-go/internal/network/tcp_handler/tcp_client"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 )
 
@@ -32,5 +32,5 @@ func runClient(cmd *cobra.Command, args []string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-signals
-	log.Logger().Warn("shutdown app")
+	rolling.New().Warn("shutdown app")
 }

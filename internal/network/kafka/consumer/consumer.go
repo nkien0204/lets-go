@@ -3,7 +3,7 @@ package consumer
 import (
 	"context"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	kafka "github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
@@ -38,7 +38,7 @@ func InitConsumer(addr, topic, group string, partition int) *Consumer {
 }
 
 func (c *Consumer) ConsumeEvent(messageChan chan kafka.Message) {
-	logger := log.Logger()
+	logger := rolling.New()
 	if messageChan == nil {
 		logger.Error("consume nil channel")
 		return
@@ -56,7 +56,7 @@ func (c *Consumer) ConsumeEvent(messageChan chan kafka.Message) {
 }
 
 func (c *Consumer) Stop() {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	if err := c.reader.Close(); err != nil {
 		logger.Error("reader.Close failed", zap.Error(err))

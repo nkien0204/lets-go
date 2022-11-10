@@ -3,7 +3,7 @@ package producer
 import (
 	"context"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
@@ -32,7 +32,7 @@ func InitProducer(addr, topic string, partition int) *Producer {
 func (p *Producer) ProduceEvent(messageChan chan kafka.Message) {
 	for {
 		if err := p.writer.WriteMessages(context.Background(), <-messageChan); err != nil {
-			log.Logger().Error("writer.WriteMessages failed", zap.Error(err))
+			rolling.New().Error("writer.WriteMessages failed", zap.Error(err))
 			close(messageChan)
 			return
 		}
@@ -41,6 +41,6 @@ func (p *Producer) ProduceEvent(messageChan chan kafka.Message) {
 
 func (p *Producer) Close() {
 	if err := p.writer.Close(); err != nil {
-		log.Logger().Error("writer.Close failed", zap.Error(err))
+		rolling.New().Error("writer.Close failed", zap.Error(err))
 	}
 }

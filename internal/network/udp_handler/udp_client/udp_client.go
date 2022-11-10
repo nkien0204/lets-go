@@ -3,12 +3,12 @@ package udp_client
 import (
 	"net"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
 func RunUdpClient(serverAddr net.Addr) error {
-	logger := log.Logger()
+	logger := rolling.New()
 	client, err := net.ListenPacket("udp", "127.0.0.1:")
 	if err != nil {
 		logger.Error("listen packet failed", zap.Error(err))

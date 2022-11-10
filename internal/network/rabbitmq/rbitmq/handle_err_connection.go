@@ -7,6 +7,7 @@ import (
 
 	"github.com/nkien0204/lets-go/internal/configs"
 	events "github.com/nkien0204/protobuf/build"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/streadway/amqp"
@@ -14,8 +15,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-
-	"github.com/nkien0204/lets-go/internal/log"
 
 	"go.uber.org/zap"
 )
@@ -34,7 +33,7 @@ type BackupObj struct {
 }
 
 func NewRabbitBackupHandler(cfg *configs.Cfg) (handler *RabbitBackupHandler) {
-	logger := log.Logger()
+	logger := rolling.New()
 	handler = &RabbitBackupHandler{
 		file:         nil,
 		index:        0,     // total of messages in the backup file
@@ -57,7 +56,7 @@ func NewRabbitBackupHandler(cfg *configs.Cfg) (handler *RabbitBackupHandler) {
 }
 
 func (handler *RabbitBackupHandler) writeToBackupFile(message amqp.Publishing) (err error) {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	handler.file, err = os.OpenFile(filepath.Join(handler.cfg.BackupFolder, filepath.Base(handler.fileName)), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -81,7 +80,7 @@ func (handler *RabbitBackupHandler) writeToBackupFile(message amqp.Publishing) (
 }
 
 func (handler *RabbitBackupHandler) readFromBackupFile(scanner *bufio.Scanner) (message amqp.Publishing, err error) {
-	logger := log.Logger()
+	logger := rolling.New()
 
 	message, err = pushToMessages(scanner.Text())
 	if err != nil {
@@ -92,7 +91,7 @@ func (handler *RabbitBackupHandler) readFromBackupFile(scanner *bufio.Scanner) (
 }
 
 func pushToMessages(content string) (message amqp.Publishing, err error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	var fileStruct BackupObj
 	err = json.Unmarshal([]byte(content), &fileStruct)
 	if err != nil {
@@ -105,7 +104,7 @@ func pushToMessages(content string) (message amqp.Publishing, err error) {
 
 	body, err := proto.Marshal(&protMess)
 	if err != nil {
-		log.Logger().Info("Error while marshal protobuf")
+		rolling.New().Info("Error while marshal protobuf")
 		return
 	}
 	message = amqp.Publishing{
@@ -128,7 +127,7 @@ func pushToMessages(content string) (message amqp.Publishing, err error) {
 }
 
 func transformData(rawData []byte) (fileStruct string, err error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	var fileStructByte []byte
 	protoMess, err := convRaw2ProtoMess(rawData)
 	if err != nil {
@@ -151,7 +150,7 @@ func convProto2JsonMess(protoMess *events.InternalMessageEvent) (fileStruct *Bac
 }
 
 func convRaw2ProtoMess(rawData []byte) (protoMess events.InternalMessageEvent, err error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	if err = proto.Unmarshal(rawData, &protoMess); err != nil {
 		logger.Error("unmarshal err", zap.Error(err))
 		return protoMess, err

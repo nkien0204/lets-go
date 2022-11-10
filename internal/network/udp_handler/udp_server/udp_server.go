@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
 func EchoServerUDP(ctx context.Context, addr string) (net.Addr, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	s, err := net.ListenPacket("udp", addr)
 	if err != nil {
 		logger.Error("Listen UDP packet failed", zap.Error(err))

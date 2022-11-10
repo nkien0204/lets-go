@@ -5,9 +5,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/lets-go/internal/configs"
 	"github.com/nkien0204/lets-go/internal/network/http_handler"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var runHttpServerCmd = &cobra.Command{
@@ -21,6 +23,10 @@ func init() {
 }
 
 func runHttpServer(cmd *cobra.Command, args []string) {
+	logger := rolling.New()
+	defer logger.Sync()
+
+	logger.Info("HTTP server starting...", zap.String("addr", configs.GetConfigs().HttpServer.Address))
 	server := http_handler.InitServer()
 	go server.ServeHttp()
 
@@ -28,5 +34,5 @@ func runHttpServer(cmd *cobra.Command, args []string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	<-signals
-	log.Logger().Warn("shutdown app")
+	logger.Warn("shutdown app")
 }

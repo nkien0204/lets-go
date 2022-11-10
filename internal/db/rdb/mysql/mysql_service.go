@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -24,7 +24,7 @@ func GetMysqlConnection() *MysqlService {
 		var err error
 		addr := configs.GetConfigs().Db.Addr
 		if service, err = initMysqlConnection(addr); err != nil {
-			log.Logger().Error("initMysqlConnection failed", zap.Error(err))
+			rolling.New().Error("initMysqlConnection failed", zap.Error(err))
 			panic(1)
 		}
 	})
@@ -32,7 +32,7 @@ func GetMysqlConnection() *MysqlService {
 }
 
 func initMysqlConnection(addr string) (*MysqlService, error) {
-	logger := log.Logger()
+	logger := rolling.New()
 	addr = fmt.Sprintf("%s?charset=utf8mb4&parseTime=True&loc=Local", addr)
 	db, err := gorm.Open(mysql.Open(addr))
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/log"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 )
@@ -52,7 +52,7 @@ func NewProducer(amqpServerUrl string, queueName string, queueSend chan amqp.Pub
 }
 
 func (c *producer) Start() {
-	logger := log.Logger()
+	logger := rolling.New()
 	var err error
 	// Create a new RabbitMQ connection.
 	c.connectRabbitMQ, err = amqp.Dial(c.amqpServerUrl)
@@ -79,7 +79,7 @@ func (c *producer) Start() {
 
 	)
 	if err != nil {
-		log.Logger().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
+		rolling.New().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
 		return
 	}
 
@@ -92,7 +92,7 @@ func (c *producer) Start() {
 }
 
 func (c *producer) publishListener() {
-	logger := log.Logger().With(zap.String("queue_name", c.queueName))
+	logger := rolling.New().With(zap.String("queue_name", c.queueName))
 	for {
 		select {
 		case message := <-c.queueSend:
@@ -122,7 +122,7 @@ func (c *producer) publishListener() {
 
 func (c *producer) reconnect() bool {
 	var err error
-	logger := log.Logger().With(zap.String("queue", c.queueName))
+	logger := rolling.New().With(zap.String("queue", c.queueName))
 	logger.Error("rabbit lost connection, try to reconnect...")
 	c.connectRabbitMQ, err = amqp.Dial(c.amqpServerUrl)
 	if err != nil {
@@ -150,14 +150,14 @@ func (c *producer) reconnect() bool {
 
 	)
 	if err != nil {
-		log.Logger().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
+		rolling.New().With(zap.Error(err)).Error("Rabbitmq: subscribe failed")
 		return false
 	}
 	return true
 }
 
 func (c *producer) sendBackupData() {
-	logger := log.Logger()
+	logger := rolling.New()
 	var err error
 	if c.backup.file, err = os.OpenFile(c.backup.fileName, os.O_RDONLY, 0644); err != nil {
 		logger.Error("could not open file", zap.Error(err))
