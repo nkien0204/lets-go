@@ -3,6 +3,7 @@
 Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server`, `Kafka Client` and `Database driver`, ... (MongoDb, Redis and MySQL).
 
 ## How to use
+##### Build
 Environment: **Linux** only, **Go 1.18+**
 
 ```shell
@@ -26,11 +27,12 @@ cp .env.sample .env               # create '.env' file base on '.env.sample' to 
 Run `./lets-go serve -h` for more detail.
 
 ## Some other utils
-- **Logging**: when running, log will auto generate to keep track about status of program. See in `log` directory
+- **Logging**: when running, log will auto generate to keep track about status of program.
 - **Database**: support noSQL (MongoDb, Redis) and SQL (MySQL).
 - **Kafka-Client**: produce and consume message via Kafka server.
 - **Rabbitmq**: another message pub/sub beside Kafka.
 
 ## Special dependencies
+- **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
 - **[Protobuf](https://github.com/nkien0204/protobuf)**
 - **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
