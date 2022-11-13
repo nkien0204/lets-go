@@ -21,6 +21,7 @@ type Cfg struct {
 	SecretKey      SecretKeyConfig
 	Kafka          KafkaConfig
 	Redis          RedisConfig
+	WebSocket      WebSocketConfig
 }
 
 type RedisConfig struct {
@@ -76,6 +77,10 @@ type TcpProxyServerConfig struct {
 	ProxyAddress string
 }
 
+type WebSocketConfig struct {
+	Addr string
+}
+
 var config *Cfg
 var once sync.Once
 
@@ -104,7 +109,14 @@ func initConfigs() (*Cfg, error) {
 		SecretKey:      loadSecretKeyConfig(),
 		Kafka:          loadKafkaConfig(),
 		Redis:          loadRedisConfig(),
+		WebSocket:      loadWebSocketConfig(),
 	}, nil
+}
+
+func loadWebSocketConfig() WebSocketConfig {
+	return WebSocketConfig{
+		Addr: os.Getenv("WEBSOCKET_ADDR"),
+	}
 }
 
 func loadKafkaConfig() KafkaConfig {

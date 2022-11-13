@@ -1,10 +1,10 @@
 # Golang backend server
 
-Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server`, `Kafka Client` and `Database driver`, ... (MongoDb, Redis and MySQL).
+Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server`, `Kafka Client` and `Database driver`, `WebSocket`, ... (MongoDb, Redis and MySQL).
 
 ## How to use
 ##### Build
-Environment: **Linux** only, **Go 1.18+**
+Environment: **Linux**/**Windows**, **Go 1.17+**
 
 ```shell
 git clone https://github.com/nkien0204/lets-go.git
@@ -23,6 +23,7 @@ cp .env.sample .env               # create '.env' file base on '.env.sample' to 
 - **Monitor** tcp server
 - **Tcp proxy** server
 - **Tcp** (server and client)
+- **WebSocket** server
 
 Run `./lets-go serve -h` for more detail.
 
@@ -36,3 +37,4 @@ Run `./lets-go serve -h` for more detail.
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
 - **[Protobuf](https://github.com/nkien0204/protobuf)**
 - **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
+- **[WebSocket](https://github.com/gorilla/websocket)**
