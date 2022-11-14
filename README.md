@@ -1,6 +1,7 @@
-# Golang backend server
-
+# Template Golang backend server
 Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server`, `Kafka Client` and `Database driver`, `WebSocket`, ... (MongoDb, Redis and MySQL).
+
+***All you need to do is implementing your own business logic*!**.
 
 ## How to use
 ##### Build
