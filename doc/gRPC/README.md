@@ -26,7 +26,7 @@ How to run
 ```bash
 ./lets-go serve grpc-client
 ```
-Client will connect with gRPC on address in `.env` file.
+Client will connect with gRPC server on address in `.env` file.
 ```bash
 #FOR GRPC CLIENT
 GRPC_SERVER=192.168.114.61:10000
