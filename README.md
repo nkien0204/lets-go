@@ -39,3 +39,6 @@ Run `./lets-go serve -h` for more detail.
 - **[Protobuf](https://github.com/nkien0204/protobuf)**
 - **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
 - **[WebSocket](https://github.com/gorilla/websocket)**
+
+## Documentation
+- **[gRPC Server/Client](doc/gRPC/README.md)**
