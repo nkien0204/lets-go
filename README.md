@@ -1,6 +1,7 @@
-# Golang backend server
-
+# Base Golang backend server
 Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Server`, `Kafka Client` and `Database driver`, `WebSocket`, ... (MongoDb, Redis and MySQL).
+
+***All you need to do is implementing your own business logic*!**.
 
 ## How to use
 ##### Build
@@ -38,3 +39,9 @@ Run `./lets-go serve -h` for more detail.
 - **[Protobuf](https://github.com/nkien0204/protobuf)**
 - **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
 - **[WebSocket](https://github.com/gorilla/websocket)**
+
+## Documentation
+- **[gRPC Server/Client](doc/gRPC/README.md)**
+- **[TCP Server/Client](doc/tcp/README.md)**
+- **[UDP Server/Client](doc/udp/README.md)**
+- **[WS Server](doc/websocket/README.md)**
