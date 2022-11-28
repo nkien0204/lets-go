@@ -5,7 +5,7 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 
 ## How to use
 ##### Build
-Environment: **Linux**/**Windows**, **Go 1.17+**
+Environment: **Linux**/**Windows**, **Go 1.18+**
 
 ```shell
 git clone https://github.com/nkien0204/lets-go.git
