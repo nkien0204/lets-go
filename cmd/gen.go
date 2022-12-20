@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/nkien0204/lets-go/internal/generator"
 	"github.com/spf13/cobra"
 )
 
@@ -13,20 +14,25 @@ var genCmd = &cobra.Command{
 	Short: "Generate project structure",
 	Run:   runGenCmd,
 }
+var projectName string
 
 func init() {
+	genCmd.PersistentFlags().StringVarP(&projectName, "projectName", "p", "hello-world", "set name for project")
+	// viper.BindPFlag("project", cmd.Flags().Lookup("project"))
 	rootCmd.AddCommand(genCmd)
 }
 
 func runGenCmd(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	wg.Add(1)
 	go genWithAnimation(&wg)
-	// put your business here
-	wg.Wait()
+
+	generator.Generate(projectName)
 }
 
 func genWithAnimation(wg *sync.WaitGroup) {
-	wg.Add(1)
 	defer wg.Done()
 	for i := 0; i <= 100; i += 5 {
 		output := fmt.Sprintf("Generating...%d%%", i)
