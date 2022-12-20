@@ -9,7 +9,7 @@ import (
 )
 
 func TestRedis(t *testing.T) {
-	conn := redis.InitRedisConnection("localhost:6379", "123")
+	conn := redis.InitRedisConnection("localhost:55000", "default", "redispw", 0)
 	ctx := context.Background()
 	err := conn.Conn.Set(ctx, "key123", "value1231234", 0).Err()
 	if err != nil {
