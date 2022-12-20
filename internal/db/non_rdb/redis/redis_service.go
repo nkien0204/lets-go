@@ -9,11 +9,12 @@ type RedisService struct {
 	Conn *redis.Client
 }
 
-func InitRedisConnection(addr, password string) *RedisService {
+func InitRedisConnection(addr, username, password string, db int) *RedisService {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
+		Username: username,
 		Password: password,
-		DB:       0,
+		DB:       db,
 	})
 
 	return &RedisService{
