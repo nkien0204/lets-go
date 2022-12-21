@@ -1,4 +1,4 @@
-package generator
+package off
 
 import (
 	"errors"
@@ -9,17 +9,21 @@ import (
 	"github.com/dave/jennifer/jen"
 )
 
-func Generate(projectName string) error {
-	if projectName == "" {
-		return errors.New("project name must be identified, please use -p flag")
-	}
-	if err := genGoMod(projectName); err != nil {
-		return err
-	}
-	return genMainFile()
+type OfflineGenerator struct {
+	ProjectName string
 }
 
-func genGoMod(projectName string) error {
+func (off *OfflineGenerator) Generate() error {
+	if off.ProjectName == "" {
+		return errors.New("project name must be identified, please use -p flag")
+	}
+	if err := off.genGoMod(off.ProjectName); err != nil {
+		return err
+	}
+	return off.genMainFile()
+}
+
+func (off *OfflineGenerator) genGoMod(projectName string) error {
 	if _, err := os.Stat(projectName); !errors.Is(err, fs.ErrNotExist) {
 		return fs.ErrExist
 	}
@@ -33,14 +37,9 @@ func genGoMod(projectName string) error {
 	return cmd.Run()
 }
 
-func genMainFile() error {
+func (off *OfflineGenerator) genMainFile() error {
 	mainFile := jen.NewFilePath("main")
 	mainFile.Func().Id("main").Params().Block(
-		jen.Err().Op(":=").Qual("github.com/joho/godotenv", "Load").Call(),
-		jen.If(jen.Err().Op("!=").Nil()).Block(
-			jen.Panic(jen.Err()),
-		),
-
 		jen.Qual("github.com/nkien0204/lets-go/cmd", "Execute").Call(),
 	)
 	return mainFile.Save("main.go")
