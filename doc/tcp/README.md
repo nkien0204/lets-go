@@ -5,7 +5,7 @@ Client will connect to server and send PING/PONG message to each other.
 This is the [Template protobuf we using](https://github.com/nkien0204/protobuf/blob/main/events.proto), you need to replace it with yours for fitting with the business.
 ## TCP Server
 - See [tcp_server](../../internal/network/tcp_handler/tcp_server/tcp_server.go) package for detail.
-- Go to [cmd](../../cmd/tcp_server.go) package to know how to start TCP server.
+- Go to [cmd](../../cmd/testing/cmd/tcp_server.go) package to know how to start TCP server.
 
 How to run
 ```bash

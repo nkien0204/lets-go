@@ -44,4 +44,4 @@ Run `./lets-go serve -h` for more detail.
 - **[gRPC Server/Client](doc/gRPC/README.md)**
 - **[TCP Server/Client](doc/tcp/README.md)**
 - **[UDP Server/Client](doc/udp/README.md)**
-- **[WS Server](doc/websocket/README.md)**
+- **[WebSocket Server](doc/websocket/README.md)**
