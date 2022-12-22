@@ -4,29 +4,82 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 ***All you need to do is implementing your own business logic*!**.
 
 ## How to use
-##### Build
-Environment: **Linux**/**Windows**, **Go 1.18+**
+Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.18+**
 
+### Install 
+*Note: Please make sure that your `$GOPATH/bin` is in `$PATH`*
 ```shell
-git clone https://github.com/nkien0204/lets-go.git
-cd lets-go
-go build -o lets-go main.go       # build to go_layout executive file
-cp .env.sample .env               # create '.env' file base on '.env.sample' to get all environment variables.
+go install github.com/nkien0204/lets-go@latest
 ```
-##### Run the project
+### Generate project
+**Usage:**
 ```shell
-./lets-go serve [sub_command]
+lets-go gen [flags]
 ```
+**Flags:**
+```bash
+-m, --mod:  download online (onl) or generate offline (off) (default "onl")*
+-p, --projectName: name of project (required)
+```
+*Note: `online` mod should have the internet connection for working.*
 
-##### Some kind of features:
-- **gRPC** (server and client)
-- **HTTP** server
-- **Monitor** tcp server
-- **Tcp proxy** server
-- **Tcp** (server and client)
-- **WebSocket** server
+Run `lets-go -h` for more detail.
 
-Run `./lets-go serve -h` for more detail.
+
+After generate successfully, you should see your project something like this:
+```bash
+├── cmd
+│   └── testing
+│       └── cmd
+├── doc
+│   ├── gRPC
+│   ├── http
+│   ├── tcp
+│   ├── udp
+│   └── websocket
+├── internal
+│   ├── configs
+│   ├── db
+│   │   ├── non_rdb
+│   │   │   ├── mongo
+│   │   │   │   ├── models
+│   │   │   │   └── test
+│   │   │   └── redis
+│   │   │       └── test
+│   │   └── rdb
+│   │       └── mysql
+│   │           ├── models
+│   │           └── test
+│   ├── generator
+│   │   ├── off
+│   │   └── onl
+│   └── network
+│       ├── grpc
+│       │   ├── grpc_client
+│       │   └── grpc_server
+│       ├── http_handler
+│       │   ├── authentication
+│       │   └── responses
+│       ├── kafka
+│       │   ├── consumer
+│       │   │   └── test
+│       │   └── producer
+│       │       └── test
+│       ├── rabbitmq
+│       │   └── rbitmq
+│       ├── tcp_handler
+│       │   ├── tcp_client
+│       │   ├── tcp_monitor
+│       │   ├── tcp_proxy
+│       │   └── tcp_server
+│       ├── udp_handler
+│       │   ├── tftp
+│       │   ├── udp_client
+│       │   └── udp_server
+│       └── websocket
+│           └── test
+└── pkg
+```
 
 ## Some other utils
 - **Logging**: when running, log will auto generate to keep track about status of program.
