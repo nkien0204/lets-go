@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const APP_VERSION string = "v1.4.0"
-
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
@@ -34,7 +32,6 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.Version = APP_VERSION
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bm.yaml)")
 	//
 	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
