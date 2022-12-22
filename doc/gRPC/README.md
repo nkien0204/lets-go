@@ -5,7 +5,7 @@ Client will connect to server and send PING/PONG message to each other ([Bidirec
 This is the [Template protobuf we using](https://github.com/nkien0204/protobuf/blob/main/events.proto), you need to replace it with yours for fitting with the business.
 ## gRPC Server
 - See [grpc_server](../../internal/network/grpc/grpc_server/server.go) package for detail.
-- Go to [cmd](../../cmd/grpc_server.go) package to know how to start gRPC server.
+- Go to [cmd](../../cmd/testing/cmd/grpc_server.go) package to know how to start gRPC server.
 
 How to run
 ```bash
@@ -20,7 +20,7 @@ GRPC_ADDR=192.168.114.61:10000
 
 ## gRPC Client
 - See [grpc_client](../../internal/network/grpc/grpc_client/client.go) package for detail.
-- Go to [cmd](../../cmd/grpc_client.go) package to know how to start gRPC client.
+- Go to [cmd](../../cmd/tesing/cmd/grpc_client.go) package to know how to start gRPC client.
 
 How to run
 ```bash

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/nkien0204/lets-go/internal/generator"
-	"github.com/nkien0204/lets-go/internal/generator/off"
 	"github.com/nkien0204/lets-go/internal/generator/onl"
 	"github.com/spf13/cobra"
 )
@@ -55,7 +54,9 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	case ONL_MOD:
 		gen = &onl.OnlineGenerator{ProjectName: genFlags.projectName}
 	case OFF_MOD:
-		gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
+		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
+		fmt.Println("comming soon")
+		return
 	default:
 		err = errors.New("flag mod is not match")
 		return
