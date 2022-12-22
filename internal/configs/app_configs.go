@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/joho/godotenv"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
@@ -97,6 +98,10 @@ func GetConfigs() *Cfg {
 }
 
 func initConfigs() (*Cfg, error) {
+	err := godotenv.Load()
+	if err != nil {
+		return nil, err
+	}
 	return &Cfg{
 		HttpServer:     loadHttpServerConfig(),
 		Rabbit:         loadRabbitConfig(),
