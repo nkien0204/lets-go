@@ -18,7 +18,7 @@ lets-go gen [flags]
 ```
 **Flags:**
 ```bash
--m, --mod:  download online (onl) or generate offline (off) (default "onl")*
+-m, --mod:  download online (onl) or generate offline (off) (default "onl")
 -p, --projectName: name of project (required)
 ```
 *Note: `online` mod should have the internet connection for working.*
