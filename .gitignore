@@ -6,3 +6,4 @@ rabbitBackup/
 bin/
 lets-go
 for-test
+.DS_Store

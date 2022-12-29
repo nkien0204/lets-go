@@ -19,14 +19,20 @@ type Consumer struct {
 	reader    *kafka.Reader
 }
 
+// If group is setted, partition will be ignored
 func InitConsumer(addr, topic, group string, partition int) *Consumer {
-	r := kafka.NewReader(kafka.ReaderConfig{
+	kafkaConfig := kafka.ReaderConfig{
 		Brokers:  []string{addr},
-		GroupID:  group,
 		Topic:    topic,
 		MinBytes: BATCH_MIN_BYTES,
 		MaxBytes: BATCH_MAX_BYTES,
-	})
+	}
+	if group != "" {
+		kafkaConfig.GroupID = group
+	} else {
+		kafkaConfig.Partition = partition
+	}
+	r := kafka.NewReader(kafkaConfig)
 
 	return &Consumer{
 		KafkaAddr: addr,
