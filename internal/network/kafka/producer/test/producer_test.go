@@ -11,7 +11,7 @@ import (
 
 func TestProducer(t *testing.T) {
 	kafkaConfigs := configs.GetConfigs().Kafka
-	producer := producer.InitProducer(kafkaConfigs.Addr, kafkaConfigs.Topic, kafkaConfigs.Partition)
+	producer := producer.InitProducer(kafkaConfigs.Addr, kafkaConfigs.Topic)
 	messageChan := make(chan kafka.Message)
 	go producer.ProduceEvent(messageChan)
 

@@ -20,6 +20,10 @@ const RefreshTokenExpireTime = time.Duration(24) * time.Hour
 const AccessTokenKey string = "AccessToken"
 const RefreshTokenKey string = "RefreshToken"
 
+type AuthnHandler struct {
+	MysqlSvc *mysql.MysqlService
+}
+
 type Credentials struct {
 	Username string `json:"user_name"`
 	Password string `json:"password"`
@@ -30,7 +34,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func SignIn(w http.ResponseWriter, r *http.Request) {
+func (a *AuthnHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	jwtKey := configs.GetConfigs().SecretKey.Key
 	var creds Credentials
 	logger := rolling.New()
@@ -78,7 +82,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	responses.CustomResponse(w, responses.ResOk, "ok", data)
 }
 
-func Welcome(w http.ResponseWriter, r *http.Request) {
+func (a *AuthnHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	logger := rolling.New()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 
@@ -111,7 +115,7 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 	responses.CustomResponse(w, responses.ResOk, "ok", data)
 }
 
-func Refresh(w http.ResponseWriter, r *http.Request) {
+func (a *AuthnHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	logger := rolling.New()
 	jwtKey := configs.GetConfigs().SecretKey.Key
 	tknStr := r.Header.Get(RefreshTokenKey)

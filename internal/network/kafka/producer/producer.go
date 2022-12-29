@@ -11,11 +11,10 @@ import (
 type Producer struct {
 	KafkaAddr string
 	Topic     string
-	Partition int
 	writer    *kafka.Writer
 }
 
-func InitProducer(addr, topic string, partition int) *Producer {
+func InitProducer(addr, topic string) *Producer {
 	w := &kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,
@@ -24,7 +23,6 @@ func InitProducer(addr, topic string, partition int) *Producer {
 	return &Producer{
 		KafkaAddr: addr,
 		Topic:     topic,
-		Partition: partition,
 		writer:    w,
 	}
 }

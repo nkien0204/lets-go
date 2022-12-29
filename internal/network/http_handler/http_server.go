@@ -4,8 +4,10 @@ import (
 	"net/http"
 
 	"github.com/nkien0204/lets-go/internal/configs"
-	authN "github.com/nkien0204/lets-go/internal/network/http_handler/authentication"
+	"github.com/nkien0204/lets-go/internal/db/rdb/mysql"
+	"github.com/nkien0204/lets-go/internal/network/http_handler/authentication"
 	"github.com/nkien0204/rolling-logger/rolling"
+	"github.com/rs/cors"
 	"go.uber.org/zap"
 )
 
@@ -18,11 +20,17 @@ func InitServer() HttpServer {
 }
 
 func (server *HttpServer) ServeHttp() {
-	http.HandleFunc("/sign-in", authN.SignIn)
-	http.HandleFunc("/welcome", authN.Welcome)
-	http.HandleFunc("/refresh", authN.Refresh)
+	authnSvc := authentication.AuthnHandler{
+		MysqlSvc: mysql.GetMysqlConnection(),
+	}
+	mux := http.NewServeMux()
 
-	if err := http.ListenAndServe(server.Address, nil); err != nil {
+	http.HandleFunc("/sign-in", authnSvc.SignIn)
+	http.HandleFunc("/welcome", authnSvc.Welcome)
+	http.HandleFunc("/refresh", authnSvc.Refresh)
+
+	handler := cors.Default().Handler(mux)
+	if err := http.ListenAndServe(server.Address, handler); err != nil {
 		rolling.New().Fatal("ListenAndServe http server failed", zap.Error(err))
 	}
 }
