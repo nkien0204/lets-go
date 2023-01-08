@@ -318,6 +318,8 @@ github.com/nkien0204/protobuf v0.0.0-20220822064338-3940be5fedae h1:PK2xaw+M74Ml
 github.com/nkien0204/protobuf v0.0.0-20220822064338-3940be5fedae/go.mod h1:gX2OOl0EdhLehStCAPDxehNG4xQAOJF6DSJqsosb2kE=
 github.com/nkien0204/rolling-logger v0.0.3 h1:5c01pBJp3nFRg+yENItnowpC7zNCP71NlgSMXUcG+dM=
 github.com/nkien0204/rolling-logger v0.0.3/go.mod h1:lMfLgKBTAnlx86d+7oN+5xvEcH3pwZeOeCLoZM32/Iw=
+github.com/nkien0204/rolling-logger v0.0.4 h1:xO/yol+aCT2QY69SLQ21fMVxa3/+yoktqRHFLKALNoE=
+github.com/nkien0204/rolling-logger v0.0.4/go.mod h1:lMfLgKBTAnlx86d+7oN+5xvEcH3pwZeOeCLoZM32/Iw=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/gomega v1.18.1 h1:M1GfJqGRrBrrGGsbxzV5dqM2U2ApXefZCQpkukxYRLE=
