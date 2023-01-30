@@ -16,9 +16,11 @@ type Producer struct {
 
 func InitProducer(addr, topic string) *Producer {
 	w := &kafka.Writer{
-		Addr:     kafka.TCP(addr),
-		Topic:    topic,
-		Balancer: &kafka.LeastBytes{},
+		Addr:         kafka.TCP(addr),
+		Topic:        topic,
+		RequiredAcks: kafka.RequireAll, // no lose data
+		Balancer:     &kafka.LeastBytes{},
+		Compression:  kafka.Snappy,
 	}
 	return &Producer{
 		KafkaAddr: addr,
