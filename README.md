@@ -34,6 +34,7 @@ After generate successfully, you should see your project something like this:
 ├── doc
 │   ├── gRPC
 │   ├── http
+│   ├── sse
 │   ├── tcp
 │   ├── udp
 │   └── websocket
@@ -63,10 +64,16 @@ After generate successfully, you should see your project something like this:
 │       ├── kafka
 │       │   ├── consumer
 │       │   │   └── test
+│       │   │       └── log
 │       │   └── producer
 │       │       └── test
 │       ├── rabbitmq
 │       │   └── rbitmq
+│       ├── sse
+│       │   ├── client
+│       │   │   └── test
+│       │   └── server
+│       │       └── test
 │       ├── tcp_handler
 │       │   ├── tcp_client
 │       │   ├── tcp_monitor
