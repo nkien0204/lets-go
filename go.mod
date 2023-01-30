@@ -9,6 +9,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nkien0204/protobuf v0.0.0-20220822064338-3940be5fedae
+	github.com/r3labs/sse/v2 v2.10.0
 	github.com/segmentio/kafka-go v0.4.38
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
@@ -24,6 +25,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
+	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 )
 
 require (
