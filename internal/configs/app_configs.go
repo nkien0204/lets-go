@@ -23,6 +23,14 @@ type Cfg struct {
 	Kafka          KafkaConfig
 	Redis          RedisConfig
 	WebSocket      WebSocketConfig
+	MailClient     MailClientConfig
+}
+
+type MailClientConfig struct {
+	ServerName string
+	SmtpAddr   string
+	UserName   string
+	Password   string
 }
 
 type RedisConfig struct {
@@ -115,7 +123,17 @@ func initConfigs() (*Cfg, error) {
 		Kafka:          loadKafkaConfig(),
 		Redis:          loadRedisConfig(),
 		WebSocket:      loadWebSocketConfig(),
+		MailClient:     loadMailClientConfig(),
 	}, nil
+}
+
+func loadMailClientConfig() MailClientConfig {
+	return MailClientConfig{
+		ServerName: os.Getenv("MAIL_SERVER"),
+		SmtpAddr:   os.Getenv("MAIL_SMTP_ADDR"),
+		UserName:   os.Getenv("MAIL_USERNAME"),
+		Password:   os.Getenv("MAIL_PASSWORD"),
+	}
 }
 
 func loadWebSocketConfig() WebSocketConfig {
