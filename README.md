@@ -28,6 +28,7 @@ Run `lets-go -h` for more detail.
 
 After generate successfully, you should see your project something like this:
 ```bash
+├── bin
 ├── cmd
 │   └── testing
 │       └── cmd
@@ -42,49 +43,20 @@ After generate successfully, you should see your project something like this:
 │   ├── configs
 │   ├── db
 │   │   ├── non_rdb
-│   │   │   ├── mongo
-│   │   │   │   ├── models
-│   │   │   │   └── test
-│   │   │   └── redis
-│   │   │       └── test
 │   │   └── rdb
-│   │       └── mysql
-│   │           ├── models
-│   │           └── test
 │   ├── generator
 │   │   ├── off
 │   │   └── onl
 │   └── network
 │       ├── grpc
-│       │   ├── grpc_client
-│       │   └── grpc_server
 │       ├── http_handler
-│       │   ├── authentication
-│       │   └── responses
 │       ├── kafka
-│       │   ├── consumer
-│       │   │   └── test
-│       │   │       └── log
-│       │   └── producer
-│       │       └── test
+│       ├── mailclient
 │       ├── rabbitmq
-│       │   └── rbitmq
 │       ├── sse
-│       │   ├── client
-│       │   │   └── test
-│       │   └── server
-│       │       └── test
 │       ├── tcp_handler
-│       │   ├── tcp_client
-│       │   ├── tcp_monitor
-│       │   ├── tcp_proxy
-│       │   └── tcp_server
 │       ├── udp_handler
-│       │   ├── tftp
-│       │   ├── udp_client
-│       │   └── udp_server
 │       └── websocket
-│           └── test
 └── pkg
 ```
 
@@ -107,3 +79,4 @@ After generate successfully, you should see your project something like this:
 - **[UDP Server/Client](doc/udp/README.md)**
 - **[WebSocket Server](doc/websocket/README.md)**
 - **[Server-Sent Events](doc/sse/README.md)**
+- **[Mail Client](doc/mailclient/README.md)**
