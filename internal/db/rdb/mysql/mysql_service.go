@@ -22,7 +22,7 @@ var once sync.Once
 func GetMysqlConnection() *MysqlService {
 	once.Do(func() {
 		var err error
-		addr := configs.GetConfigs().Db.Addr
+		addr := configs.GetConfigs().Sql.Addr
 		if service, err = initMysqlConnection(addr); err != nil {
 			rolling.New().Error("initMysqlConnection failed", zap.Error(err))
 			panic(1)

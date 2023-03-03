@@ -35,7 +35,7 @@ type Claims struct {
 }
 
 func (a *AuthnHandler) SignIn(w http.ResponseWriter, r *http.Request) {
-	jwtKey := configs.GetConfigs().SecretKey.Key
+	jwtKey := []byte(configs.GetConfigs().SecretKey)
 	var creds Credentials
 	logger := rolling.New()
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -84,7 +84,7 @@ func (a *AuthnHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (a *AuthnHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	logger := rolling.New()
-	jwtKey := configs.GetConfigs().SecretKey.Key
+	jwtKey := configs.GetConfigs().SecretKey
 
 	tknStr := r.Header.Get(AccessTokenKey)
 
@@ -117,7 +117,7 @@ func (a *AuthnHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 
 func (a *AuthnHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	logger := rolling.New()
-	jwtKey := configs.GetConfigs().SecretKey.Key
+	jwtKey := []byte(configs.GetConfigs().SecretKey)
 	tknStr := r.Header.Get(RefreshTokenKey)
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {

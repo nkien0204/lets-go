@@ -1,93 +1,87 @@
 package configs
 
 import (
-	"os"
-	"strconv"
+	"fmt"
+	"io/ioutil"
 	"sync"
 
-	"github.com/joho/godotenv"
-	"github.com/nkien0204/rolling-logger/rolling"
-	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 type Cfg struct {
-	GrpcServer     GrpcServerConfig
-	GrpcClient     GrpcClientConfig
-	HttpServer     HttpServerConfig
-	Rabbit         RabbitConfig
-	TcpClient      TcpClientConfig
-	TcpServer      TcpServerConfig
-	TcpProxyServer TcpProxyServerConfig
-	Db             DbConfig
-	SecretKey      SecretKeyConfig
-	Kafka          KafkaConfig
-	Redis          RedisConfig
-	WebSocket      WebSocketConfig
-	MailClient     MailClientConfig
+	GrpcServer     GrpcServerConfig     `yaml:"grpc_server"`
+	GrpcClient     GrpcClientConfig     `yaml:"grpc_client"`
+	HttpServer     HttpServerConfig     `yaml:"http_server"`
+	Rabbit         RabbitConfig         `yaml:"rabbitmq"`
+	TcpClient      TcpClientConfig      `yaml:"tcp_client"`
+	TcpServer      TcpServerConfig      `yaml:"tcp_server"`
+	TcpProxyServer TcpProxyServerConfig `yaml:"proxy_server"`
+	Sql            SqlConfig            `yaml:"sql"`
+	SecretKey      string               `yaml:"secret_key"`
+	Kafka          KafkaConfig          `yaml:"kafka"`
+	Redis          RedisConfig          `yaml:"redis"`
+	Websocket      WebsocketConfig      `yaml:"websocket"`
+	MailClient     MailClientConfig     `yaml:"mail_client"`
 }
 
 type MailClientConfig struct {
-	ServerName string
-	SmtpAddr   string
-	UserName   string
-	Password   string
+	ServerName string `yaml:"mail_server"`
+	SmtpAddr   string `yaml:"mail_smtp_addr"`
+	UserName   string `yaml:"mail_username"`
+	Password   string `yaml:"mail_password"`
 }
 
 type RedisConfig struct {
-	Addr     string
-	Password string
+	Addr     string `yaml:"redis_addr"`
+	Password string `yaml:"redis_password"`
 }
 
-type SecretKeyConfig struct {
-	Key []byte
-}
-
-type DbConfig struct {
-	Addr string
+type SqlConfig struct {
+	Addr string `yaml:"sql_addr"`
 }
 
 type GrpcServerConfig struct {
-	Address string
+	Address string `yaml:"grpc_addr"`
 }
 
 type GrpcClientConfig struct {
-	ServerAddress string
+	ServerAddress string `yaml:"grpc_server"`
 }
 
 type HttpServerConfig struct {
-	Address string
+	Address string `yaml:"http_addr"`
 }
 
 type RabbitConfig struct {
-	Host           string
-	Queue          string
-	BackupFileName string
-	BackupFolder   string
+	Host           string `yaml:"rabbitmq_host"`
+	Queue          string `yaml:"rabbitmq_queue"`
+	BackupFileName string `yaml:"backup_filename"`
+	BackupFolder   string `yaml:"backup_folder"`
 }
 
 type KafkaConfig struct {
-	Addr      string
-	Topic     string
-	Group     string
-	Partition int
+	Addr      string `yaml:"kafka_addr"`
+	Topic     string `yaml:"kafka_topic"`
+	Group     string `yaml:"kafka_group"`
+	Partition int    `yaml:"kafka_partition"`
 }
 
 type TcpClientConfig struct {
-	TcpServerUrl string
-	ServerName   string
-	ClientName   string
+	TcpServerUrl string `yaml:"tcp_server_url"`
+	ServerName   string `yaml:"server_name"`
+	ClientName   string `yaml:"client_name"`
 }
 
 type TcpServerConfig struct {
-	TcpPort string
+	TcpPort string `yaml:"tcp_addr"`
 }
 
 type TcpProxyServerConfig struct {
-	ProxyAddress string
+	ProxyAddress string `yaml:"proxy_address"`
 }
 
-type WebSocketConfig struct {
-	Addr string
+type WebsocketConfig struct {
+	Addr string `yaml:"websocket_addr"`
 }
 
 var config *Cfg
@@ -97,126 +91,28 @@ var once sync.Once
 func GetConfigs() *Cfg {
 	once.Do(func() {
 		var err error
-		if config, err = initConfigs(); err != nil {
-			rolling.New().Error("initConfigs failed", zap.Error(err))
-			panic(1)
+		if config, err = newConfigs(); err != nil {
+			panic(err)
 		}
 	})
 	return config
 }
 
-func initConfigs() (*Cfg, error) {
-	err := godotenv.Load()
+func newConfigs() (*Cfg, error) {
+	return readConf("config.yaml")
+}
+
+func readConf(filename string) (*Cfg, error) {
+	buf, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return &Cfg{
-		HttpServer:     loadHttpServerConfig(),
-		Rabbit:         loadRabbitConfig(),
-		TcpClient:      loadTcpClientConfig(),
-		TcpServer:      loadTcpServerConfig(),
-		TcpProxyServer: loadProxyServerConfig(),
-		GrpcServer:     loadGrpcServerConfig(),
-		GrpcClient:     loadGrpcClientConfig(),
-		Db:             loadDbConfig(),
-		SecretKey:      loadSecretKeyConfig(),
-		Kafka:          loadKafkaConfig(),
-		Redis:          loadRedisConfig(),
-		WebSocket:      loadWebSocketConfig(),
-		MailClient:     loadMailClientConfig(),
-	}, nil
-}
 
-func loadMailClientConfig() MailClientConfig {
-	return MailClientConfig{
-		ServerName: os.Getenv("MAIL_SERVER"),
-		SmtpAddr:   os.Getenv("MAIL_SMTP_ADDR"),
-		UserName:   os.Getenv("MAIL_USERNAME"),
-		Password:   os.Getenv("MAIL_PASSWORD"),
-	}
-}
-
-func loadWebSocketConfig() WebSocketConfig {
-	return WebSocketConfig{
-		Addr: os.Getenv("WEBSOCKET_ADDR"),
-	}
-}
-
-func loadKafkaConfig() KafkaConfig {
-	intPartition, err := strconv.Atoi(os.Getenv("KAFKA_PARTITION"))
+	c := &Cfg{}
+	err = yaml.Unmarshal(buf, c)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("in file %q: %w", filename, err)
 	}
-	return KafkaConfig{
-		Addr:      os.Getenv("KAFKA_ADDR"),
-		Topic:     os.Getenv("KAFKA_TOPIC"),
-		Group:     os.Getenv("KAFKA_GROUP"),
-		Partition: intPartition,
-	}
-}
 
-func loadSecretKeyConfig() SecretKeyConfig {
-	return SecretKeyConfig{
-		Key: []byte(os.Getenv("SECRET_KEY")),
-	}
-}
-
-func loadDbConfig() DbConfig {
-	return DbConfig{
-		Addr: os.Getenv("DB_ADDR"),
-	}
-}
-
-func loadGrpcServerConfig() GrpcServerConfig {
-	return GrpcServerConfig{
-		Address: os.Getenv("GRPC_ADDR"),
-	}
-}
-
-func loadGrpcClientConfig() GrpcClientConfig {
-	return GrpcClientConfig{
-		ServerAddress: os.Getenv("GRPC_SERVER"),
-	}
-}
-
-func loadHttpServerConfig() HttpServerConfig {
-	return HttpServerConfig{
-		Address: os.Getenv("HTTP_ADDR"),
-	}
-}
-
-func loadRabbitConfig() RabbitConfig {
-	return RabbitConfig{
-		BackupFileName: os.Getenv("BACKUP_FILE_NAME"),
-		BackupFolder:   os.Getenv("BACKUP_FOLDER"),
-		Host:           os.Getenv("RABBITMQ_HOST"),
-		Queue:          os.Getenv("RABBITMQ_QUEUE"),
-	}
-}
-
-func loadTcpClientConfig() TcpClientConfig {
-	return TcpClientConfig{
-		ServerName:   os.Getenv("SERVER_NAME"),
-		TcpServerUrl: os.Getenv("TCP_SERVER_URL"),
-		ClientName:   os.Getenv("CLIENT_NAME"),
-	}
-}
-
-func loadTcpServerConfig() TcpServerConfig {
-	return TcpServerConfig{
-		TcpPort: os.Getenv("TCP_PORT"),
-	}
-}
-
-func loadProxyServerConfig() TcpProxyServerConfig {
-	return TcpProxyServerConfig{
-		ProxyAddress: os.Getenv("PROXY_ADDRESS"),
-	}
-}
-
-func loadRedisConfig() RedisConfig {
-	return RedisConfig{
-		Addr:     os.Getenv("REDIS_ADDR"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-	}
+	return c, err
 }

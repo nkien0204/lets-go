@@ -26,9 +26,9 @@ func runWsServer(cmd *cobra.Command, args []string) {
 	logger := rolling.New()
 	defer logger.Sync()
 
-	logger.Info("Websocket server starting...", zap.String("addr", configs.GetConfigs().WebSocket.Addr))
+	logger.Info("Websocket server starting...", zap.String("addr", configs.GetConfigs().Websocket.Addr))
 	server := websocket.WebSocketServer{
-		Addr: configs.GetConfigs().WebSocket.Addr,
+		Addr: configs.GetConfigs().Websocket.Addr,
 	}
 	go server.Start()
 

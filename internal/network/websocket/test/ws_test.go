@@ -14,7 +14,7 @@ func TestWs(t *testing.T) {
 		panic(err)
 	}
 	wsServer := websocket.WebSocketServer{
-		Addr: configs.GetConfigs().WebSocket.Addr,
+		Addr: configs.GetConfigs().Websocket.Addr,
 	}
 	wsServer.Start()
 }
