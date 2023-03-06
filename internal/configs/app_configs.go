@@ -8,6 +8,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const CONFIG_FILENAME string = "config.yaml"
+const CONFIG_FILENAME_SAMPLE string = "config-sample.yaml"
+
 type Cfg struct {
 	GrpcServer     GrpcServerConfig     `yaml:"grpc_server"`
 	GrpcClient     GrpcClientConfig     `yaml:"grpc_client"`
@@ -99,7 +102,7 @@ func GetConfigs() *Cfg {
 }
 
 func newConfigs() (*Cfg, error) {
-	return readConf("config.yaml")
+	return readConf(CONFIG_FILENAME)
 }
 
 func readConf(filename string) (*Cfg, error) {

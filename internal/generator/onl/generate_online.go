@@ -9,7 +9,10 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+
+	"github.com/nkien0204/lets-go/internal/configs"
 )
 
 const GITHUB_REPO_ENDPOINT string = "https://api.github.com/repos/nkien0204/lets-go"
@@ -26,7 +29,15 @@ func (onl *OnlineGenerator) Generate() error {
 	if err != nil {
 		return err
 	}
-	return onl.downloadLatestAsset(tag)
+	if err := onl.downloadLatestAsset(tag); err != nil {
+		return err
+	}
+	return onl.copyConfig()
+}
+
+func (onl *OnlineGenerator) copyConfig() error {
+	cmd := exec.Command("cp", "-n", configs.CONFIG_FILENAME_SAMPLE, configs.CONFIG_FILENAME)
+	return cmd.Run()
 }
 
 func (onl *OnlineGenerator) getLatestVersion() (string, error) {
