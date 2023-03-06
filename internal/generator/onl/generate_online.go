@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 
 	"github.com/nkien0204/lets-go/internal/configs"
 )
@@ -36,7 +37,16 @@ func (onl *OnlineGenerator) Generate() error {
 }
 
 func (onl *OnlineGenerator) copyConfig() error {
-	cmd := exec.Command("cp", "-n", configs.CONFIG_FILENAME_SAMPLE, configs.CONFIG_FILENAME)
+	var cmd *exec.Cmd
+	src := filepath.Join(onl.ProjectName, configs.CONFIG_FILENAME_SAMPLE)
+	dst := filepath.Join(onl.ProjectName, configs.CONFIG_FILENAME)
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("copy", src, dst)
+	default:
+		cmd = exec.Command("cp", "-n", src, dst)
+	}
 	return cmd.Run()
 }
 
