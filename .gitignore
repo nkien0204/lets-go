@@ -5,5 +5,5 @@ rabbitBackup/
 .env
 bin/
 lets-go
-for-test
 .DS_Store
+config.yaml
