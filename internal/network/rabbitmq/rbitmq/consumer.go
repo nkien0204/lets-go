@@ -16,7 +16,7 @@ type ConsumerCfg struct {
 	args      map[string]interface{}
 }
 
-type consumer struct {
+type Consumer struct {
 	amqpServerUrl   string
 	queueName       string
 	cfg             *ConsumerCfg
@@ -33,11 +33,11 @@ var defaultCfg = &ConsumerCfg{
 	args:      nil,
 }
 
-func NewConsumer(amqpServerUrl string, queueName string, queue chan amqp.Delivery, cfg *ConsumerCfg) *consumer {
+func NewConsumer(amqpServerUrl string, queueName string, queue chan amqp.Delivery, cfg *ConsumerCfg) *Consumer {
 	if cfg == nil {
 		cfg = defaultCfg
 	}
-	return &consumer{
+	return &Consumer{
 		amqpServerUrl:   amqpServerUrl,
 		queueName:       queueName,
 		queue:           queue,
@@ -47,7 +47,7 @@ func NewConsumer(amqpServerUrl string, queueName string, queue chan amqp.Deliver
 	}
 }
 
-func (c *consumer) Start() {
+func (c *Consumer) Start() {
 	logger := rolling.New().With(zap.String("queue", c.queueName))
 	for {
 		// Create a new RabbitMQ connection.
@@ -94,7 +94,7 @@ func (c *consumer) Start() {
 	}
 }
 
-func (c *consumer) consumerListener(messages <-chan amqp.Delivery) {
+func (c *Consumer) consumerListener(messages <-chan amqp.Delivery) {
 	logger := rolling.New().With(zap.String("queue", c.queueName))
 	err := make(chan *amqp.Error)
 	for {

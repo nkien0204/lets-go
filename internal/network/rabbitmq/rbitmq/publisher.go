@@ -18,7 +18,7 @@ type PublisherCfg struct {
 	args      map[string]interface{}
 }
 
-type producer struct {
+type Producer struct {
 	amqpServerUrl   string
 	queueName       string
 	cfg             *PublisherCfg
@@ -36,11 +36,11 @@ var defaultProducerCfg = &PublisherCfg{
 	args:      nil,
 }
 
-func NewProducer(amqpServerUrl string, queueName string, queueSend chan amqp.Publishing, cfg *PublisherCfg, backup *RabbitBackupHandler) *producer {
+func NewProducer(amqpServerUrl string, queueName string, queueSend chan amqp.Publishing, cfg *PublisherCfg, backup *RabbitBackupHandler) *Producer {
 	if cfg == nil {
 		cfg = defaultProducerCfg
 	}
-	return &producer{
+	return &Producer{
 		amqpServerUrl:   amqpServerUrl,
 		queueName:       queueName,
 		queueSend:       queueSend,
@@ -51,7 +51,7 @@ func NewProducer(amqpServerUrl string, queueName string, queueSend chan amqp.Pub
 	}
 }
 
-func (c *producer) Start() {
+func (c *Producer) Start() {
 	logger := rolling.New()
 	var err error
 	// Create a new RabbitMQ connection.
@@ -91,7 +91,7 @@ func (c *producer) Start() {
 	c.publishListener()
 }
 
-func (c *producer) publishListener() {
+func (c *Producer) publishListener() {
 	logger := rolling.New().With(zap.String("queue_name", c.queueName))
 	for {
 		select {
@@ -120,7 +120,7 @@ func (c *producer) publishListener() {
 	}
 }
 
-func (c *producer) reconnect() bool {
+func (c *Producer) reconnect() bool {
 	var err error
 	logger := rolling.New().With(zap.String("queue", c.queueName))
 	logger.Error("rabbit lost connection, try to reconnect...")
@@ -156,7 +156,7 @@ func (c *producer) reconnect() bool {
 	return true
 }
 
-func (c *producer) sendBackupData() {
+func (c *Producer) sendBackupData() {
 	logger := rolling.New()
 	var err error
 	if c.backup.file, err = os.OpenFile(c.backup.fileName, os.O_RDONLY, 0644); err != nil {
