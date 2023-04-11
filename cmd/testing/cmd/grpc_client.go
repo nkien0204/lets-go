@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/network/grpc/grpc_client"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/grpc/grpc_client"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 )
