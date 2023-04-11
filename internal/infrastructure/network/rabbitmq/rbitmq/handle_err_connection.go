@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"

@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"

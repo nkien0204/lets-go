@@ -3,9 +3,9 @@ package http_handler
 import (
 	"net/http"
 
-	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/db/rdb/mysql"
-	"github.com/nkien0204/lets-go/internal/network/http_handler/authentication"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/db/rdb/mysql"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/http_handler/authentication"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/rs/cors"
 	"go.uber.org/zap"

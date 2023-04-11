@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"
 

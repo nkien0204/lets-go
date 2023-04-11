@@ -5,8 +5,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/network/websocket"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/websocket"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"

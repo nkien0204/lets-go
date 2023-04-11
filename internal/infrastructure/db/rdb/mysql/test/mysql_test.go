@@ -3,8 +3,8 @@ package test
 import (
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/db/rdb/mysql"
-	"github.com/nkien0204/lets-go/internal/db/rdb/mysql/models"
+	"github.com/nkien0204/lets-go/internal/infrastructure/db/rdb/mysql"
+	"github.com/nkien0204/lets-go/internal/infrastructure/db/rdb/mysql/models"
 )
 
 func TestInitConnection(t *testing.T) {

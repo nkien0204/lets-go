@@ -93,28 +93,25 @@ func (c *Producer) Start() {
 
 func (c *Producer) publishListener() {
 	logger := rolling.New().With(zap.String("queue_name", c.queueName))
-	for {
-		select {
-		case message := <-c.queueSend:
-			logger.Info(" >> rabbitmq: publish message")
-			// Attempt to publish a message to the queue.
-			if err := c.channelRabbitMQ.Publish(
-				"",          // exchange
-				c.queueName, // queue name
-				false,       // mandatory
-				false,       // immediate
-				message,     // message to publish
-			); err != nil {
-				logger.Error("rabbitmq: publish failed", zap.Error(err))
-				if err := c.backup.writeToBackupFile(message); err != nil {
-					logger.Error("error while writing to backup file", zap.Error(err))
-					continue
-				}
-				logger.Info("wrote a message to backup file")
-				if c.reconnect() {
-					logger.Info("need to send data on backup file first")
-					go c.sendBackupData()
-				}
+	for message := range c.queueSend {
+		logger.Info(" >> rabbitmq: publish message")
+		// Attempt to publish a message to the queue.
+		if err := c.channelRabbitMQ.Publish(
+			"",          // exchange
+			c.queueName, // queue name
+			false,       // mandatory
+			false,       // immediate
+			message,     // message to publish
+		); err != nil {
+			logger.Error("rabbitmq: publish failed", zap.Error(err))
+			if err := c.backup.writeToBackupFile(message); err != nil {
+				logger.Error("error while writing to backup file", zap.Error(err))
+				continue
+			}
+			logger.Info("wrote a message to backup file")
+			if c.reconnect() {
+				logger.Info("need to send data on backup file first")
+				go c.sendBackupData()
 			}
 		}
 	}

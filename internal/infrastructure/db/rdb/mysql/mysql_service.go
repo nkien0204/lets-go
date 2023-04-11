@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"

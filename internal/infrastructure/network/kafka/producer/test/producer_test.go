@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/network/kafka/producer"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/kafka/producer"
 	"github.com/segmentio/kafka-go"
 )
 
