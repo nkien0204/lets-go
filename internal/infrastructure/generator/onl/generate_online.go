@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/nkien0204/lets-go/internal/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 )
 
 const GITHUB_REPO_ENDPOINT string = "https://api.github.com/repos/nkien0204/lets-go"

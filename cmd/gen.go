@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/generator"
-	"github.com/nkien0204/lets-go/internal/generator/onl"
+	"github.com/nkien0204/lets-go/internal/infrastructure/generator"
+	"github.com/nkien0204/lets-go/internal/infrastructure/generator/onl"
 	"github.com/spf13/cobra"
 )
 
