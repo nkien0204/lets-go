@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/network/mailclient"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/mailclient"
 )
 
 func TestMailClient(t *testing.T) {

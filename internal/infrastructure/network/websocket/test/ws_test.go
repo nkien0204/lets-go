@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/nkien0204/lets-go/internal/configs"
-	"github.com/nkien0204/lets-go/internal/network/websocket"
+	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/websocket"
 )
 
 func TestWs(t *testing.T) {

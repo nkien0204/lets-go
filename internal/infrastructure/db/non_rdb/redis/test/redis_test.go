@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/db/non_rdb/redis"
+	"github.com/nkien0204/lets-go/internal/infrastructure/db/non_rdb/redis"
 )
 
 func TestRedis(t *testing.T) {

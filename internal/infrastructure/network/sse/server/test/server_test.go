@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/network/sse/server"
+	"github.com/nkien0204/lets-go/internal/infrastructure/network/sse/server"
 )
 
 func TestServer(t *testing.T) {
