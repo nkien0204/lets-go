@@ -27,7 +27,11 @@ func runHttpServer(cmd *cobra.Command, args []string) {
 	defer logger.Sync()
 
 	logger.Info("HTTP server starting...", zap.String("addr", configs.GetConfigs().HttpServer.Address))
-	server := http_handler.InitServer()
+	server, err := http_handler.NewServer("http server", "db addr")
+	if err != nil {
+		logger.Error("create server failed", zap.Error(err))
+		return
+	}
 	go server.ServeHttp()
 
 	// graceful shutdown

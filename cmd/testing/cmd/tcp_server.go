@@ -21,7 +21,7 @@ func init() {
 }
 
 func runServer(cmd *cobra.Command, args []string) {
-	ServerManager := tcp_server.GetServer()
+	ServerManager := tcp_server.NewServer("server addr")
 	go ServerManager.Listen()
 	go tcp_server.RunTcpTimer()
 

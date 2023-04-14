@@ -23,7 +23,7 @@ func init() {
 func runGrpcServer(cmd *cobra.Command, args []string) {
 	logger := rolling.New()
 	go func() {
-		server := grpc_server.InitServer()
+		server := grpc_server.NewServer("grpc server")
 		server.Start()
 	}()
 
