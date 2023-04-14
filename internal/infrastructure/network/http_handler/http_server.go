@@ -3,31 +3,36 @@ package http_handler
 import (
 	"net/http"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/lets-go/internal/infrastructure/db/rdb/mysql"
 	"github.com/nkien0204/lets-go/internal/infrastructure/network/http_handler/authentication"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type HttpServer struct {
 	Address string
+	DB      *gorm.DB
 }
 
-func InitServer() HttpServer {
-	return HttpServer{Address: configs.GetConfigs().HttpServer.Address}
+func NewServer(httpServerAddr, dbAddr string) (*HttpServer, error) {
+	db, err := mysql.NewMysqlConnection(dbAddr)
+	if err != nil {
+		return nil, err
+	}
+	return &HttpServer{
+		Address: httpServerAddr,
+		DB:      db,
+	}, nil
 }
 
 func (server *HttpServer) ServeHttp() {
-	authnSvc := authentication.AuthnHandler{
-		MysqlSvc: mysql.GetMysqlConnection(),
-	}
 	mux := http.NewServeMux()
 
-	http.HandleFunc("/sign-in", authnSvc.SignIn)
-	http.HandleFunc("/welcome", authnSvc.Welcome)
-	http.HandleFunc("/refresh", authnSvc.Refresh)
+	http.HandleFunc("/sign-in", authentication.SignIn(server.DB))
+	http.HandleFunc("/welcome", authentication.Welcome())
+	http.HandleFunc("/refresh", authentication.Refresh())
 
 	handler := cors.Default().Handler(mux)
 	if err := http.ListenAndServe(server.Address, handler); err != nil {

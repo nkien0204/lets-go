@@ -4,14 +4,13 @@ import (
 	"io"
 	"net"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
 
-func EstablishProxy(dstAddress string) error {
+func EstablishProxy(dstAddress, proxyAddr string) error {
 	logger := rolling.New()
-	proxyServer, err := net.Listen("tcp", configs.GetConfigs().TcpProxyServer.ProxyAddress)
+	proxyServer, err := net.Listen("tcp", proxyAddr)
 	if err != nil {
 		logger.Error("listen proxyServer failed", zap.Error(err))
 		return err

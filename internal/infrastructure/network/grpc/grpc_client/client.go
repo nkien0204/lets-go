@@ -6,7 +6,6 @@ import (
 
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
@@ -19,10 +18,10 @@ type GrpcClient struct {
 	ServerAddress string
 }
 
-func InitClient() GrpcClient {
+func NewClient(serverConfig string) GrpcClient {
 	return GrpcClient{
 		Conn:          nil,
-		ServerAddress: configs.GetConfigs().GrpcClient.ServerAddress,
+		ServerAddress: serverConfig,
 	}
 }
 

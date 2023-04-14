@@ -20,7 +20,7 @@ type Consumer struct {
 }
 
 // If group is setted, partition will be ignored
-func InitConsumer(addr, topic, group string, partition int) *Consumer {
+func NewConsumer(addr, topic, group string, partition int) *Consumer {
 	kafkaConfig := kafka.ReaderConfig{
 		Brokers:  []string{addr},
 		Topic:    topic,

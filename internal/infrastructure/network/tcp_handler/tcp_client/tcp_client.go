@@ -17,9 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func RunTcp() {
-	tcpServerUrl := configs.GetConfigs().TcpClient.TcpServerUrl
-
+func RunTcp(tcpServerUrl string) {
 	client, err := initClient(tcpServerUrl)
 	if err != nil {
 		rolling.New().Warn("Connection refused, try to reconnect to controller...")

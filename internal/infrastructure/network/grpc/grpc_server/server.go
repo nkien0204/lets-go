@@ -5,7 +5,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	events "github.com/nkien0204/protobuf/build"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
@@ -17,14 +16,10 @@ type Server struct {
 	Address string
 }
 
-func newServer() *Server {
+func NewServer(serverAddr string) *Server {
 	return &Server{
-		Address: configs.GetConfigs().GrpcServer.Address,
+		Address: serverAddr,
 	}
-}
-
-func InitServer() *Server {
-	return newServer()
 }
 
 func (g *Server) Start() {
@@ -35,7 +30,7 @@ func (g *Server) Start() {
 	}
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	events.RegisterRouteGuideServer(grpcServer, newServer())
+	events.RegisterRouteGuideServer(grpcServer, g)
 	grpcServer.Serve(lis)
 }
 
