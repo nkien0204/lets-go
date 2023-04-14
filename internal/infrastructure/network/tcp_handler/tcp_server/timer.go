@@ -16,15 +16,14 @@ func RunTcpTimer() {
 	for {
 		<-ticker.C
 		now := time.Now()
-		serverManager := GetServer()
-		serverManager.Mutex.Lock()
-		clients := deepCopyClientsMap(serverManager.TcpServer.Clients)
-		serverManager.Mutex.Unlock()
+		tcpServerManager.Mutex.Lock()
+		clients := deepCopyClientsMap(tcpServerManager.TcpServer.Clients)
+		tcpServerManager.Mutex.Unlock()
 		for k, v := range clients {
 			if now.Sub(v.LastTimeSeen) >= Timeout*time.Second {
 				err := errors.New("client got timeout")
 				logger.Warn("timeout", zap.String("uuid", k))
-				serverManager.OnClientConnectionClosed(v, err)
+				tcpServerManager.OnClientConnectionClosed(v, err)
 			}
 		}
 	}

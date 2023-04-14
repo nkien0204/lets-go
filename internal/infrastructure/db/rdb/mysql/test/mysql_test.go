@@ -7,20 +7,15 @@ import (
 	"github.com/nkien0204/lets-go/internal/infrastructure/db/rdb/mysql/models"
 )
 
-func TestInitConnection(t *testing.T) {
-	mysqlService := mysql.GetMysqlConnection()
-	// if err != nil {
-	// 	t.Errorf("mysql.InitMysqlConnection: %v", err.Error())
-	// 	return
-	// }
-	t.Logf("init connection successfully: %v", mysqlService.Address)
-}
-
 func TestGetPayments(t *testing.T) {
-	mysqlService := mysql.GetMysqlConnection()
+	mysqlService, err := mysql.NewMysqlConnection("user:pass@tcp(127.0.0.1:3306)/classicmodels")
+	if err != nil {
+		t.Errorf("create new connection failed: %v", err)
+		return
+	}
 
 	var payment []models.Payment
-	if result := mysqlService.Db.Table(models.PaymentsTable).Limit(10).Offset(10).Find(&payment); result.Error != nil {
+	if result := mysqlService.Table(models.PaymentsTable).Limit(10).Offset(10).Find(&payment); result.Error != nil {
 		t.Errorf("mysqlService.Db.Table(models.PaymentsTable).Find: %v", result.Error)
 		return
 	}

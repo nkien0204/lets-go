@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"google.golang.org/protobuf/proto"
 
@@ -18,18 +17,10 @@ import (
 )
 
 // Singleton pattern
-func GetServer() *ServerManager {
-	logger := rolling.New()
-	if tcpServerManager.TcpServer == nil {
-		tcpServerManager.Mutex.Lock()
-		defer tcpServerManager.Mutex.Unlock()
-		if tcpServerManager.TcpServer == nil {
-			logger.Info("created instance")
-			tcpServerManager.TcpServer = &Server{
-				Address: configs.GetConfigs().TcpServer.TcpPort,
-				Clients: make(map[string]*Client),
-			}
-		}
+func NewServer(serverAddr string) *ServerManager {
+	tcpServerManager.TcpServer = &Server{
+		Address: serverAddr,
+		Clients: make(map[string]*Client),
 	}
 	return tcpServerManager
 }

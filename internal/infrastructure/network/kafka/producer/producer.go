@@ -14,7 +14,7 @@ type Producer struct {
 	writer    *kafka.Writer
 }
 
-func InitProducer(addr, topic string) *Producer {
+func NewProducer(addr, topic string) *Producer {
 	w := &kafka.Writer{
 		Addr:         kafka.TCP(addr),
 		Topic:        topic,

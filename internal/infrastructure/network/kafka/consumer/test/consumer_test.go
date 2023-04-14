@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/lets-go/internal/infrastructure/network/kafka/consumer"
 	"github.com/segmentio/kafka-go"
 )
 
 func TestConsumer(t *testing.T) {
-	kafkaConfigs := configs.GetConfigs().Kafka
-	consumer := consumer.InitConsumer(kafkaConfigs.Addr, kafkaConfigs.Topic, kafkaConfigs.Group, kafkaConfigs.Partition)
+	consumer := consumer.NewConsumer("kafkaConfigs.Addr", "kafkaConfigs.Topic", "kafkaConfigs.Group", 0)
 	eventChan := make(chan kafka.Message)
 	go consumer.ConsumeEvent(eventChan)
 	for {

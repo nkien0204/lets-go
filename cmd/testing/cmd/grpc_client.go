@@ -23,7 +23,7 @@ func init() {
 func runGrpcClient(cmd *cobra.Command, args []string) {
 	logger := rolling.New()
 	go func() {
-		client := grpc_client.InitClient()
+		client := grpc_client.NewClient("addr")
 		client.Start()
 	}()
 

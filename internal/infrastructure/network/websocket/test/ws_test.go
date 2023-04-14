@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
 	"github.com/nkien0204/lets-go/internal/infrastructure/network/websocket"
 )
 
@@ -14,7 +13,7 @@ func TestWs(t *testing.T) {
 		panic(err)
 	}
 	wsServer := websocket.WebSocketServer{
-		Addr: configs.GetConfigs().Websocket.Addr,
+		Addr: "0.0.0.0:8888",
 	}
 	wsServer.Start()
 }

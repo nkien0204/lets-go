@@ -24,7 +24,7 @@ func runClient(cmd *cobra.Command, args []string) {
 	go func() {
 		for {
 			// Handle for TCP reconnection case
-			tcp_client.RunTcp()
+			tcp_client.RunTcp("tcp addr")
 		}
 	}()
 
