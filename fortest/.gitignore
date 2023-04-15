@@ -1,9 +1,0 @@
-log/
-rabbitBackup/
-.vscode/
-.idea/
-.env
-bin/
-lets-go
-.DS_Store
-config.yaml
