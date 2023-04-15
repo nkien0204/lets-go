@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 
@@ -33,7 +34,21 @@ func (onl *OnlineGenerator) Generate() error {
 	if err := onl.downloadLatestAsset(tag); err != nil {
 		return err
 	}
-	return onl.copyConfig()
+	if err := onl.copyConfig(); err != nil {
+		return err
+	}
+	return onl.removeGenerator()
+}
+
+func (onl *OnlineGenerator) removeGenerator() error {
+	// remove cmd/gen.go
+	genCmdFilePath := path.Join(onl.ProjectName, "cmd", "gen.go")
+	if err := os.Remove(genCmdFilePath); err != nil {
+		return err
+	}
+
+	infrastructureDirPath := path.Join(onl.ProjectName, "internal", "infrastructure")
+	return os.RemoveAll(infrastructureDirPath)
 }
 
 func (onl *OnlineGenerator) copyConfig() error {
@@ -96,6 +111,7 @@ func (onl *OnlineGenerator) downloadLatestAsset(tagName string) error {
 		os.Remove(zipFileName)
 		if err := os.Rename(unZipDir, onl.ProjectName); err != nil {
 			fmt.Println("error: ", err)
+			os.RemoveAll(unZipDir)
 		}
 	}()
 	if _, err := f.Write(body); err != nil {
@@ -121,10 +137,7 @@ func unZip(zipFile string) (string, error) {
 	}
 
 	for _, f := range archive.File {
-		fmt.Println("unzipping file ", f.Name)
-
 		if f.FileInfo().IsDir() {
-			fmt.Println("creating directory...")
 			os.MkdirAll(f.Name, os.ModePerm)
 			continue
 		}

@@ -108,3 +108,11 @@ After generate successfully, you should see your project something like this:
 - **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
 - **[WebSocket](https://github.com/gorilla/websocket)**
 - **[Server-Sent Events](https://github.com/r3labs/sse)**
+
+## Documentation
+- **[gRPC Server/Client](doc/gRPC/README.md)**
+- **[TCP Server/Client](doc/tcp/README.md)**
+- **[UDP Server/Client](doc/udp/README.md)**
+- **[WebSocket Server](doc/websocket/README.md)**
+- **[Server-Sent Events](doc/sse/README.md)**
+- **[Mail Client](doc/mailclient/README.md)**
