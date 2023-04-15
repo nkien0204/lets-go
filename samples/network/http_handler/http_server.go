@@ -30,9 +30,9 @@ func NewServer(httpServerAddr, dbAddr string) (*HttpServer, error) {
 func (server *HttpServer) ServeHttp() {
 	mux := http.NewServeMux()
 
-	http.HandleFunc("/sign-in", authentication.SignIn(server.DB))
-	http.HandleFunc("/welcome", authentication.Welcome())
-	http.HandleFunc("/refresh", authentication.Refresh())
+	mux.HandleFunc("/sign-in", authentication.SignIn(server.DB))
+	mux.HandleFunc("/welcome", authentication.Welcome())
+	mux.HandleFunc("/refresh", authentication.Refresh())
 
 	handler := cors.Default().Handler(mux)
 	if err := http.ListenAndServe(server.Address, handler); err != nil {
