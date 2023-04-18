@@ -29,71 +29,28 @@ Run `lets-go -h` for more detail.
 After generate successfully, you should see your project something like this:
 ```bash
 ├── cmd
-│   └── testing
-│       └── cmd
-├── doc
-│   ├── gRPC
-│   ├── http
-│   ├── mailclient
-│   ├── sse
-│   ├── tcp
-│   ├── udp
-│   └── websocket
 ├── internal
-│   ├── entities
-│   ├── infrastructure
-│   │   ├── configs
-│   │   │   └── test
-│   │   ├── db
-│   │   │   ├── non_rdb
-│   │   │   │   ├── mongo
-│   │   │   │   │   ├── models
-│   │   │   │   │   └── test
-│   │   │   │   └── redis
-│   │   │   │       └── test
-│   │   │   └── rdb
-│   │   │       └── mysql
-│   │   │           ├── models
-│   │   │           └── test
-│   │   ├── generator
-│   │   │   ├── off
-│   │   │   └── onl
-│   │   └── network
-│   │       ├── grpc
-│   │       │   ├── grpc_client
-│   │       │   └── grpc_server
-│   │       ├── http_handler
-│   │       │   ├── authentication
-│   │       │   └── responses
-│   │       ├── kafka
-│   │       │   ├── consumer
-│   │       │   │   └── test
-│   │       │   │       └── log
-│   │       │   └── producer
-│   │       │       └── test
-│   │       ├── mailclient
-│   │       │   └── test
-│   │       │       └── log
-│   │       ├── rabbitmq
-│   │       │   └── rbitmq
-│   │       ├── sse
-│   │       │   ├── client
-│   │       │   │   └── test
-│   │       │   └── server
-│   │       │       └── test
-│   │       ├── tcp_handler
-│   │       │   ├── tcp_client
-│   │       │   ├── tcp_monitor
-│   │       │   ├── tcp_proxy
-│   │       │   └── tcp_server
-│   │       ├── udp_handler
-│   │       │   ├── tftp
-│   │       │   ├── udp_client
-│   │       │   └── udp_server
-│   │       └── websocket
-│   │           └── test
-│   └── usecases
-└── pkg
+│   ├── drivers
+│   ├── entities
+│   ├── infrastructure
+│   │   ├── configs
+│   │   └── generator
+│   └── usecases
+└── samples
+    ├── configs
+    ├── db
+    │   ├── non_rdb
+    │   └── rdb
+    └── network
+        ├── grpc
+        ├── http_handler
+        ├── kafka
+        ├── mailclient
+        ├── rabbitmq
+        ├── sse
+        ├── tcp_handler
+        ├── udp_handler
+        └── websocket
 ```
 
 ## Some other utils
