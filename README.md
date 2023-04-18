@@ -53,12 +53,6 @@ After generate successfully, you should see your project something like this:
         └── websocket
 ```
 
-## Some other utils
-- **Logging**: when running, log will auto generate to keep track about status of program.
-- **Database**: support noSQL (MongoDb, Redis) and SQL (MySQL).
-- **Kafka-Client**: produce and consume message via Kafka server.
-- **Rabbitmq**: another message pub/sub beside Kafka.
-
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
 - **[Protobuf](https://github.com/nkien0204/protobuf)**
