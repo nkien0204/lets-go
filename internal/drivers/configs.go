@@ -2,7 +2,7 @@ package drivers
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/nkien0204/lets-go/internal/entities"
 	"gopkg.in/yaml.v2"
@@ -29,7 +29,7 @@ func newConfigs() (*entities.Cfg, error) {
 }
 
 func readConf(filename string) (*entities.Cfg, error) {
-	buf, err := ioutil.ReadFile(filename)
+	buf, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

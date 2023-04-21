@@ -11,15 +11,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-const APP_VERSION string = "v1.5.0"
+const APP_VERSION string = "v1.5.2"
 
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:              "lets-go",
-	Short:            "lets-go command line tool",
-	TraverseChildren: true,
+	Use:               "lets-go",
+	Short:             "lets-go command line tool",
+	TraverseChildren:  true,
+	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
