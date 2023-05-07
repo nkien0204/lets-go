@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/k0kubun/pp/v3"
-	"github.com/nkien0204/lets-go/internal/drivers"
-	"github.com/nkien0204/lets-go/internal/usecases"
+	"github.com/nkien0204/lets-go/internal/adapters/configs"
+	"github.com/nkien0204/lets-go/internal/usecases/configs"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +18,6 @@ func init() {
 }
 
 func runCfgCmd(cmd *cobra.Command, args []string) {
-	configs := usecases.NewConfigUseCases(drivers.NewConfigs())
-	pp.Print(configs.LoadConfigs())
+	config := usecases.NewConfigUseCases(configs.NewConfigs())
+	pp.Print(config.LoadConfigs())
 }

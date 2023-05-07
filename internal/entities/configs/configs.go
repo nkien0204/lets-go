@@ -1,6 +1,7 @@
-package entities
+package configs
 
 const CONFIG_FILENAME string = "config.yaml"
+const CONFIG_FILENAME_SAMPLE string = "config-sample.yaml"
 
 type Cfg struct {
 	GrpcServer     GrpcServerConfig     `yaml:"grpc_server"`

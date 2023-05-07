@@ -14,17 +14,20 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/configs"
+	"github.com/nkien0204/lets-go/internal/entities/configs"
+	"github.com/nkien0204/lets-go/internal/entities/generators"
 )
 
-const GITHUB_REPO_ENDPOINT string = "https://api.github.com/repos/nkien0204/lets-go"
-
-type OnlineGenerator struct {
-	ProjectName string
+type onlGenAdapter struct {
+    gen *generators.OnlineGenerator
 }
 
-func (onl *OnlineGenerator) Generate() error {
-	if onl.ProjectName == "" {
+func NewOnlGenAdapter(gen *generators.OnlineGenerator) *onlGenAdapter {
+    return &onlGenAdapter{gen: gen}
+}
+
+func (onl *onlGenAdapter) Generate() error {
+	if onl.gen.ProjectName == "" {
 		return errors.New("project name must be identified, please use -p flag")
 	}
 	tag, err := onl.getLatestVersion()
@@ -40,21 +43,16 @@ func (onl *OnlineGenerator) Generate() error {
 	return onl.removeGenerator()
 }
 
-func (onl *OnlineGenerator) removeGenerator() error {
+func (onl *onlGenAdapter) removeGenerator() error {
 	// remove cmd/gen.go
-	genCmdFilePath := path.Join(onl.ProjectName, "cmd", "gen.go")
-	if err := os.Remove(genCmdFilePath); err != nil {
-		return err
-	}
-
-	infrastructureDirPath := path.Join(onl.ProjectName, "internal", "infrastructure")
-	return os.RemoveAll(infrastructureDirPath)
+	genCmdFilePath := path.Join(onl.gen.ProjectName, "cmd", "gen.go")
+	return os.Remove(genCmdFilePath)
 }
 
-func (onl *OnlineGenerator) copyConfig() error {
+func (onl *onlGenAdapter) copyConfig() error {
 	var cmd *exec.Cmd
-	src := filepath.Join(onl.ProjectName, configs.CONFIG_FILENAME_SAMPLE)
-	dst := filepath.Join(onl.ProjectName, configs.CONFIG_FILENAME)
+	src := filepath.Join(onl.gen.ProjectName, configs.CONFIG_FILENAME_SAMPLE)
+	dst := filepath.Join(onl.gen.ProjectName, configs.CONFIG_FILENAME)
 
 	switch runtime.GOOS {
 	case "windows":
@@ -65,8 +63,8 @@ func (onl *OnlineGenerator) copyConfig() error {
 	return cmd.Run()
 }
 
-func (onl *OnlineGenerator) getLatestVersion() (string, error) {
-	resp, err := http.Get(GITHUB_REPO_ENDPOINT + "/releases/latest")
+func (o *onlGenAdapter) getLatestVersion() (string, error) {
+	resp, err := http.Get(generators.GITHUB_REPO_ENDPOINT + "/releases/latest")
 	if err != nil {
 		return "", err
 	}
@@ -77,7 +75,7 @@ func (onl *OnlineGenerator) getLatestVersion() (string, error) {
 		return "", err
 	}
 
-	var latestReleaseInfo LatestReleaseInfo
+	var latestReleaseInfo generators.LatestReleaseInfo
 	err = json.Unmarshal(body, &latestReleaseInfo)
 	if err != nil {
 		return "", err
@@ -85,8 +83,8 @@ func (onl *OnlineGenerator) getLatestVersion() (string, error) {
 	return latestReleaseInfo.TagName, nil
 }
 
-func (onl *OnlineGenerator) downloadLatestAsset(tagName string) error {
-	apiEndpoint := fmt.Sprintf(GITHUB_REPO_ENDPOINT+"/zipball/"+"%s", tagName)
+func (o *onlGenAdapter) downloadLatestAsset(tagName string) error {
+	apiEndpoint := fmt.Sprintf(generators.GITHUB_REPO_ENDPOINT+"/zipball/"+"%s", tagName)
 	resp, err := http.Get(apiEndpoint)
 	if err != nil {
 		return err
@@ -98,7 +96,7 @@ func (onl *OnlineGenerator) downloadLatestAsset(tagName string) error {
 	}
 
 	var unZipDir string
-	zipFileName := onl.ProjectName + ".zip"
+	zipFileName := o.gen.ProjectName + ".zip"
 	if _, err := os.Stat(zipFileName); err == nil || !errors.Is(err, fs.ErrNotExist) {
 		return errors.New(zipFileName + " was exist")
 	}
@@ -109,7 +107,7 @@ func (onl *OnlineGenerator) downloadLatestAsset(tagName string) error {
 	defer func() {
 		f.Close()
 		os.Remove(zipFileName)
-		if err := os.Rename(unZipDir, onl.ProjectName); err != nil {
+		if err := os.Rename(unZipDir, o.gen.ProjectName); err != nil {
 			fmt.Println("error: ", err)
 			os.RemoveAll(unZipDir)
 		}

@@ -6,8 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/infrastructure/generator"
-	"github.com/nkien0204/lets-go/internal/infrastructure/generator/onl"
+	"github.com/nkien0204/lets-go/internal/entities/generators"
+	"github.com/nkien0204/lets-go/internal/adapters/generators/onl"
+	usecase "github.com/nkien0204/lets-go/internal/usecases/generators"
 	"github.com/spf13/cobra"
 )
 
@@ -49,19 +50,20 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	wg.Add(1)
 	go genWithAnimation(&wg, interruptEvent)
 
-	var gen generator.Generator
+    var gen usecase.GenerateBehaviors
 	switch genFlags.genMod {
 	case ONL_MOD:
-		gen = &onl.OnlineGenerator{ProjectName: genFlags.projectName}
+        gen = onl.NewOnlGenAdapter(&generators.OnlineGenerator{ProjectName: genFlags.projectName})
 	case OFF_MOD:
 		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
 		fmt.Println("comming soon")
 		return
 	default:
-		err = errors.New("flag mod is not match")
+		err = errors.New("flag \"mod\" is not match")
 		return
 	}
-	err = gen.Generate()
+    genUseCase := usecase.NewGenUseCase(gen)
+    err = genUseCase.HandleGenerate()
 }
 
 func genWithAnimation(wg *sync.WaitGroup, event chan bool) {
