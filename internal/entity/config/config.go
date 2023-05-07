@@ -1,4 +1,4 @@
-package configs
+package config
 
 const CONFIG_FILENAME string = "config.yaml"
 const CONFIG_FILENAME_SAMPLE string = "config-sample.yaml"
