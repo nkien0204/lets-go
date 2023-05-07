@@ -30,12 +30,18 @@ After generate successfully, you should see your project something like this:
 ```bash
 ├── cmd
 ├── internal
-│   ├── drivers
-│   ├── entities
-│   ├── infrastructure
-│   │   ├── configs
-│   │   └── generator
-│   └── usecases
+│   ├── adapters
+│   │   ├── configs
+│   │   └── generators
+│   │       ├── off
+│   │       └── onl
+│   ├── entities
+│   │   ├── configs
+│   │   └── generators
+│   └── usecases
+│       ├── configs
+│       └── generators
+│           └── mocks
 └── samples
     ├── configs
     ├── db
