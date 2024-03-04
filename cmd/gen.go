@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nkien0204/lets-go/internal/entities/generators"
-	"github.com/nkien0204/lets-go/internal/adapters/generators/onl"
-	usecase "github.com/nkien0204/lets-go/internal/usecases/generators"
+	generatorDelivery "github.com/nkien0204/lets-go/internal/delivery/generator"
+	generatorEntity "github.com/nkien0204/lets-go/internal/entity/generator"
+	"github.com/nkien0204/lets-go/internal/usecase/generator/onl"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,10 @@ var genCmd = &cobra.Command{
 
 func init() {
 	genCmd.PersistentFlags().StringVarP(&genFlags.projectName, "projectName", "p", "", "set name for project")
-	genCmd.PersistentFlags().StringVarP(&genFlags.genMod, "mod", "m", "onl", "download online (onl) or generate offline (off)")
+	genCmd.PersistentFlags().StringVarP(
+		&genFlags.genMod, "mod", "m", ONL_MOD,
+		fmt.Sprintf("download online (%s) or generate offline (%s)", ONL_MOD, OFF_MOD),
+	)
 	rootCmd.AddCommand(genCmd)
 }
 
@@ -50,10 +53,10 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	wg.Add(1)
 	go genWithAnimation(&wg, interruptEvent)
 
-    var gen usecase.GenerateBehaviors
+	var gen generatorDelivery.GeneratorBehaviors
 	switch genFlags.genMod {
 	case ONL_MOD:
-        gen = onl.NewOnlGenAdapter(&generators.OnlineGenerator{ProjectName: genFlags.projectName})
+		gen = onl.NewUsecase(&generatorEntity.OnlineGenerator{ProjectName: genFlags.projectName})
 	case OFF_MOD:
 		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
 		fmt.Println("comming soon")
@@ -62,8 +65,8 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 		err = errors.New("flag \"mod\" is not match")
 		return
 	}
-    genUseCase := usecase.NewGenUseCase(gen)
-    err = genUseCase.HandleGenerate()
+	genDelivery := generatorDelivery.NewDelivery(gen)
+	err = genDelivery.HandleGenerate()
 }
 
 func genWithAnimation(wg *sync.WaitGroup, event chan bool) {

@@ -14,45 +14,55 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/nkien0204/lets-go/internal/entities/configs"
-	"github.com/nkien0204/lets-go/internal/entities/generators"
+	"github.com/nkien0204/lets-go/internal/entity/config"
+	"github.com/nkien0204/lets-go/internal/entity/generator"
 )
 
-type onlGenAdapter struct {
-    gen *generators.OnlineGenerator
-}
-
-func NewOnlGenAdapter(gen *generators.OnlineGenerator) *onlGenAdapter {
-    return &onlGenAdapter{gen: gen}
-}
-
-func (onl *onlGenAdapter) Generate() error {
-	if onl.gen.ProjectName == "" {
+func (u *usecase) Generate() error {
+	if u.gen.ProjectName == "" {
 		return errors.New("project name must be identified, please use -p flag")
 	}
-	tag, err := onl.getLatestVersion()
+	tag, err := u.getLatestVersion()
 	if err != nil {
 		return err
 	}
-	if err := onl.downloadLatestAsset(tag); err != nil {
+	if err := u.downloadLatestAsset(tag); err != nil {
 		return err
 	}
-	if err := onl.copyConfig(); err != nil {
+	if err := u.copyConfig(); err != nil {
 		return err
 	}
-	return onl.removeGenerator()
+	return u.removeGenerator()
 }
 
-func (onl *onlGenAdapter) removeGenerator() error {
-	// remove cmd/gen.go
-	genCmdFilePath := path.Join(onl.gen.ProjectName, "cmd", "gen.go")
-	return os.Remove(genCmdFilePath)
+func (u *usecase) removeGenerator() error {
+	genCmdFilePath := path.Join(u.gen.ProjectName, "cmd", "gen.go")
+	genDeliveryPath := path.Join(u.gen.ProjectName, "internal", "delivery", "generator")
+	genUsecasePath := path.Join(u.gen.ProjectName, "internal", "usecase", "generator")
+	samplesPath := path.Join(u.gen.ProjectName, "samples")
+	sampleConfigFilePath := path.Join(u.gen.ProjectName, config.CONFIG_FILENAME_SAMPLE)
+	if err := os.Remove(genCmdFilePath); err != nil {
+		return err
+	}
+	if err := os.Remove(genDeliveryPath); err != nil {
+		return err
+	}
+	if err := os.Remove(genUsecasePath); err != nil {
+		return err
+	}
+	if err := os.Remove(samplesPath); err != nil {
+		return err
+	}
+	if err := os.Remove(sampleConfigFilePath); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (onl *onlGenAdapter) copyConfig() error {
+func (u *usecase) copyConfig() error {
 	var cmd *exec.Cmd
-	src := filepath.Join(onl.gen.ProjectName, configs.CONFIG_FILENAME_SAMPLE)
-	dst := filepath.Join(onl.gen.ProjectName, configs.CONFIG_FILENAME)
+	src := filepath.Join(u.gen.ProjectName, config.CONFIG_FILENAME_SAMPLE)
+	dst := filepath.Join(u.gen.ProjectName, config.CONFIG_FILENAME)
 
 	switch runtime.GOOS {
 	case "windows":
@@ -63,8 +73,8 @@ func (onl *onlGenAdapter) copyConfig() error {
 	return cmd.Run()
 }
 
-func (o *onlGenAdapter) getLatestVersion() (string, error) {
-	resp, err := http.Get(generators.GITHUB_REPO_ENDPOINT + "/releases/latest")
+func (u *usecase) getLatestVersion() (string, error) {
+	resp, err := http.Get(generator.GITHUB_REPO_ENDPOINT + "/releases/latest")
 	if err != nil {
 		return "", err
 	}
@@ -75,7 +85,7 @@ func (o *onlGenAdapter) getLatestVersion() (string, error) {
 		return "", err
 	}
 
-	var latestReleaseInfo generators.LatestReleaseInfo
+	var latestReleaseInfo generator.LatestReleaseInfo
 	err = json.Unmarshal(body, &latestReleaseInfo)
 	if err != nil {
 		return "", err
@@ -83,8 +93,8 @@ func (o *onlGenAdapter) getLatestVersion() (string, error) {
 	return latestReleaseInfo.TagName, nil
 }
 
-func (o *onlGenAdapter) downloadLatestAsset(tagName string) error {
-	apiEndpoint := fmt.Sprintf(generators.GITHUB_REPO_ENDPOINT+"/zipball/"+"%s", tagName)
+func (u *usecase) downloadLatestAsset(tagName string) error {
+	apiEndpoint := fmt.Sprintf(generator.GITHUB_REPO_ENDPOINT+"/zipball/"+"%s", tagName)
 	resp, err := http.Get(apiEndpoint)
 	if err != nil {
 		return err
@@ -96,7 +106,7 @@ func (o *onlGenAdapter) downloadLatestAsset(tagName string) error {
 	}
 
 	var unZipDir string
-	zipFileName := o.gen.ProjectName + ".zip"
+	zipFileName := u.gen.ProjectName + ".zip"
 	if _, err := os.Stat(zipFileName); err == nil || !errors.Is(err, fs.ErrNotExist) {
 		return errors.New(zipFileName + " was exist")
 	}
@@ -107,7 +117,7 @@ func (o *onlGenAdapter) downloadLatestAsset(tagName string) error {
 	defer func() {
 		f.Close()
 		os.Remove(zipFileName)
-		if err := os.Rename(unZipDir, o.gen.ProjectName); err != nil {
+		if err := os.Rename(unZipDir, u.gen.ProjectName); err != nil {
 			fmt.Println("error: ", err)
 			os.RemoveAll(unZipDir)
 		}

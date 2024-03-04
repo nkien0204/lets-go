@@ -1,4 +1,4 @@
-package generators
+package generator
 
 import "time"
 
@@ -22,6 +22,7 @@ type LatestReleaseInfo struct {
 	ZipballURL      string        `json:"zipball_url"`
 	Body            string        `json:"body"`
 }
+
 type Author struct {
 	Login             string `json:"login"`
 	ID                int    `json:"id"`
