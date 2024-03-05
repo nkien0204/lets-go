@@ -1,7 +1,7 @@
 package usecases
 
 import (
-	"github.com/nkien0204/lets-go/internal/entity/config"
+	"github.com/nkien0204/lets-go/internal/domain/entity/config"
 )
 
 type ConfigsBehaviors interface {

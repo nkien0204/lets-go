@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nkien0204/lets-go/internal/entity/config"
+	"github.com/nkien0204/lets-go/internal/domain/entity/config"
 	"gopkg.in/yaml.v2"
 )
 
@@ -18,14 +18,10 @@ func NewConfig() *usecase {
 
 func (u *usecase) LoadConfig() *config.Cfg {
 	var err error
-	if u.cfg, err = newConfig(); err != nil {
+	if u.cfg, err = readConf(config.CONFIG_FILENAME); err != nil {
 		panic(err)
 	}
 	return u.cfg
-}
-
-func newConfig() (*config.Cfg, error) {
-	return readConf(config.CONFIG_FILENAME)
 }
 
 func readConf(filename string) (*config.Cfg, error) {
