@@ -30,23 +30,24 @@ After generate successfully, you should see your project something like this:
 ```bash
 ├── cmd
 ├── internal
-│   ├── adapters
-│   │   ├── configs
-│   │   └── generators
-│   │       ├── off
-│   │       └── onl
-│   ├── entities
-│   │   ├── configs
-│   │   └── generators
-│   └── usecases
-│       ├── configs
-│       └── generators
-│           └── mocks
+│   ├── delivery
+│   │   ├── config
+│   │   └── generator
+│   │       └── mocks
+│   ├── entity
+│   │   ├── config
+│   │   └── generator
+│   └── usecase
+│       ├── config
+│       └── generator
+│           ├── off
+│           └── onl
 └── samples
     ├── configs
+    │   └── test
     ├── db
-    │   ├── non_rdb
-    │   └── rdb
+    │   ├── non_rdb
+    │   └── rdb
     └── network
         ├── grpc
         ├── http_handler
