@@ -1,6 +1,7 @@
 log/
 rabbitBackup/
 .vscode/
+.nvim/
 .idea/
 .env
 bin/

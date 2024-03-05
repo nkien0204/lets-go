@@ -1,11 +1,13 @@
 package onl
 
-import "github.com/nkien0204/lets-go/internal/entity/generator"
+import (
+	"github.com/nkien0204/lets-go/internal/domain"
+)
 
 type usecase struct {
-	gen *generator.OnlineGenerator
+	repo domain.GeneratorRepository
 }
 
-func NewUsecase(gen *generator.OnlineGenerator) *usecase {
-	return &usecase{gen: gen}
+func NewUsecase(repo domain.GeneratorRepository) *usecase {
+	return &usecase{repo: repo}
 }

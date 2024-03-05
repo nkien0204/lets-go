@@ -7,8 +7,10 @@ import (
 	"time"
 
 	generatorDelivery "github.com/nkien0204/lets-go/internal/delivery/generator"
-	generatorEntity "github.com/nkien0204/lets-go/internal/entity/generator"
-	"github.com/nkien0204/lets-go/internal/usecase/generator/onl"
+	"github.com/nkien0204/lets-go/internal/domain"
+	generatorEntity "github.com/nkien0204/lets-go/internal/domain/entity/generator"
+	onlRepository "github.com/nkien0204/lets-go/internal/repository/generator/onl"
+	onlUsecase "github.com/nkien0204/lets-go/internal/usecase/generator/onl"
 	"github.com/spf13/cobra"
 )
 
@@ -53,10 +55,12 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	wg.Add(1)
 	go genWithAnimation(&wg, interruptEvent)
 
-	var gen generatorDelivery.GeneratorBehaviors
+	var gen domain.GeneratorUsecase
 	switch genFlags.genMod {
 	case ONL_MOD:
-		gen = onl.NewUsecase(&generatorEntity.OnlineGenerator{ProjectName: genFlags.projectName})
+		gen = onlUsecase.NewUsecase(onlRepository.NewRepository(&generatorEntity.OnlineGenerator{
+			RepoEndPoint: generatorEntity.GITHUB_REPO_ENDPOINT},
+		))
 	case OFF_MOD:
 		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
 		fmt.Println("comming soon")
@@ -66,7 +70,9 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 	genDelivery := generatorDelivery.NewDelivery(gen)
-	err = genDelivery.HandleGenerate()
+	err = genDelivery.HandleGenerate(generatorEntity.OnlineGeneratorInputEntity{
+		ProjectName: genFlags.projectName,
+	})
 }
 
 func genWithAnimation(wg *sync.WaitGroup, event chan bool) {

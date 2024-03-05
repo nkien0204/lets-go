@@ -1,13 +1,11 @@
 package generator
 
-type GeneratorBehaviors interface {
-	Generate() error
-}
+import "github.com/nkien0204/lets-go/internal/domain"
 
 type delivery struct {
-	gen GeneratorBehaviors
+	usecase domain.GeneratorUsecase
 }
 
-func NewDelivery(o GeneratorBehaviors) *delivery {
-	return &delivery{gen: o}
+func NewDelivery(u domain.GeneratorUsecase) *delivery {
+	return &delivery{usecase: u}
 }
