@@ -59,8 +59,8 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	switch genFlags.genMod {
 	case ONL_MOD:
 		gen = onlUsecase.NewUsecase(onlRepository.NewRepository(&generatorEntity.OnlineGenerator{
-			RepoEndPoint: generatorEntity.GITHUB_REPO_ENDPOINT},
-		))
+			RepoEndPoint: generatorEntity.GITHUB_REPO_ENDPOINT,
+		}))
 	case OFF_MOD:
 		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
 		fmt.Println("comming soon")

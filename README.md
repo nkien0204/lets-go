@@ -32,32 +32,14 @@ After generate successfully, you should see your project something like this:
 ├── internal
 │   ├── delivery
 │   │   ├── config
-│   │   └── generator
-│   │       └── mocks
-│   ├── entity
+│   ├── domain
+│   │   ├── entity
+│   │   │   ├── config
+│   │   └── mock
+│   ├── repository
 │   │   ├── config
-│   │   └── generator
 │   └── usecase
 │       ├── config
-│       └── generator
-│           ├── off
-│           └── onl
-└── samples
-    ├── configs
-    │   └── test
-    ├── db
-    │   ├── non_rdb
-    │   └── rdb
-    └── network
-        ├── grpc
-        ├── http_handler
-        ├── kafka
-        ├── mailclient
-        ├── rabbitmq
-        ├── sse
-        ├── tcp_handler
-        ├── udp_handler
-        └── websocket
 ```
 
 ## Special dependencies

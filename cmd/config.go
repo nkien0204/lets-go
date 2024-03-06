@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"github.com/k0kubun/pp/v3"
-	configDelivery "github.com/nkien0204/lets-go/internal/delivery/config"
-	configUsecase "github.com/nkien0204/lets-go/internal/usecase/config"
+	delivery "github.com/nkien0204/lets-go/internal/delivery/config"
+	"github.com/nkien0204/lets-go/internal/domain/entity/config"
+	repository "github.com/nkien0204/lets-go/internal/repository/config"
+	usecase "github.com/nkien0204/lets-go/internal/usecase/config"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +20,6 @@ func init() {
 }
 
 func runCfgCmd(cmd *cobra.Command, args []string) {
-	config := configDelivery.NewDelivery(configUsecase.NewConfig())
+	config := delivery.NewDelivery(usecase.NewConfig(repository.NewRepository(config.CONFIG_FILENAME)))
 	pp.Print(config.LoadConfig())
 }
