@@ -18,20 +18,23 @@ const ONL_MOD string = "onl"
 const OFF_MOD string = "off"
 
 type genFlagsModel struct {
-	projectName string
-	genMod      string
+	moduleName string
+	genMod     string
 }
 
 var genFlags = genFlagsModel{}
 
 var genCmd = &cobra.Command{
-	Use:   "gen",
+	Use:   "gen <project-name>",
 	Short: "Generate project structure",
+	Args:  cobra.ExactArgs(1),
 	Run:   runGenCmd,
 }
 
 func init() {
-	genCmd.PersistentFlags().StringVarP(&genFlags.projectName, "projectName", "p", "", "set name for project")
+	genCmd.PersistentFlags().StringVarP(
+		&genFlags.moduleName, "moduleName", "u", "", "module name (eg: github.com/nkien0204/lets-go)",
+	)
 	genCmd.PersistentFlags().StringVarP(
 		&genFlags.genMod, "mod", "m", ONL_MOD,
 		fmt.Sprintf("download online (%s) or generate offline (%s)", ONL_MOD, OFF_MOD),
@@ -43,13 +46,17 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	var err error
 
+	if len(args) == 0 {
+		return
+	}
+
 	interruptEvent := make(chan bool, 1)
 	defer func() {
-		interruptEvent <- true
-		wg.Wait()
 		if err != nil {
+			interruptEvent <- true
 			fmt.Println("error:", err.Error())
 		}
+		wg.Wait()
 	}()
 
 	wg.Add(1)
@@ -71,7 +78,8 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	}
 	genDelivery := generatorDelivery.NewDelivery(gen)
 	err = genDelivery.HandleGenerate(generatorEntity.OnlineGeneratorInputEntity{
-		ProjectName: genFlags.projectName,
+		ProjectName: args[0],
+		ModuleName:  genFlags.moduleName,
 	})
 }
 

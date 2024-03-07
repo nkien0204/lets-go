@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/config"
 	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
@@ -32,7 +33,46 @@ func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) err
 	if err := u.copyConfig(inputEntity); err != nil {
 		return err
 	}
-	return u.removeGenerator(inputEntity)
+	if err := u.removeGenerator(inputEntity); err != nil {
+		return err
+	}
+	return u.replaceProjectName(inputEntity)
+}
+
+func (u *usecase) replaceProjectName(inputEntity generator.OnlineGeneratorInputEntity) error {
+	var newName string
+	if inputEntity.ModuleName != "" {
+		newName = inputEntity.ModuleName
+	} else {
+		newName = inputEntity.ProjectName
+	}
+	return filepath.Walk(inputEntity.ProjectName, u.walkFunc(newName))
+}
+
+func (u *usecase) walkFunc(projectName string) func(path string, fi os.FileInfo, err error) error {
+	return func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if fi.IsDir() {
+			return nil
+		}
+
+		read, err := os.ReadFile(path)
+		if err != nil {
+			panic(err)
+		}
+
+		newContents := strings.Replace(string(read), generator.ORIGINAL_PROJECT_NAME, projectName, -1)
+
+		err = os.WriteFile(path, []byte(newContents), 0)
+		if err != nil {
+			panic(err)
+		}
+
+		return nil
+	}
 }
 
 func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEntity) error {
@@ -41,8 +81,6 @@ func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEnti
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_usecase_interface.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_repository_interface.go"),
-		path.Join(inputEntity.ProjectName, "go.sum"),
-		path.Join(inputEntity.ProjectName, "go.mod"),
 		path.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE),
 	}
 	removeDirNames := []string{
