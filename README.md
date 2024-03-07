@@ -33,14 +33,18 @@ After generate successfully, you should see your project something like this:
 ├── internal
 │   ├── delivery
 │   │   ├── config
+│   │   └── greeting
 │   ├── domain
 │   │   ├── entity
 │   │   │   ├── config
+│   │   │   └── greeting
 │   │   └── mock
 │   ├── repository
 │   │   ├── config
+│   │   └── greeting
 │   └── usecase
 │       ├── config
+│       └── greeting
 ```
 
 ## Special dependencies
