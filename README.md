@@ -4,7 +4,7 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 ***All you need to do is implementing your own business logic*!**.
 
 ## How to use
-Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.18+**
+Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 
 ### Install 
 *Note: Please make sure that your `$GOPATH/bin` is in `$PATH`*
@@ -22,6 +22,12 @@ lets-go gen [flags]
 -p, --projectName: name of project (required)
 ```
 *Note: `online` mod should have the internet connection for working.*
+
+Move to generated project and init Go mod:
+```bash
+cd [project-name]
+go mod init github.com/[git-username]/[project-name]
+```
 
 Run `lets-go -h` for more detail.
 

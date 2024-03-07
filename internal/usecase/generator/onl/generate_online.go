@@ -36,45 +36,31 @@ func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) err
 }
 
 func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEntity) error {
-	genCmdFilePath := path.Join(inputEntity.ProjectName, "cmd", "gen.go")
-	genDeliveryPath := path.Join(inputEntity.ProjectName, "internal", "delivery", "generator")
-	genUsecasePath := path.Join(inputEntity.ProjectName, "internal", "usecase", "generator")
-	genRepositoryPath := path.Join(inputEntity.ProjectName, "internal", "repository", "generator")
-	genEntityPath := path.Join(inputEntity.ProjectName, "internal", "domain", "entity", "generator")
-	genMockUsecasePath := path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go")
-	genDomainUsecaseFilePath := path.Join(inputEntity.ProjectName, "internal", "domain", "gen_usecase_interface.go")
-	genDomainRepositoryFilePath := path.Join(inputEntity.ProjectName, "internal", "domain", "gen_repository_interface.go")
-	samplesPath := path.Join(inputEntity.ProjectName, "samples")
-	sampleConfigFilePath := path.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE)
-	if err := os.Remove(genCmdFilePath); err != nil {
-		return err
+	removeFileNames := []string{
+		path.Join(inputEntity.ProjectName, "cmd", "gen.go"),
+		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go"),
+		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_usecase_interface.go"),
+		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_repository_interface.go"),
+		path.Join(inputEntity.ProjectName, "go.sum"),
+		path.Join(inputEntity.ProjectName, "go.mod"),
+		path.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE),
 	}
-	if err := os.Remove(sampleConfigFilePath); err != nil {
-		return err
+	removeDirNames := []string{
+		path.Join(inputEntity.ProjectName, "internal", "delivery", "generator"),
+		path.Join(inputEntity.ProjectName, "internal", "usecase", "generator"),
+		path.Join(inputEntity.ProjectName, "internal", "repository", "generator"),
+		path.Join(inputEntity.ProjectName, "internal", "domain", "entity", "generator"),
+		path.Join(inputEntity.ProjectName, "samples"),
 	}
-	if err := os.Remove(genDomainUsecaseFilePath); err != nil {
-		return err
+	for _, fileName := range removeFileNames {
+		if err := os.Remove(fileName); err != nil {
+			return err
+		}
 	}
-	if err := os.Remove(genDomainRepositoryFilePath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(genDeliveryPath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(genUsecasePath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(samplesPath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(genEntityPath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(genMockUsecasePath); err != nil {
-		return err
-	}
-	if err := os.RemoveAll(genRepositoryPath); err != nil {
-		return err
+	for _, dirName := range removeDirNames {
+		if err := os.RemoveAll(dirName); err != nil {
+			return err
+		}
 	}
 	return nil
 }
