@@ -14,20 +14,15 @@ go install github.com/nkien0204/lets-go@latest
 ### Generate project
 **Usage:**
 ```shell
-lets-go gen [flags]
+lets-go gen <project-name> [flags]
+cd <project-name> && go mod tidy
 ```
 **Flags:**
 ```bash
 -m, --mod:  download online (onl) or generate offline (off) (default "onl")
--p, --projectName: name of project (required)
+-u, --moduleName: name of module (eg: github.com/nkien0204/lets-go) 
 ```
 *Note: `online` mod should have the internet connection for working.*
-
-Move to generated project and init Go mod:
-```bash
-cd [project-name]
-go mod init github.com/[git-username]/[project-name]
-```
 
 Run `lets-go -h` for more detail.
 
