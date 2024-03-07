@@ -1,6 +1,6 @@
 module github.com/nkien0204/lets-go
 
-go 1.18
+go 1.22.1
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
