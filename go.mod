@@ -96,7 +96,7 @@ retract v1.4.8-fixbugs
 
 retract v1.4.7
 
-retract v1.4.7-fixbugs
+retract v1.4.7-fixbug
 
 retract v1.4.6
 
@@ -119,3 +119,5 @@ retract v1.3.7
 retract v1.3.6
 
 retract v1.3.5
+
+retract v1.0.0
