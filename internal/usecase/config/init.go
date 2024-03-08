@@ -8,7 +8,7 @@ type usecase struct {
 	repo domain.ConfigRepository
 }
 
-func NewConfig(repo domain.ConfigRepository) *usecase {
+func NewUsecase(repo domain.ConfigRepository) *usecase {
 	return &usecase{
 		repo: repo,
 	}

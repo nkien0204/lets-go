@@ -1,6 +1,7 @@
 package generator_test
 
 import (
+	"errors"
 	"testing"
 
 	delivery "github.com/nkien0204/lets-go/internal/delivery/generator"
@@ -10,8 +11,7 @@ import (
 	mockPackage "github.com/stretchr/testify/mock"
 )
 
-func TestGenerate(t *testing.T) {
-	// gen := mocks.NewGenerateBehaviors(t)
+func TestGenerateHappy(t *testing.T) {
 	gen := mock.NewGeneratorUsecase(t)
 	gen.On("Generate", mockPackage.AnythingOfType("generator.OnlineGeneratorInputEntity")).Return(nil)
 
@@ -19,4 +19,14 @@ func TestGenerate(t *testing.T) {
 	err := genDelivery.HandleGenerate(generator.OnlineGeneratorInputEntity{ProjectName: "test"})
 
 	assert.Nil(t, err)
+}
+
+func TestGenerateError(t *testing.T) {
+	expectError := errors.New("project name can not contain slash(/) character, consider to use -u (moduleName) flag")
+	gen := mock.NewGeneratorUsecase(t)
+
+	genDelivery := delivery.NewDelivery(gen)
+	err := genDelivery.HandleGenerate(generator.OnlineGeneratorInputEntity{ProjectName: "test/"})
+
+	assert.Equal(t, expectError, err)
 }

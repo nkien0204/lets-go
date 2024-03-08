@@ -20,6 +20,6 @@ func init() {
 }
 
 func runCfgCmd(cmd *cobra.Command, args []string) {
-	config := delivery.NewDelivery(usecase.NewConfig(repository.NewRepository(config.CONFIG_FILENAME)))
+	config := delivery.NewDelivery(usecase.NewUsecase(repository.NewRepository(config.CONFIG_FILENAME)))
 	pp.Print(config.LoadConfig())
 }
