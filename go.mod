@@ -77,3 +77,45 @@ require (
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/gorm v1.23.8
 )
+
+retract v1.6.0
+
+retract v1.5.3
+
+retract v1.5.2
+
+retract v1.5.1
+
+retract v1.5.0
+
+retract v1.4.9
+
+retract v1.4.8
+
+retract v1.4.8-fixbugs
+
+retract v1.4.7
+
+retract v1.4.7-fixbugs
+
+retract v1.4.6
+
+retract v1.4.5
+
+retract v1.4.4
+
+retract v1.4.3
+
+retract v1.4.2
+
+retract v1.4.1
+
+retract v1.4.0
+
+retract v1.3.8
+
+retract v1.3.7
+
+retract v1.3.6
+
+retract v1.3.5
