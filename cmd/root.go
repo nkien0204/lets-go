@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const APP_VERSION string = "v1.7.0"
+const APP_VERSION string = "v1.7.1"
 
 var cfgFile string
 

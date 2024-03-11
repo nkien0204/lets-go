@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/k0kubun/pp/v3"
 	delivery "github.com/nkien0204/lets-go/internal/delivery/config"
 	"github.com/nkien0204/lets-go/internal/domain/entity/config"
@@ -20,6 +22,18 @@ func init() {
 }
 
 func runCfgCmd(cmd *cobra.Command, args []string) {
-	config := delivery.NewDelivery(usecase.NewUsecase(repository.NewRepository(config.CONFIG_FILENAME)))
+	config := delivery.NewDelivery(usecase.NewUsecase(repository.NewRepository(&fileReader{fileName: config.CONFIG_FILENAME})))
 	pp.Print(config.LoadConfig())
+}
+
+type fileReader struct {
+	fileName string
+}
+
+func (f *fileReader) ReadFile() ([]byte, error) {
+	return os.ReadFile(f.fileName)
+}
+
+func (f *fileReader) GetFileName() string {
+	return f.fileName
 }
