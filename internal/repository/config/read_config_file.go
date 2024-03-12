@@ -2,14 +2,13 @@ package config
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/config"
 	"gopkg.in/yaml.v2"
 )
 
 func (repo *repository) ReadConfigFile() (result config.ConfigFileReadResponseEntity, err error) {
-	buf, err := os.ReadFile(repo.fileName)
+	buf, err := repo.fileReader.ReadFile()
 	if err != nil {
 		return result, err
 	}
@@ -17,7 +16,7 @@ func (repo *repository) ReadConfigFile() (result config.ConfigFileReadResponseEn
 	c := &config.Cfg{}
 	err = yaml.Unmarshal(buf, c)
 	if err != nil {
-		return result, fmt.Errorf("in file %q: %w", repo.fileName, err)
+		return result, fmt.Errorf("in file %q: %w", repo.fileReader.GetFileName(), err)
 	}
 	result.Config = c
 

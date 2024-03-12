@@ -1,11 +1,16 @@
 package config
 
-type repository struct {
-	fileName string
+type FileReaderInterface interface {
+	ReadFile() ([]byte, error)
+	GetFileName() string
 }
 
-func NewRepository(fileName string) *repository {
+type repository struct {
+	fileReader FileReaderInterface
+}
+
+func NewRepository(reader FileReaderInterface) *repository {
 	return &repository{
-		fileName: fileName,
+		fileReader: reader,
 	}
 }
