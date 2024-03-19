@@ -50,10 +50,10 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	interruptEvent := make(chan bool, 1)
+	interruptEvent := make(chan struct{})
 	defer func() {
 		if err != nil {
-			interruptEvent <- true
+			close(interruptEvent)
 			fmt.Println("error:", err.Error())
 		}
 		wg.Wait()
@@ -83,14 +83,16 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	})
 }
 
-func genWithAnimation(wg *sync.WaitGroup, event chan bool) {
+func genWithAnimation(wg *sync.WaitGroup, event chan struct{}) {
 	defer wg.Done()
 	for i := 0; i <= 100; i += 5 {
-		output := fmt.Sprintf("generating...%d%%", i)
-		fmt.Print("\r", output)
-		time.Sleep(50 * time.Millisecond)
-		if len(event) == cap(event) {
-			break
+		select {
+		case <-event:
+			return
+		default:
+			output := fmt.Sprintf("generating...%d%%", i)
+			fmt.Print("\r", output)
+			time.Sleep(50 * time.Millisecond)
 		}
 	}
 	fmt.Println()
