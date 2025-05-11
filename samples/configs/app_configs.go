@@ -9,7 +9,7 @@ import (
 )
 
 const CONFIG_FILENAME string = "config.yaml"
-const CONFIG_FILENAME_SAMPLE string = "config-sample.yaml"
+const CONFIG_FILENAME_SAMPLE string = "config_sample.yaml"
 
 type Cfg struct {
 	GrpcServer     GrpcServerConfig     `yaml:"grpc_server"`
