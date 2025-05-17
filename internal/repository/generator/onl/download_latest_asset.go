@@ -40,7 +40,6 @@ func (repo *repository) DownloadLatestAsset(
 		f.Close()
 		os.Remove(zipFileName)
 		if err := os.Rename(unZipDir, requestEntity.ProjectName); err != nil {
-			fmt.Println("error: ", err)
 			os.RemoveAll(unZipDir)
 		}
 	}()

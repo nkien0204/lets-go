@@ -54,7 +54,7 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	defer func() {
 		if err != nil {
 			close(interruptEvent)
-			fmt.Println("error:", err.Error())
+			fmt.Errorf("error: %s", err.Error())
 		}
 		wg.Wait()
 	}()
