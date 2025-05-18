@@ -6,11 +6,14 @@ import (
 	"sync"
 	"time"
 
+	"go.uber.org/zap"
+
 	generatorDelivery "github.com/nkien0204/lets-go/internal/delivery/generator"
 	"github.com/nkien0204/lets-go/internal/domain"
 	generatorEntity "github.com/nkien0204/lets-go/internal/domain/entity/generator"
 	onlRepository "github.com/nkien0204/lets-go/internal/repository/generator/onl"
 	onlUsecase "github.com/nkien0204/lets-go/internal/usecase/generator/onl"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
 )
 
@@ -43,6 +46,7 @@ func init() {
 }
 
 func runGenCmd(cmd *cobra.Command, args []string) {
+	logger := rolling.New()
 	var wg sync.WaitGroup
 	var err error
 
@@ -54,7 +58,11 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	defer func() {
 		if err != nil {
 			close(interruptEvent)
-			fmt.Println("error:", err.Error())
+			logger.Error("something went wrong", zap.Error(err))
+			fmt.Println("An error occurred: ", err.Error())
+		} else {
+			logger.Info("generated successfully", zap.String("project: ", args[0]))
+			fmt.Println("Generated successfully!")
 		}
 		wg.Wait()
 	}()
@@ -90,7 +98,7 @@ func genWithAnimation(wg *sync.WaitGroup, event chan struct{}) {
 		case <-event:
 			return
 		default:
-			output := fmt.Sprintf("generating...%d%%", i)
+			output := fmt.Sprintf("Generating...%d%%", i)
 			fmt.Print("\r", output)
 			time.Sleep(50 * time.Millisecond)
 		}
