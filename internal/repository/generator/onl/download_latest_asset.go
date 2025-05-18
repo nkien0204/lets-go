@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
+	"github.com/nkien0204/rolling-logger/rolling"
+	"go.uber.org/zap"
 )
 
 func (repo *repository) DownloadLatestAsset(
@@ -40,6 +42,7 @@ func (repo *repository) DownloadLatestAsset(
 		f.Close()
 		os.Remove(zipFileName)
 		if err := os.Rename(unZipDir, requestEntity.ProjectName); err != nil {
+			rolling.New().Error("failed to rename directory", zap.String("directory", unZipDir))
 			os.RemoveAll(unZipDir)
 		}
 	}()
