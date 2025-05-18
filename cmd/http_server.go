@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	greetingDelivery "github.com/nkien0204/lets-go/internal/delivery/greeting"
 	greetingRepository "github.com/nkien0204/lets-go/internal/repository/greeting"
 	greetingUsecase "github.com/nkien0204/lets-go/internal/usecase/greeting"
+	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 const HTTP_DEFAULT_PORT string = "8991"
@@ -36,8 +37,10 @@ func runHttpServerCmd(cmd *cobra.Command, args []string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", delivery.Greeting())
 
+	log := rolling.New()
+	log.Info("http server is running at port", zap.String("port", hsFlags.port))
 	handler := cors.Default().Handler(mux)
 	if err := http.ListenAndServe(fmt.Sprint(":", hsFlags.port), handler); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 }
