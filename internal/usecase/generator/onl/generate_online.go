@@ -11,15 +11,19 @@ import (
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/config"
 	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
+	"github.com/nkien0204/rolling-logger/rolling"
+	"go.uber.org/zap"
 )
 
 func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) error {
+	logger := rolling.New()
 	if inputEntity.ProjectName == "" {
-		return errors.New("project name must be identified, please use -p flag")
+		return errors.New("project name must be identified")
 	}
 
 	latestVersionEntity, err := u.repo.GetRepoLatestVersion()
 	if err != nil {
+		logger.Error("failed to get latest version", zap.Error(err))
 		return err
 	}
 
@@ -27,13 +31,17 @@ func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) err
 		ProjectName: inputEntity.ProjectName,
 		TagName:     latestVersionEntity.TagName,
 	}); err != nil {
+		logger.Error("failed to download latest asset", zap.Error(err))
 		return err
 	}
 
 	if err := u.copyConfig(inputEntity); err != nil {
+		logger.Error("failed to copy config", zap.Error(err))
 		return err
 	}
+
 	if err := u.removeGenerator(inputEntity); err != nil {
+		logger.Error("failed to removeGenerator", zap.Error(err))
 		return err
 	}
 	return u.replaceProjectName(inputEntity)
@@ -105,9 +113,11 @@ func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEnti
 }
 
 func (u *usecase) copyConfig(inputEntity generator.OnlineGeneratorInputEntity) error {
+	logger := rolling.New()
 	var cmd *exec.Cmd
 	src := filepath.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE)
 	dst := filepath.Join(inputEntity.ProjectName, config.CONFIG_FILENAME)
+	logger.Info("copy config", zap.String("src", src), zap.String("dst", dst))
 
 	switch runtime.GOOS {
 	case "windows":
