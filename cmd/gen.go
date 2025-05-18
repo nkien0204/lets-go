@@ -61,7 +61,7 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 			logger.Error("something went wrong", zap.Error(err))
 			fmt.Println("An error occurred: ", err.Error())
 		} else {
-			logger.Info("generated successfully", zap.String("project: ", args[0]))
+			logger.Info("generated successfully", zap.String("project", args[0]))
 			fmt.Println("Generated successfully!")
 		}
 		wg.Wait()
