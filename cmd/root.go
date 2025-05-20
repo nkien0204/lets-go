@@ -7,8 +7,6 @@ import (
 
 const APP_VERSION string = "v1.7.2"
 
-var cfgFile string
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:               "lets-go",
