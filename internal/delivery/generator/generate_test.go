@@ -13,10 +13,11 @@ import (
 
 func TestGenerateHappy(t *testing.T) {
 	gen := mock.NewGeneratorUsecase(t)
-	gen.On("Generate", mockPackage.AnythingOfType("generator.OnlineGeneratorInputEntity")).Return(nil)
+	gen.On("Generate", mockPackage.AnythingOfType("generator.GeneratorInputEntity")).Return(nil)
 
-	genDelivery := delivery.NewDelivery(gen)
-	err := genDelivery.HandleGenerate(generator.OnlineGeneratorInputEntity{ProjectName: "test"})
+	genDelivery := delivery.NewDelivery()
+	genDelivery.SetOnlineUsecase(gen)
+	err := genDelivery.HandleOnlGenerate(generator.GeneratorInputEntity{ProjectName: "test"})
 
 	assert.Nil(t, err)
 }
@@ -25,8 +26,9 @@ func TestGenerateError(t *testing.T) {
 	expectError := errors.New("project name can not contain slash(/) character, consider to use -u (moduleName) flag")
 	gen := mock.NewGeneratorUsecase(t)
 
-	genDelivery := delivery.NewDelivery(gen)
-	err := genDelivery.HandleGenerate(generator.OnlineGeneratorInputEntity{ProjectName: "test/"})
+	genDelivery := delivery.NewDelivery()
+	genDelivery.SetOnlineUsecase(gen)
+	err := genDelivery.HandleOnlGenerate(generator.GeneratorInputEntity{ProjectName: "test/"})
 
 	assert.Equal(t, expectError, err)
 }

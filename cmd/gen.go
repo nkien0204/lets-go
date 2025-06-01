@@ -9,9 +9,10 @@ import (
 	"go.uber.org/zap"
 
 	generatorDelivery "github.com/nkien0204/lets-go/internal/delivery/generator"
-	"github.com/nkien0204/lets-go/internal/domain"
 	generatorEntity "github.com/nkien0204/lets-go/internal/domain/entity/generator"
+	offRepository "github.com/nkien0204/lets-go/internal/repository/generator/off"
 	onlRepository "github.com/nkien0204/lets-go/internal/repository/generator/onl"
+	offUsecase "github.com/nkien0204/lets-go/internal/usecase/generator/off"
 	onlUsecase "github.com/nkien0204/lets-go/internal/usecase/generator/onl"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/spf13/cobra"
@@ -70,25 +71,28 @@ func runGenCmd(cmd *cobra.Command, args []string) {
 	wg.Add(1)
 	go genWithAnimation(&wg, interruptEvent)
 
-	var gen domain.GeneratorUsecase
+	genDelivery := generatorDelivery.NewDelivery()
 	switch genFlags.genMod {
 	case ONL_MOD:
-		gen = onlUsecase.NewUsecase(onlRepository.NewRepository(&generatorEntity.OnlineGenerator{
+		genUsecase := onlUsecase.NewUsecase(onlRepository.NewRepository(&generatorEntity.OnlineGenerator{
 			RepoEndPoint: generatorEntity.GITHUB_REPO_ENDPOINT,
 		}))
+		genDelivery.SetOnlineUsecase(genUsecase)
+		err = genDelivery.HandleOnlGenerate(generatorEntity.GeneratorInputEntity{
+			ProjectName: args[0],
+			ModuleName:  genFlags.moduleName,
+		})
 	case OFF_MOD:
-		// gen = &off.OfflineGenerator{ProjectName: genFlags.projectName}
-		fmt.Println("comming soon")
-		return
+		genUsecase := offUsecase.NewUsecase(offRepository.NewRepository(&generatorEntity.OfflineGenerator{}))
+		genDelivery.SetOfflineUsecase(genUsecase)
+		err = genDelivery.HandleOffGenerate(generatorEntity.GeneratorInputEntity{
+			ProjectName: args[0],
+			ModuleName:  genFlags.moduleName,
+		})
 	default:
 		err = errors.New("flag \"mod\" is not match")
 		return
 	}
-	genDelivery := generatorDelivery.NewDelivery(gen)
-	err = genDelivery.HandleGenerate(generatorEntity.OnlineGeneratorInputEntity{
-		ProjectName: args[0],
-		ModuleName:  genFlags.moduleName,
-	})
 }
 
 func genWithAnimation(wg *sync.WaitGroup, event chan struct{}) {

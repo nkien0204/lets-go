@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (onl *delivery) HandleGenerate(inputEntity generator.OnlineGeneratorInputEntity) error {
+func (onl *delivery) HandleOnlGenerate(inputEntity generator.GeneratorInputEntity) error {
 	logger := rolling.New()
 	if strings.Contains(inputEntity.ProjectName, "/") {
 		return errors.New("project name can not contain slash(/) character, consider to use -u (moduleName) flag")
@@ -37,7 +37,7 @@ func (onl *delivery) HandleGenerate(inputEntity generator.OnlineGeneratorInputEn
 	if inputEntity.ModuleName == "" {
 		inputEntityTemp.ModuleName = inputEntity.ProjectName
 	}
-	err = onl.usecase.Generate(inputEntityTemp)
+	err = onl.onlUsecase.Generate(inputEntityTemp)
 	if err != nil {
 		logger.Error("generate project failed", zap.String("projectName", inputEntity.ProjectName), zap.Error(err))
 		return err

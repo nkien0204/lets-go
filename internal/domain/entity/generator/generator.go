@@ -8,7 +8,9 @@ type OnlineGenerator struct {
 	RepoEndPoint string
 }
 
-type OnlineGeneratorInputEntity struct {
+type OfflineGenerator struct{}
+
+type GeneratorInputEntity struct {
 	ProjectName string
 	ModuleName  string
 }
