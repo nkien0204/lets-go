@@ -1,7 +1,0 @@
-package greeting
-
-import "{{ .ModuleName }}/internal/domain/entity/greeting"
-
-func (u *usecase) Greeting() (greeting.GreetingResponseEntity, error) {
-	return u.repo.SayHello()
-}
