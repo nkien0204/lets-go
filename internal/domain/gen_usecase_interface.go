@@ -5,5 +5,5 @@ import (
 )
 
 type GeneratorUsecase interface {
-	Generate(generator.OnlineGeneratorInputEntity) error
+	Generate(generator.GeneratorInputEntity) error
 }

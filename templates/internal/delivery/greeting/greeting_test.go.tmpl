@@ -1,0 +1,27 @@
+package greeting_test
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	delivery "{{ .ModuleName }}/internal/delivery/greeting"
+	"{{ .ModuleName }}/internal/domain/entity/greeting"
+	"{{ .ModuleName }}/internal/domain/mock"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestGreetingHappy(t *testing.T) {
+	expectMsg := "hello, world!"
+	usecase := mock.NewGreetingUsecase(t)
+	usecase.On("Greeting").Return(greeting.GreetingResponseEntity{Msg: expectMsg}, nil)
+
+	w := httptest.ResponseRecorder{}
+
+	delivery := delivery.NewDelivery(usecase)
+	handler := delivery.Greeting()
+	handler(&w, nil)
+	assert.NotNil(t, w)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+}

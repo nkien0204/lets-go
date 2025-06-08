@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) error {
+func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 	logger := rolling.New()
 	if inputEntity.ProjectName == "" {
 		return errors.New("project name must be identified")
@@ -47,7 +47,7 @@ func (u *usecase) Generate(inputEntity generator.OnlineGeneratorInputEntity) err
 	return u.replaceProjectName(inputEntity)
 }
 
-func (u *usecase) replaceProjectName(inputEntity generator.OnlineGeneratorInputEntity) error {
+func (u *usecase) replaceProjectName(inputEntity generator.GeneratorInputEntity) error {
 	var newName string
 	if inputEntity.ModuleName != "" {
 		newName = inputEntity.ModuleName
@@ -83,7 +83,7 @@ func (u *usecase) walkFunc(projectName string) func(path string, fi os.FileInfo,
 	}
 }
 
-func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEntity) error {
+func (u *usecase) removeGenerator(inputEntity generator.GeneratorInputEntity) error {
 	removeFileNames := []string{
 		path.Join(inputEntity.ProjectName, "cmd", "gen.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go"),
@@ -112,7 +112,7 @@ func (u *usecase) removeGenerator(inputEntity generator.OnlineGeneratorInputEnti
 	return nil
 }
 
-func (u *usecase) copyConfig(inputEntity generator.OnlineGeneratorInputEntity) error {
+func (u *usecase) copyConfig(inputEntity generator.GeneratorInputEntity) error {
 	logger := rolling.New()
 	var cmd *exec.Cmd
 	src := filepath.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE)
