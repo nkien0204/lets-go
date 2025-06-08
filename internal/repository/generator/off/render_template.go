@@ -25,6 +25,10 @@ func (r *repository) RenderTemplate(inputEntity generator.GeneratorInputEntity) 
 
 func (r *repository) renderTemplate(templatePath string, data interface{}, outputPath string) error {
 	logger := rolling.New()
+	if filepath.Base(templatePath) != generator.OFF_TEMP_DIR_NAME {
+		templatePath = filepath.Join("templates", templatePath)
+	}
+
 	tmpl, err := template.ParseFS(tmplFS, templatePath)
 	if err != nil {
 		logger.Error("parse files failed", zap.Error(err))

@@ -50,7 +50,7 @@ func (u *usecase) createChildDirectories(inputEntity generator.GeneratorInputEnt
 			if err := u.repo.RenderTemplate(generator.GeneratorInputEntity{
 				ProjectName:    inputEntity.ProjectName,
 				ModuleName:     inputEntity.ModuleName,
-				TempFilePath:   filepath.Join("templates", path, key),
+				TempFilePath:   filepath.Join(generator.OFF_TEMP_DIR_NAME, path, key),
 				TargetFilePath: filepath.Join(inputEntity.ProjectName, absFileName),
 			}); err != nil {
 				return err
