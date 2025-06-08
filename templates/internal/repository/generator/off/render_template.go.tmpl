@@ -3,7 +3,6 @@ package off
 import (
 	"html/template"
 	"os"
-	"path/filepath"
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
 	"github.com/nkien0204/rolling-logger/rolling"
@@ -25,10 +24,7 @@ func (r *repository) renderTemplate(templatePath string, data interface{}, outpu
 		logger.Error("parse files failed", zap.Error(err))
 		return err
 	}
-	dir := filepath.Dir(outputPath)
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return err
-	}
+	logger.Debug("parse files ok")
 	out, err := os.Create(outputPath)
 	if err != nil {
 		return err

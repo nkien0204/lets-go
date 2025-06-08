@@ -31,8 +31,7 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 		return fmt.Errorf("failed to create project directory: %s", err.Error())
 	}
 
-	err = u.createChildDirectories(inputEntity.ProjectName, "", generator.GetProjectTreeMap())
-	return err
+	return u.createChildDirectories(inputEntity.ProjectName, inputEntity.ProjectName, generator.GetProjectTreeMap())
 }
 
 func (u *usecase) createChildDirectories(projectName, path string, structureMap map[string]any) error {
@@ -41,8 +40,8 @@ func (u *usecase) createChildDirectories(projectName, path string, structureMap 
 			absFileName := filepath.Join(path, fileName)
 			if err := u.repo.RenderTemplate(generator.GeneratorInputEntity{
 				ProjectName:    projectName,
-				TempFilePath:   filepath.Join("templates", path, key),
-				TargetFilePath: filepath.Join(projectName, absFileName),
+				TempFilePath:   key,
+				TargetFilePath: absFileName,
 			}); err != nil {
 				return err
 			}

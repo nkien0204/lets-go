@@ -1,0 +1,30 @@
+package cmd
+
+import (
+	"github.com/nkien0204/rolling-logger/rolling"
+	"github.com/spf13/cobra"
+)
+
+const APP_VERSION string = "v1.7.2"
+
+// rootCmd represents the base command when called without any subcommands
+var rootCmd = &cobra.Command{
+	Use:               "lets-go",
+	Short:             "lets-go command line tool",
+	TraverseChildren:  true,
+	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	logger := rolling.New()
+	if err := rootCmd.Execute(); err != nil {
+		logger.Fatal(err.Error())
+	}
+}
+
+func init() {
+	cobra.OnInitialize()
+	rootCmd.Version = APP_VERSION
+}

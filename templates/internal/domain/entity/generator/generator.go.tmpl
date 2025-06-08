@@ -6,7 +6,7 @@ const TEMP_DIR_NAME string = "lets-go-gen"
 
 // Structure to hold the project tree map
 var projectTreeMap = map[string]any{
-	"cmd": map[string]any{
+	"cmd": map[string]string{
 		"root.go.tmpl":        "root.go",
 		"http_server.go.tmpl": "http_server.go",
 		"config.go.tmpl":      "config.go",
@@ -26,16 +26,14 @@ var projectTreeMap = map[string]any{
 		},
 		"domain": map[string]any{
 			"entity": map[string]any{
-				"config": map[string]any{
-					"config.go.tmpl":     "config.go",
-					"config_dto.go.tmpl": "config_dto.go",
-				},
-				"greeting": map[string]any{
-					"greeting_dto.go.tmpl": "greeting_dto.go",
-				},
+				"config.go.tmpl":     "config.go",
+				"config_dto.go.tmpl": "config_dto.go",
 			},
-			"repository_interface.go.tmpl": "repository_interface.go",
-			"usecase_interface.go.tmpl":    "usecase_interface.go",
+			"greeting": map[string]any{
+				"greeting_dto.go.tmpl": "greeting_dto.go",
+			},
+			"repo_interface.go.tmpl":    "repository_interface.go",
+			"usecase_interface.go.tmpl": "usecase_interface.go",
 		},
 		"repository": map[string]any{
 			"config": map[string]any{
@@ -62,15 +60,15 @@ var projectTreeMap = map[string]any{
 			},
 		},
 	},
-	".gitignore.tmpl":       ".gitignore",
-	"code_coverage.sh.tmpl": "code_coverage.sh",
-	"config.yaml.tmpl":      "config.yaml",
-	"gen_mock_test.sh.tmpl": "gen_mock_test.sh",
-	"go.mod.tmpl":           "go.mod",
-	"go.sum.tmpl":           "go.sum",
-	"LICENSE.tmpl":          "LICENSE",
-	"main.go.tmpl":          "main.go",
-	"README.md.tmpl":        "README.md",
+	"gitignore.tmpl":     ".gitignore",
+	"code_coverage.tmpl": "code_coverage.sh",
+	"config.tmpl":        "config.yaml",
+	"gen_mock_test.tmpl": "gen_mock_test.sh",
+	"gomod.tmpl":         "go.mod",
+	"gosum.tmpl":         "go.sum",
+	"LICENSE.tmpl":       "LICENSE",
+	"main.tmpl":          "main.go",
+	"README.tmpl":        "README.md",
 }
 
 func GetProjectTreeMap() map[string]any {
