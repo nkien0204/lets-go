@@ -2,6 +2,7 @@ package off
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -15,7 +16,6 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 	if !u.isValidProjectName(inputEntity.ProjectName) {
 		return fmt.Errorf("invalid project name: %s", inputEntity.ProjectName)
 	}
-	rolling.New().Debug("module name", zap.String("module name", inputEntity.ModuleName))
 	if inputEntity.ModuleName == "" {
 		inputEntity.ModuleName = inputEntity.ProjectName
 	}
@@ -24,9 +24,10 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 	}
 
 	var err error
+	var fileInfo fs.FileInfo
 	defer func() {
-		// rollback if got any error
-		if err != nil {
+		// rollback if got any error except getting error of root directory already exist
+		if err != nil && !fileInfo.IsDir() {
 			if err := os.RemoveAll(inputEntity.ProjectName); err != nil {
 				rolling.New().Error("rollback failed", zap.Error(err))
 			}
@@ -34,7 +35,7 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 	}()
 
 	// create root directory for the project
-	if err = u.createDir(inputEntity.ProjectName); err != nil {
+	if fileInfo, err = u.createDir(inputEntity.ProjectName); err != nil {
 		return fmt.Errorf("failed to create project directory: %s", err.Error())
 	}
 
@@ -66,14 +67,14 @@ func (u *usecase) createChildDirectories(inputEntity generator.GeneratorInputEnt
 	return nil
 }
 
-func (u *usecase) createDir(dirName string) error {
+func (u *usecase) createDir(dirName string) (fs.FileInfo, error) {
 	info, err := os.Stat(dirName)
 	if os.IsNotExist(err) {
-		return os.Mkdir(dirName, 0755)
+		return info, os.Mkdir(dirName, 0755)
 	} else if err == nil && info.IsDir() {
-		return fmt.Errorf("directory already exists: %s", dirName)
+		return info, fmt.Errorf("directory already exists: %s", dirName)
 	} else {
-		return fmt.Errorf("error checking directory: %s", err.Error())
+		return info, fmt.Errorf("error checking directory: %s", err.Error())
 	}
 }
 
