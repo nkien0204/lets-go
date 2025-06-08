@@ -37,7 +37,7 @@ var genCmd = &cobra.Command{
 
 func init() {
 	genCmd.PersistentFlags().StringVarP(
-		&genFlags.moduleName, "moduleName", "u", "<project-name>", "module name (e.g: github.com/nkien0204/lets-go)",
+		&genFlags.moduleName, "moduleName", "u", "", "module name (e.g: github.com/nkien0204/lets-go)",
 	)
 	genCmd.PersistentFlags().StringVarP(
 		&genFlags.genMod, "mod", "m", OFF_MOD,

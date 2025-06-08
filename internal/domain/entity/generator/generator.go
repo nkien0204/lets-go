@@ -3,6 +3,7 @@ package generator
 const GITHUB_REPO_ENDPOINT string = "https://api.github.com/repos/nkien0204/lets-go"
 const ORIGINAL_PROJECT_NAME string = "github.com/nkien0204/lets-go"
 const TEMP_DIR_NAME string = "lets-go-gen"
+const OFF_TEMP_DIR_NAME string = "templates"
 
 // Structure to hold the project tree map
 var projectTreeMap = map[string]any{

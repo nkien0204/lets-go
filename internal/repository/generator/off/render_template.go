@@ -1,14 +1,18 @@
 package off
 
 import (
-	"html/template"
+	"embed"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"go.uber.org/zap"
 )
+
+//go:embed templates/*
+var tmplFS embed.FS
 
 func (r *repository) RenderTemplate(inputEntity generator.GeneratorInputEntity) error {
 	tempVars := map[string]interface{}{
@@ -21,7 +25,7 @@ func (r *repository) RenderTemplate(inputEntity generator.GeneratorInputEntity) 
 
 func (r *repository) renderTemplate(templatePath string, data interface{}, outputPath string) error {
 	logger := rolling.New()
-	tmpl, err := template.ParseFiles(templatePath)
+	tmpl, err := template.ParseFS(tmplFS, templatePath)
 	if err != nil {
 		logger.Error("parse files failed", zap.Error(err))
 		return err
