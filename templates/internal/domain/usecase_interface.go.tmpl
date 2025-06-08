@@ -1,0 +1,14 @@
+package domain
+
+import (
+	"{{ .ModuleName }}/internal/domain/entity/config"
+	"{{ .ModuleName }}/internal/domain/entity/greeting"
+)
+
+type ConfigUsecase interface {
+	LoadConfig() *config.Cfg
+}
+
+type GreetingUsecase interface {
+	Greeting() (greeting.GreetingResponseEntity, error)
+}

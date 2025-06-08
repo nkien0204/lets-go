@@ -1,0 +1,46 @@
+package cmd
+
+import (
+	"fmt"
+	"net/http"
+
+	greetingDelivery "{{ .ModuleName }}/internal/delivery/greeting"
+	greetingRepository "{{ .ModuleName }}/internal/repository/greeting"
+	greetingUsecase "{{ .ModuleName }}/internal/usecase/greeting"
+	"github.com/nkien0204/rolling-logger/rolling"
+	"github.com/rs/cors"
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+)
+
+const HTTP_DEFAULT_PORT string = "8991"
+
+type hsFlagsModel struct {
+	port string
+}
+
+var hsFlags = hsFlagsModel{}
+
+var hsCmd = &cobra.Command{
+	Use:   "hs",
+	Short: "Run a http server",
+	Run:   runHttpServerCmd,
+}
+
+func init() {
+	hsCmd.PersistentFlags().StringVarP(&hsFlags.port, "port", "p", HTTP_DEFAULT_PORT, "listen port")
+	rootCmd.AddCommand(hsCmd)
+}
+
+func runHttpServerCmd(cmd *cobra.Command, args []string) {
+	delivery := greetingDelivery.NewDelivery(greetingUsecase.NewUsecase(greetingRepository.NewRepository()))
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", delivery.Greeting())
+
+	log := rolling.New()
+	log.Info("http server is running at port", zap.String("port", hsFlags.port))
+	handler := cors.Default().Handler(mux)
+	if err := http.ListenAndServe(fmt.Sprint(":", hsFlags.port), handler); err != nil {
+		log.Fatal(err.Error())
+	}
+}
