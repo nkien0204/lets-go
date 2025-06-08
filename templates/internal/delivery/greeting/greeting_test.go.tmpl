@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	delivery "github.com/nkien0204/lets-go/internal/delivery/greeting"
-	"github.com/nkien0204/lets-go/internal/domain/entity/greeting"
-	"github.com/nkien0204/lets-go/internal/domain/mock"
+	delivery "{{ .ModuleName }}/internal/delivery/greeting"
+	"{{ .ModuleName }}/internal/domain/entity/greeting"
+	"{{ .ModuleName }}/internal/domain/mock"
 	"github.com/stretchr/testify/assert"
 )
 

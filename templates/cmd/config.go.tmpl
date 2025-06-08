@@ -4,10 +4,10 @@ import (
 	"os"
 
 	"github.com/k0kubun/pp/v3"
-	delivery "github.com/nkien0204/lets-go/internal/delivery/config"
-	"github.com/nkien0204/lets-go/internal/domain/entity/config"
-	repository "github.com/nkien0204/lets-go/internal/repository/config"
-	usecase "github.com/nkien0204/lets-go/internal/usecase/config"
+	delivery "{{ .ModuleName }}/internal/delivery/config"
+	"{{ .ModuleName }}/internal/domain/entity/config"
+	repository "{{ .ModuleName }}/internal/repository/config"
+	usecase "{{ .ModuleName }}/internal/usecase/config"
 	"github.com/spf13/cobra"
 )
 

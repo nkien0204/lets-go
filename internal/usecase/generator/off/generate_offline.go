@@ -12,8 +12,14 @@ import (
 )
 
 func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
-	if !u.isValidName(inputEntity.ProjectName) {
+	if !u.isValidProjectName(inputEntity.ProjectName) {
 		return fmt.Errorf("invalid project name: %s", inputEntity.ProjectName)
+	}
+	if inputEntity.ModuleName == "" {
+		inputEntity.ModuleName = inputEntity.ProjectName
+	}
+	if !u.isValidModuleName(inputEntity.ModuleName) {
+		return fmt.Errorf("invalid module name: %s", inputEntity.ModuleName)
 	}
 
 	var err error
@@ -31,24 +37,25 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 		return fmt.Errorf("failed to create project directory: %s", err.Error())
 	}
 
-	err = u.createChildDirectories(inputEntity.ProjectName, "", generator.GetProjectTreeMap())
+	err = u.createChildDirectories(inputEntity, "", generator.GetProjectTreeMap())
 	return err
 }
 
-func (u *usecase) createChildDirectories(projectName, path string, structureMap map[string]any) error {
+func (u *usecase) createChildDirectories(inputEntity generator.GeneratorInputEntity, path string, structureMap map[string]any) error {
 	for key, value := range structureMap {
 		if fileName, ok := value.(string); ok {
 			absFileName := filepath.Join(path, fileName)
 			if err := u.repo.RenderTemplate(generator.GeneratorInputEntity{
-				ProjectName:    projectName,
+				ProjectName:    inputEntity.ProjectName,
+				ModuleName:     inputEntity.ModuleName,
 				TempFilePath:   filepath.Join("templates", path, key),
-				TargetFilePath: filepath.Join(projectName, absFileName),
+				TargetFilePath: filepath.Join(inputEntity.ProjectName, absFileName),
 			}); err != nil {
 				return err
 			}
 		} else if childStructureMap, ok := value.(map[string]any); ok {
 			absPath := filepath.Join(path, key)
-			if err := u.createChildDirectories(projectName, absPath, childStructureMap); err != nil {
+			if err := u.createChildDirectories(inputEntity, absPath, childStructureMap); err != nil {
 				return err
 			}
 		} else {
@@ -69,7 +76,11 @@ func (u *usecase) createDir(dirName string) error {
 	}
 }
 
-func (u *usecase) isValidName(name string) bool {
+func (u *usecase) isValidProjectName(name string) bool {
 	validName := regexp.MustCompile(`^[a-zA-Z0-9_.-]+$`)
 	return validName.MatchString(name)
+}
+
+func (u *usecase) isValidModuleName(name string) bool {
+	return true
 }

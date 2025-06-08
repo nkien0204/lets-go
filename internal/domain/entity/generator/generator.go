@@ -84,8 +84,8 @@ type OnlineGenerator struct {
 type OfflineGenerator struct{}
 
 type GeneratorInputEntity struct {
-	ProjectName    string
-	ModuleName     string
+	ProjectName    string // used to create the directory structure
+	ModuleName     string // used to create the go.mod file, package import paths, etc. (e.g., github.com/nkien0204/lets-go)
 	TempFilePath   string
 	TargetFilePath string
 }

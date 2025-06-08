@@ -13,6 +13,7 @@ import (
 func (r *repository) RenderTemplate(inputEntity generator.GeneratorInputEntity) error {
 	tempVars := map[string]interface{}{
 		"ProjectName": inputEntity.ProjectName,
+		"ModuleName":  inputEntity.ModuleName,
 	}
 
 	return r.renderTemplate(inputEntity.TempFilePath, tempVars, inputEntity.TargetFilePath)

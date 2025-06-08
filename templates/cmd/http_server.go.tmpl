@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	greetingDelivery "github.com/nkien0204/lets-go/internal/delivery/greeting"
-	greetingRepository "github.com/nkien0204/lets-go/internal/repository/greeting"
-	greetingUsecase "github.com/nkien0204/lets-go/internal/usecase/greeting"
+	greetingDelivery "{{ .ModuleName }}/internal/delivery/greeting"
+	greetingRepository "{{ .ModuleName }}/internal/repository/greeting"
+	greetingUsecase "{{ .ModuleName }}/internal/usecase/greeting"
 	"github.com/nkien0204/rolling-logger/rolling"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
