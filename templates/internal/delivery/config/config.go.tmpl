@@ -1,9 +1,0 @@
-package config
-
-import (
-	"{{ .ModuleName }}/internal/domain/entity/config"
-)
-
-func (c *delivery) LoadConfig() *config.Cfg {
-	return c.usecase.LoadConfig()
-}
