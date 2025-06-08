@@ -15,6 +15,7 @@ func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
 	if !u.isValidProjectName(inputEntity.ProjectName) {
 		return fmt.Errorf("invalid project name: %s", inputEntity.ProjectName)
 	}
+	rolling.New().Debug("module name", zap.String("module name", inputEntity.ModuleName))
 	if inputEntity.ModuleName == "" {
 		inputEntity.ModuleName = inputEntity.ProjectName
 	}
