@@ -1,0 +1,14 @@
+package domain
+
+import (
+	"{{ .ModuleName }}/internal/domain/entity/config"
+	"{{ .ModuleName }}/internal/domain/entity/greeting"
+)
+
+type ConfigRepository interface {
+	ReadConfigFile() (config.ConfigFileReadResponseEntity, error)
+}
+
+type GreetingRepository interface {
+	SayHello() (greeting.GreetingResponseEntity, error)
+}
