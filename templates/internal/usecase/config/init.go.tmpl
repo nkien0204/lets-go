@@ -1,0 +1,15 @@
+package config
+
+import (
+	"{{ .ModuleName }}/internal/domain"
+)
+
+type usecase struct {
+	repo domain.ConfigRepository
+}
+
+func NewUsecase(repo domain.ConfigRepository) *usecase {
+	return &usecase{
+		repo: repo,
+	}
+}
