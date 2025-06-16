@@ -49,6 +49,3 @@ After generate successfully, you should see your project something like this:
 
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
-- **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
-- **[WebSocket](https://github.com/gorilla/websocket)**
-- **[Server-Sent Events](https://github.com/r3labs/sse)**
