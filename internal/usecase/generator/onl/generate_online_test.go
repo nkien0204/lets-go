@@ -21,7 +21,7 @@ func TestGenerateError(t *testing.T) {
 		).Return(nil)
 
 	usecase := onl.NewUsecase(repo)
-	err := usecase.Generate(generator.OnlineGeneratorInputEntity{
+	err := usecase.Generate(generator.GeneratorInputEntity{
 		ProjectName: "test",
 		ModuleName:  "test",
 	})

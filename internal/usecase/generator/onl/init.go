@@ -5,9 +5,9 @@ import (
 )
 
 type usecase struct {
-	repo domain.GeneratorRepository
+	repo domain.OnlGeneratorRepository
 }
 
-func NewUsecase(repo domain.GeneratorRepository) *usecase {
+func NewUsecase(repo domain.OnlGeneratorRepository) *usecase {
 	return &usecase{repo: repo}
 }

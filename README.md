@@ -6,7 +6,7 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 ## How to use
 Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 
-### Install 
+### Install
 *Note: Please make sure that your `$GOPATH/bin` is in `$PATH`*
 ```shell
 go install github.com/nkien0204/lets-go@latest
@@ -20,7 +20,7 @@ cd <project-name> && go mod tidy
 **Flags:**
 ```bash
 -m, --mod:  download online (onl) or generate offline (off) (default "onl")
--u, --moduleName: name of module (eg: github.com/nkien0204/lets-go) 
+-u, --moduleName: name of module (eg: github.com/nkien0204/lets-go)
 ```
 *Note: `online` mod should have the internet connection for working.*
 
@@ -49,7 +49,3 @@ After generate successfully, you should see your project something like this:
 
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
-- **[Protobuf](https://github.com/nkien0204/protobuf)**
-- **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
-- **[WebSocket](https://github.com/gorilla/websocket)**
-- **[Server-Sent Events](https://github.com/r3labs/sse)**

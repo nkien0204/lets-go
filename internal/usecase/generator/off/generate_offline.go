@@ -1,46 +1,88 @@
 package off
 
 import (
-	"errors"
+	"fmt"
 	"io/fs"
 	"os"
-	"os/exec"
+	"path/filepath"
+	"regexp"
 
-	"github.com/dave/jennifer/jen"
+	"github.com/nkien0204/lets-go/internal/domain/entity/generator"
+	"github.com/nkien0204/rolling-logger/rolling"
+	"go.uber.org/zap"
 )
 
-type OfflineGenerator struct {
-	ProjectName string
+func (u *usecase) Generate(inputEntity generator.GeneratorInputEntity) error {
+	if !u.isValidProjectName(inputEntity.ProjectName) {
+		return fmt.Errorf("invalid project name: %s", inputEntity.ProjectName)
+	}
+	if inputEntity.ModuleName == "" {
+		inputEntity.ModuleName = inputEntity.ProjectName
+	}
+	if !u.isValidModuleName(inputEntity.ModuleName) {
+		return fmt.Errorf("invalid module name: %s", inputEntity.ModuleName)
+	}
+
+	var err error
+	var fileInfo fs.FileInfo
+	defer func() {
+		// rollback if got any error except getting error of root directory already exist
+		if err != nil && !fileInfo.IsDir() {
+			if err := os.RemoveAll(inputEntity.ProjectName); err != nil {
+				rolling.New().Error("rollback failed", zap.Error(err))
+			}
+		}
+	}()
+
+	// create root directory for the project
+	if fileInfo, err = u.createDir(inputEntity.ProjectName); err != nil {
+		return fmt.Errorf("failed to create project directory: %s", err.Error())
+	}
+
+	err = u.createChildDirectories(inputEntity, "", generator.GetProjectTreeMap())
+	return err
 }
 
-func (off *OfflineGenerator) Generate() error {
-	if off.ProjectName == "" {
-		return errors.New("project name must be identified, please use -p flag")
+func (u *usecase) createChildDirectories(inputEntity generator.GeneratorInputEntity, path string, structureMap map[string]any) error {
+	for key, value := range structureMap {
+		if fileName, ok := value.(string); ok {
+			absFileName := filepath.Join(path, fileName)
+			if err := u.repo.RenderTemplate(generator.GeneratorInputEntity{
+				ProjectName:    inputEntity.ProjectName,
+				ModuleName:     inputEntity.ModuleName,
+				TempFilePath:   filepath.Join(generator.OFF_TEMP_DIR_NAME, path, key),
+				TargetFilePath: filepath.Join(inputEntity.ProjectName, absFileName),
+			}); err != nil {
+				return err
+			}
+		} else if childStructureMap, ok := value.(map[string]any); ok {
+			absPath := filepath.Join(path, key)
+			if err := u.createChildDirectories(inputEntity, absPath, childStructureMap); err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("can not parse structureMap: key %s, value %s", key, value)
+		}
 	}
-	if err := off.genGoMod(off.ProjectName); err != nil {
-		return err
-	}
-	return off.genMainFile()
+	return nil
 }
 
-func (off *OfflineGenerator) genGoMod(projectName string) error {
-	if _, err := os.Stat(projectName); !errors.Is(err, fs.ErrNotExist) {
-		return fs.ErrExist
+func (u *usecase) createDir(dirName string) (fs.FileInfo, error) {
+	info, err := os.Stat(dirName)
+	if os.IsNotExist(err) {
+		return info, os.Mkdir(dirName, 0755)
+	} else if err == nil && info.IsDir() {
+		return info, fmt.Errorf("directory already exists: %s", dirName)
+	} else {
+		return info, fmt.Errorf("error checking directory: %s", err.Error())
 	}
-	if err := os.Mkdir(projectName, 0755); err != nil {
-		return err
-	}
-	if err := os.Chdir(projectName); err != nil {
-		return err
-	}
-	cmd := exec.Command("go", "mod", "init", projectName)
-	return cmd.Run()
 }
 
-func (off *OfflineGenerator) genMainFile() error {
-	mainFile := jen.NewFilePath("main")
-	mainFile.Func().Id("main").Params().Block(
-		jen.Qual("github.com/nkien0204/lets-go/cmd", "Execute").Call(),
-	)
-	return mainFile.Save("main.go")
+func (u *usecase) isValidProjectName(name string) bool {
+	validName := regexp.MustCompile(`^[a-zA-Z0-9_.-]+$`)
+	return validName.MatchString(name)
+}
+
+func (u *usecase) isValidModuleName(name string) bool {
+	return true
 }
