@@ -88,6 +88,7 @@ func (u *usecase) removeGenerator(inputEntity generator.GeneratorInputEntity) er
 		path.Join(inputEntity.ProjectName, "cmd", "gen.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorRepository.go"),
+		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_delivery_interface.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_usecase_interface.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_repository_interface.go"),
 		path.Join(inputEntity.ProjectName, config.CONFIG_FILENAME_SAMPLE),
