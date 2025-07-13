@@ -19,7 +19,7 @@ cd <project-name> && go mod tidy
 ```
 **Flags:**
 ```bash
--m, --mod:  download online (onl) or generate offline (off) (default "onl")
+-m, --mod:  download online (onl) or generate offline (off) (default "off")
 -u, --moduleName: name of module (eg: github.com/nkien0204/lets-go)
 ```
 *Note: `online` mod should have the internet connection for working.*
