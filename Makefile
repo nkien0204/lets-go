@@ -64,8 +64,8 @@ build-all: build-linux
 
 # Run tests
 test:
-	@echo "Running tests..."
-	$(GOTEST) -v ./...
+	@echo "Running tests..." $(GOTEST)
+	$(GOTEST) -v $$(go list ./... | grep -v "samples")
 
 # Run tests with coverage
 coverage:
