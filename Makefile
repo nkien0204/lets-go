@@ -34,7 +34,7 @@ LDFLAGS_PROD := -ldflags "\
 	-X '$(MODULE)/cmd.GoVersion=$(GO_VERSION)' \
 	-s -w"
 
-.PHONY: all build clean test coverage help deps version install uninstall
+.PHONY: all build clean test coverage help deps version install uninstall go-install
 
 # Default target
 all: clean deps test build
@@ -92,10 +92,15 @@ deps:
 	$(GOMOD) download
 	$(GOMOD) tidy
 
-# Install the binary to $GOPATH/bin
+# Install the binary to $GOPATH/bin (local build)
 install: build
 	@echo "Installing $(BINARY_NAME) to $(GOPATH)/bin..."
 	cp $(BINARY_NAME) $(GOPATH)/bin/
+
+# Install directly from Go modules (recommended for end users)
+go-install:
+	@echo "Installing $(BINARY_NAME) via go install..."
+	go install github.com/nkien0204/lets-go@latest
 
 # Uninstall the binary from $GOPATH/bin
 uninstall:
@@ -140,7 +145,8 @@ help:
 	@echo "  coverage    - Run tests with coverage report"
 	@echo "  clean       - Clean build artifacts"
 	@echo "  deps        - Download and tidy dependencies"
-	@echo "  install     - Install binary to GOPATH/bin"
+	@echo "  install     - Install binary to GOPATH/bin (local build)"
+	@echo "  go-install  - Install via go install (recommended for end users)"
 	@echo "  uninstall   - Remove binary from GOPATH/bin"
 	@echo "  run         - Build and run the application"
 	@echo "  dev         - Quick development build"
@@ -148,3 +154,8 @@ help:
 	@echo "  fmt         - Format code"
 	@echo "  lint        - Lint code (requires golangci-lint)"
 	@echo "  help        - Show this help"
+	@echo ""
+	@echo "For end users to install this tool:"
+	@echo "  go install github.com/nkien0204/lets-go@latest"
+	@echo ""
+	@echo "Note: Version info is automatically detected from git tags and build info"
