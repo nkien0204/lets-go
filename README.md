@@ -11,6 +11,23 @@ Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 ```shell
 go install github.com/nkien0204/lets-go@latest
 ```
+
+### Check Version
+After installation, you can check the version and build information:
+```shell
+lets-go version
+# Output:
+# lets-go version v1.8.0
+# Build time: 2025-07-17_15:22:58
+# Git commit: 96b60a4
+# Go version: go1.22.1
+```
+
+Or use the built-in version flag:
+```shell
+lets-go --version
+# Output: lets-go version v1.8.0
+```
 ### Generate project
 **Usage:**
 ```shell
@@ -46,6 +63,32 @@ After generate successfully, you should see your project something like this:
 │       ├── config
 │       └── greeting
 ```
+
+## Development
+
+### Building from Source
+If you want to build from source with full version information:
+
+```shell
+git clone https://github.com/nkien0204/lets-go.git
+cd lets-go
+make build
+```
+
+### Available Make Targets
+- `make build` - Build with version injection
+- `make build-prod` - Build optimized production binary
+- `make test` - Run tests
+- `make clean` - Clean build artifacts
+- `make help` - Show all available targets
+
+### Version Management
+This project uses automated version management:
+- **Git tags** determine the version (e.g., `v1.8.0`)
+- **Build information** is automatically injected at compile time
+- **No manual version updates** required in source code
+
+When installed via `go install`, version information is automatically detected from Git tags and build metadata.
 
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
