@@ -37,6 +37,7 @@ var projectTreeMap = map[string]any{
 			},
 			"repository_interface.go.tmpl": "repository_interface.go",
 			"usecase_interface.go.tmpl":    "usecase_interface.go",
+			"delivery_interface.go.tmpl":   "delivery_interface.go",
 		},
 		"repository": map[string]any{
 			"config": map[string]any{
