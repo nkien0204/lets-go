@@ -70,9 +70,13 @@ test:
 # Run tests with coverage
 coverage:
 	@echo "Running tests with coverage..."
-	$(GOTEST) -v -coverprofile=coverage.out ./...
+	$(GOTEST) -v $$(go list ./... | grep -v "samples") -coverprofile=coverage.out ./...
 	$(GOCMD) tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report generated: coverage.html"
+	@echo ""
+	@echo "=== TOTAL PROJECT COVERAGE ==="
+	$(GOCMD) tool cover -func=coverage.out | tail -1
+	@echo "=============================="
 
 # Clean build artifacts
 clean:

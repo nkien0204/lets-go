@@ -6,7 +6,7 @@ type delivery struct {
 	usecase domain.GreetingUsecase
 }
 
-func NewDelivery(usecase domain.GreetingUsecase) *delivery {
+func NewDelivery(usecase domain.GreetingUsecase) domain.GreetingDelivery {
 	return &delivery{
 		usecase: usecase,
 	}
