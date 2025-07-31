@@ -3,6 +3,9 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 
 ***All you need to do is implementing your own business logic*!**.
 
+## Architecture
+This project follows Clean Architecture principles with **Delivery**, **Usecase**, and **Repository** layers. For detailed information about the project structure and architecture patterns, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## How to use
 Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 
