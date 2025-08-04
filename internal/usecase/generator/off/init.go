@@ -11,3 +11,11 @@ type usecase struct {
 func NewUsecase(repo domain.OffGeneratorRepository) *usecase {
 	return &usecase{repo: repo}
 }
+
+type templateGeneratorUsecase struct {
+	repo domain.OffGeneratorRepository
+}
+
+func NewTemplateGeneratorUsecase(repo domain.OffGeneratorRepository) *templateGeneratorUsecase {
+	return &templateGeneratorUsecase{repo: repo}
+}
