@@ -72,7 +72,7 @@ func (u *usecase) walkFunc(projectName string) func(path string, fi os.FileInfo,
 			panic(err)
 		}
 
-		newContents := strings.Replace(string(read), generator.ORIGINAL_PROJECT_NAME, projectName, -1)
+		newContents := strings.Replace(string(read), generator.ORIGINAL_MODULE_NAME, projectName, -1)
 
 		err = os.WriteFile(path, []byte(newContents), 0)
 		if err != nil {

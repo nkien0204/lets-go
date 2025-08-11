@@ -3,10 +3,13 @@ package generator
 import "time"
 
 const GITHUB_REPO_ENDPOINT string = "https://api.github.com/repos/nkien0204/lets-go"
-const ORIGINAL_PROJECT_NAME string = "github.com/nkien0204/lets-go"
+const ORIGINAL_MODULE_NAME string = "github.com/nkien0204/lets-go"
+const ORIGINAL_PROJECT_NAME string = "lets-go"
 const TEMP_DIR_NAME string = "lets-go-gen"
 const OFF_TEMP_DIR_NAME string = "templates"
 const OFF_TEMP_FULL_DIR_NAME string = "internal/repository/generator/off/templates"
+const MODULE_NAME_PLACE_HOLDER = "{{ .ModuleName }}"
+const PROJECT_NAME_PLACE_HOLDER = "{{ .ProjectName }}"
 
 // Structure to hold the project tree map
 var projectTreeMap = map[string]any{

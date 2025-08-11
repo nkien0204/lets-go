@@ -3,6 +3,9 @@ Providing basic packages for simple Golang server such as `Tcp Server`, `HTTP Se
 
 ***All you need to do is implementing your own business logic*!**.
 
+## Architecture
+This project follows Clean Architecture principles with **Delivery**, **Usecase**, and **Repository** layers. For detailed information about the project structure and architecture patterns, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## How to use
 Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 
@@ -10,6 +13,23 @@ Prerequirement: **MacOS/Linux**/**Windows**, **Go 1.22.1+**
 *Note: Please make sure that your `$GOPATH/bin` is in `$PATH`*
 ```shell
 go install {{ .ModuleName }}@latest
+```
+
+### Check Version
+After installation, you can check the version and build information:
+```shell
+{{ .ProjectName }} version
+# Output:
+# {{ .ProjectName }} version v1.8.0
+# Build time: 2025-07-17_15:22:58
+# Git commit: 96b60a4
+# Go version: go1.22.1
+```
+
+Or use the built-in version flag:
+```shell
+{{ .ProjectName }} --version
+# Output: {{ .ProjectName }} version v1.8.0
 ```
 ### Generate project
 **Usage:**
@@ -19,8 +39,8 @@ cd <project-name> && go mod tidy
 ```
 **Flags:**
 ```bash
--m, --mod:  download online (onl) or generate offline (off) (default "onl")
--u, --moduleName: name of module (e.g: {{ .ModuleName }})
+-m, --mod:  download online (onl) or generate offline (off) (default "off")
+-u, --moduleName: name of module (eg: {{ .ModuleName }})
 ```
 *Note: `online` mod should have the internet connection for working.*
 
@@ -47,9 +67,31 @@ After generate successfully, you should see your project something like this:
 │       └── greeting
 ```
 
+## Development
+
+### Building from Source
+If you want to build from source with full version information:
+
+```shell
+git clone https://{{ .ModuleName }}.git
+cd {{ .ProjectName }}
+make build
+```
+
+### Available Make Targets
+- `make build` - Build with version injection
+- `make build-prod` - Build optimized production binary
+- `make test` - Run tests
+- `make clean` - Clean build artifacts
+- `make help` - Show all available targets
+
+### Version Management
+This project uses automated version management:
+- **Git tags** determine the version (e.g., `v1.8.0`)
+- **Build information** is automatically injected at compile time
+- **No manual version updates** required in source code
+
+When installed via `go install`, version information is automatically detected from Git tags and build metadata.
+
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
-- **[Protobuf](https://github.com/nkien0204/protobuf)**
-- **[Docker-env](https://github.com/nkien0204/docker-env-setup)**
-- **[WebSocket](https://github.com/gorilla/websocket)**
-- **[Server-Sent Events](https://github.com/r3labs/sse)**
