@@ -7,3 +7,7 @@ import (
 type GeneratorUsecase interface {
 	Generate(generator.GeneratorInputEntity) error
 }
+
+type TemplateGeneratorUsecase interface {
+	UpdateTemplate() error
+}
