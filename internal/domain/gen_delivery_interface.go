@@ -5,8 +5,10 @@ import (
 )
 
 type GeneratorDelivery interface {
-	HandleOnlGenerate(generator.GeneratorInputEntity) error
-	HandleOffGenerate(generator.GeneratorInputEntity) error
 	SetOnlineUsecase(GeneratorUsecase)
 	SetOfflineUsecase(GeneratorUsecase)
+	SetTemplateGenUsecase(TemplateGeneratorUsecase)
+	HandleOnlGenerate(generator.GeneratorInputEntity) error
+	HandleOffGenerate(generator.GeneratorInputEntity) error
+	HandleTemplateUpdating() error
 }

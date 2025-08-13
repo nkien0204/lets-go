@@ -3,8 +3,9 @@ package generator
 import "github.com/nkien0204/lets-go/internal/domain"
 
 type delivery struct {
-	onlUsecase domain.GeneratorUsecase
-	offUsecase domain.GeneratorUsecase
+	onlUsecase              domain.GeneratorUsecase
+	offUsecase              domain.GeneratorUsecase
+	templateUpdatingUsecase domain.TemplateGeneratorUsecase
 }
 
 func NewDelivery() domain.GeneratorDelivery {
@@ -17,4 +18,8 @@ func (d *delivery) SetOnlineUsecase(usecase domain.GeneratorUsecase) {
 
 func (d *delivery) SetOfflineUsecase(usecase domain.GeneratorUsecase) {
 	d.offUsecase = usecase
+}
+
+func (d *delivery) SetTemplateGenUsecase(usecase domain.TemplateGeneratorUsecase) {
+	d.templateUpdatingUsecase = usecase
 }

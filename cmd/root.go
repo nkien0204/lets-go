@@ -93,5 +93,4 @@ func Execute() {
 func init() {
 	cobra.OnInitialize()
 	initVersionInfo()
-	rootCmd.Version = AppVersion
 }

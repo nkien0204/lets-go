@@ -6,7 +6,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gofrs/uuid v4.2.0+incompatible
-	github.com/joho/godotenv v1.4.0
 	github.com/nkien0204/protobuf v0.0.0-20220822064338-3940be5fedae
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/segmentio/kafka-go v0.4.38

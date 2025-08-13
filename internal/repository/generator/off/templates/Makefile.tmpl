@@ -7,7 +7,7 @@ GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
 
 # Binary name
-BINARY_NAME=lets-go
+BINARY_NAME={{ .ProjectName }}
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 # Version information
@@ -17,7 +17,7 @@ GIT_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown")
 GO_VERSION := $(shell go version | cut -d ' ' -f 3)
 
 # Module path from go.mod
-MODULE := github.com/nkien0204/lets-go
+MODULE := {{ .ModuleName }}
 
 # Linker flags for version injection
 LDFLAGS := -ldflags "\
@@ -104,7 +104,7 @@ install: build
 # Install directly from Go modules (recommended for end users)
 go-install:
 	@echo "Installing $(BINARY_NAME) via go install..."
-	go install github.com/nkien0204/lets-go@latest
+	go install {{ .ModuleName }}@latest
 
 # Uninstall the binary from $GOPATH/bin
 uninstall:
@@ -160,6 +160,6 @@ help:
 	@echo "  help        - Show this help"
 	@echo ""
 	@echo "For end users to install this tool:"
-	@echo "  go install github.com/nkien0204/lets-go@latest"
+	@echo "  go install {{ .ModuleName }}@latest"
 	@echo ""
 	@echo "Note: Version info is automatically detected from git tags and build info"

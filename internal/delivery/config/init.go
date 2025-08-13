@@ -6,6 +6,6 @@ type delivery struct {
 	usecase domain.ConfigUsecase
 }
 
-func NewDelivery(usecase domain.ConfigUsecase) *delivery {
+func NewDelivery(usecase domain.ConfigUsecase) domain.ConfigDelivery {
 	return &delivery{usecase: usecase}
 }
