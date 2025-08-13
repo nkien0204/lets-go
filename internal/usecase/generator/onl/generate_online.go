@@ -86,6 +86,7 @@ func (u *usecase) walkFunc(projectName string) func(path string, fi os.FileInfo,
 func (u *usecase) removeGenerator(inputEntity generator.GeneratorInputEntity) error {
 	removeFileNames := []string{
 		path.Join(inputEntity.ProjectName, "cmd", "gen.go"),
+		path.Join(inputEntity.ProjectName, "cmd", "update_template.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorUsecase.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "mock", "GeneratorRepository.go"),
 		path.Join(inputEntity.ProjectName, "internal", "domain", "gen_delivery_interface.go"),
