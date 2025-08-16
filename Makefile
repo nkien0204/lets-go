@@ -136,7 +136,7 @@ release:
 	fi; \
 	echo "Generating embedded version files..."; \
 	chmod +x scripts/generate-version-files.sh; \
-	scripts/generate-version-files.sh; \
+	scripts/generate-version-files.sh "$$tag_name"; \
 	echo "Adding version files to git..."; \
 	git add cmd/buildinfo/; \
 	git commit -m "chore: embed version info for $$tag_name"; \
