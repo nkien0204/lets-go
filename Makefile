@@ -34,7 +34,7 @@ LDFLAGS_PROD := -ldflags "\
 	-X '$(MODULE)/cmd.GoVersion=$(GO_VERSION)' \
 	-s -w"
 
-.PHONY: all build clean test coverage help deps version install uninstall go-install release test-embed dev-mode
+.PHONY: all build clean test coverage help deps version release test-embed dev-mode
 
 # Default target
 all: clean deps test build
@@ -116,13 +116,22 @@ dev-mode:
 	@echo "✅ Reset to development mode"
 	@echo "Next: run 'make build' to build with development mode"
 
-# Enhanced release with embedded files
+# Enhanced release with embedded files and release branch workflow
 release:
-	@echo "Starting embed-based release process..."
+	@echo "Starting embed-based release process with branch workflow..."
 	@echo -n "Enter tag name (e.g., v1.2.3): "; \
 	read tag_name; \
 	if [ -z "$$tag_name" ]; then \
 		echo "Error: Tag name cannot be empty"; \
+		exit 1; \
+	fi; \
+	current_branch=$$(git branch --show-current); \
+	release_branch="release_$$tag_name"; \
+	echo "Current branch: $$current_branch"; \
+	echo "Creating release branch: $$release_branch"; \
+	git checkout -b $$release_branch; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to create release branch"; \
 		exit 1; \
 	fi; \
 	echo "Generating embedded version files..."; \
@@ -131,11 +140,18 @@ release:
 	echo "Adding version files to git..."; \
 	git add cmd/buildinfo/; \
 	git commit -m "chore: embed version info for $$tag_name"; \
-	echo "Creating tag: $$tag_name"; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to commit version files"; \
+		git checkout $$current_branch; \
+		git branch -D $$release_branch; \
+		exit 1; \
+	fi; \
+	echo "Creating tag: $$tag_name on release branch"; \
 	git tag -a $$tag_name -m "Release $$tag_name"; \
 	if [ $$? -ne 0 ]; then \
 		echo "Error: Failed to create tag"; \
-		git reset --hard HEAD~1; \
+		git checkout $$current_branch; \
+		git branch -D $$release_branch; \
 		exit 1; \
 	fi; \
 	echo "Building with embedded metadata..."; \
@@ -143,102 +159,36 @@ release:
 	if [ $$? -ne 0 ]; then \
 		echo "Error: Build failed"; \
 		git tag -d $$tag_name; \
-		git reset --hard HEAD~1; \
+		git checkout $$current_branch; \
+		git branch -D $$release_branch; \
 		exit 1; \
 	fi; \
-	echo "Pushing to remote..."; \
-	git push origin main; \
+	echo "Pushing release branch and tag to remote..."; \
+	git push origin $$release_branch; \
 	git push origin $$tag_name; \
 	if [ $$? -ne 0 ]; then \
-		echo "Error: Failed to push"; \
-		exit 1; \
-	fi; \
-	echo "Release $$tag_name completed!"; \
-	echo ""; \
-	echo "✅ Embedded metadata will be available via: go install github.com/nkien0204/lets-go@$$tag_name"; \
-	echo "✅ Package will appear on pkg.go.dev within a few minutes"; \
-	echo "✅ Consider creating a GitHub release at: https://github.com/nkien0204/lets-go/releases/new?tag=$$tag_name"
-
-# Test embedded version functionality
-test-embed:
-	@echo "🔍 Testing Go embed version functionality..."
-	@echo "============================================"
-	@echo ""
-	@echo "📋 Current embedded files:"
-	@ls -la cmd/buildinfo/
-	@echo ""
-	@echo "📋 Content of embedded files:"
-	@echo "cmd/buildinfo/build.json:"
-	@cat cmd/buildinfo/build.json
-	@echo ""
-	@echo "cmd/buildinfo/version.txt: $(shell cat cmd/buildinfo/version.txt)"
-	@echo "cmd/buildinfo/commit.txt: $(shell cat cmd/buildinfo/commit.txt)"
-	@echo "cmd/buildinfo/build_date.txt: $(shell cat cmd/buildinfo/build_date.txt)"
-	@echo ""
-	@echo "🏗️  Building with embedded files..."
-	$(MAKE) build
-	@echo ""
-	@echo "🧪 Testing version command:"
-	./$(BINARY_NAME) version
-	@echo ""
-	@echo "🧪 Testing --version flag:"
-	./$(BINARY_NAME) --version
-	@echo ""
-	@echo "✅ Embed test completed!"
-
-# Reset embedded files to development defaults
-dev-mode:
-	@echo "🔧 Resetting to development mode..."
-	@echo "Resetting embedded files to development defaults..."
-	@echo '{"version":"dev","commitHash":"unknown","commitShort":"unknown","commitDate":"unknown","buildDate":"unknown","tag":"none","branch":"unknown","isRelease":false}' > cmd/buildinfo/build.json
-	@echo "dev" > cmd/buildinfo/version.txt
-	@echo "unknown" > cmd/buildinfo/commit.txt
-	@echo "unknown" > cmd/buildinfo/build_date.txt
-	@echo "✅ Reset to development mode"
-	@echo "Next: run 'make build' to build with development mode"
-
-# Enhanced release with embedded files
-release:
-	@echo "Starting embed-based release process..."
-	@echo -n "Enter tag name (e.g., v1.2.3): "; \
-	read tag_name; \
-	if [ -z "$$tag_name" ]; then \
-		echo "Error: Tag name cannot be empty"; \
-		exit 1; \
-	fi; \
-	echo "Generating embedded version files..."; \
-	chmod +x scripts/generate-version-files.sh; \
-	scripts/generate-version-files.sh; \
-	echo "Adding version files to git..."; \
-	git add cmd/buildinfo/; \
-	git commit -m "chore: embed version info for $$tag_name"; \
-	echo "Creating tag: $$tag_name"; \
-	git tag -a $$tag_name -m "Release $$tag_name"; \
-	if [ $$? -ne 0 ]; then \
-		echo "Error: Failed to create tag"; \
-		git reset --hard HEAD~1; \
-		exit 1; \
-	fi; \
-	echo "Building with embedded metadata..."; \
-	$(MAKE) build-prod; \
-	if [ $$? -ne 0 ]; then \
-		echo "Error: Build failed"; \
+		echo "Error: Failed to push to remote"; \
 		git tag -d $$tag_name; \
-		git reset --hard HEAD~1; \
+		git checkout $$current_branch; \
+		git branch -D $$release_branch; \
 		exit 1; \
 	fi; \
-	echo "Pushing to remote..."; \
-	git push origin main; \
-	git push origin $$tag_name; \
-	if [ $$? -ne 0 ]; then \
-		echo "Error: Failed to push"; \
-		exit 1; \
-	fi; \
-	echo "Release $$tag_name completed!"; \
+	echo "Switching back to original branch: $$current_branch"; \
+	git checkout $$current_branch; \
+	echo "Release $$tag_name completed on branch $$release_branch!"; \
 	echo ""; \
+	echo "✅ Release branch created: $$release_branch"; \
+	echo "✅ Tag created: $$tag_name"; \
 	echo "✅ Embedded metadata will be available via: go install github.com/nkien0204/lets-go@$$tag_name"; \
 	echo "✅ Package will appear on pkg.go.dev within a few minutes"; \
-	echo "✅ Consider creating a GitHub release at: https://github.com/nkien0204/lets-go/releases/new?tag=$$tag_name"
+	echo "✅ Consider creating a GitHub release at: https://github.com/nkien0204/lets-go/releases/new?tag=$$tag_name"; \
+	echo "✅ To merge release branch: git checkout main && git merge $$release_branch"
+
+
+
+
+
+
 
 # Clean build artifacts
 clean:
@@ -257,21 +207,6 @@ deps:
 	@echo "Downloading dependencies..."
 	$(GOMOD) download
 	$(GOMOD) tidy
-
-# Install the binary to $GOPATH/bin (local build)
-install: build
-	@echo "Installing $(BINARY_NAME) to $(GOPATH)/bin..."
-	cp $(BINARY_NAME) $(GOPATH)/bin/
-
-# Install directly from Go modules (recommended for end users)
-go-install:
-	@echo "Installing $(BINARY_NAME) via go install..."
-	go install github.com/nkien0204/lets-go@latest
-
-# Uninstall the binary from $GOPATH/bin
-uninstall:
-	@echo "Uninstalling $(BINARY_NAME) from $(GOPATH)/bin..."
-	rm -f $(GOPATH)/bin/$(BINARY_NAME)
 
 # Run the application
 run: build
@@ -311,13 +246,10 @@ help:
 	@echo "  coverage    - Run tests with coverage report"
 	@echo "  clean       - Clean build artifacts"
 	@echo "  deps        - Download and tidy dependencies"
-	@echo "  install     - Install binary to GOPATH/bin (local build)"
-	@echo "  go-install  - Install via go install (recommended for end users)"
-	@echo "  uninstall   - Remove binary from GOPATH/bin"
 	@echo "  run         - Build and run the application"
 	@echo "  dev         - Quick development build"
 	@echo "  version     - Show version information"
-	@echo "  release     - Create tag, build production binary, and push to remote"
+	@echo "  release     - Create release branch, tag, build production binary, and push to remote"
 	@echo "  test-embed  - Test embedded version functionality"
 	@echo "  dev-mode    - Reset embedded files to development defaults"
 	@echo "  fmt         - Format code"
