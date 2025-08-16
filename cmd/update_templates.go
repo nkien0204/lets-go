@@ -17,7 +17,9 @@ var renderTempCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(renderTempCmd)
+	if AppVersion == "dev" {
+		rootCmd.AddCommand(renderTempCmd)
+	}
 }
 
 func runRenderTempCmd(cmd *cobra.Command, args []string) {

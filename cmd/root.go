@@ -12,7 +12,6 @@ var (
 	AppVersion string = "dev"
 	BuildTime  string = "unknown"
 	GitCommit  string = "unknown"
-	GoVersion  string = "unknown"
 )
 
 // getVersionFromBuildInfo gets version information from Go module system
@@ -62,13 +61,6 @@ func initVersionInfo() {
 		}
 		if BuildTime == "unknown" {
 			BuildTime = buildTime
-		}
-	}
-
-	// Set Go version if not already set
-	if GoVersion == "unknown" {
-		if info, ok := debug.ReadBuildInfo(); ok {
-			GoVersion = info.GoVersion
 		}
 	}
 }

@@ -83,6 +83,7 @@ make build
 - `make build-prod` - Build optimized production binary
 - `make test` - Run tests
 - `make clean` - Clean build artifacts
+- `make release` - Create tag, build production binary, and push to remote
 - `make help` - Show all available targets
 
 ### Version Management
@@ -92,6 +93,33 @@ This project uses automated version management:
 - **No manual version updates** required in source code
 
 When installed via `go install`, version information is automatically detected from Git tags and build metadata.
+
+### Creating a Release
+For maintainers, to create a new release:
+
+```shell
+# Create a new release (will prompt for tag name)
+make release
+
+# This will:
+# 1. Prompt you to enter a tag name (e.g., v1.9.0)
+# 2. Create an annotated git tag
+# 3. Build the production binary with embedded version info
+# 4. Push the tag to remote repository
+```
+
+**Example release workflow:**
+```shell
+$ make release
+Starting release process...
+Enter tag name (e.g., v1.2.3): v1.9.0
+Creating tag: v1.9.0
+Building production binary with version v1.9.0...
+Pushing tag to remote...
+Release v1.9.0 completed successfully!
+```
+
+**Note:** The release process includes error handling - if any step fails, the tag will be automatically removed to keep the repository clean.
 
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**

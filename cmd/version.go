@@ -17,7 +17,6 @@ This command displays detailed build information that was injected at compile ti
 		fmt.Printf("lets-go version %s\n", AppVersion)
 		fmt.Printf("Build time: %s\n", BuildTime)
 		fmt.Printf("Git commit: %s\n", GitCommit)
-		fmt.Printf("Go version: %s\n", GoVersion)
 	},
 }
 

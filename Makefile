@@ -34,7 +34,7 @@ LDFLAGS_PROD := -ldflags "\
 	-X '$(MODULE)/cmd.GoVersion=$(GO_VERSION)' \
 	-s -w"
 
-.PHONY: all build clean test coverage help deps version install uninstall go-install
+.PHONY: all build clean test coverage help deps version install uninstall go-install release
 
 # Default target
 all: clean deps test build
@@ -77,6 +77,37 @@ coverage:
 	@echo "=== TOTAL PROJECT COVERAGE ==="
 	$(GOCMD) tool cover -func=coverage.out | tail -1
 	@echo "=============================="
+
+# Release - tag, build production binary, and push to remote
+release:
+	@echo "Starting release process..."
+	@echo -n "Enter tag name (e.g., v1.2.3): "; \
+	read tag_name; \
+	if [ -z "$$tag_name" ]; then \
+		echo "Error: Tag name cannot be empty"; \
+		exit 1; \
+	fi; \
+	echo "Creating tag: $$tag_name"; \
+	git tag -a $$tag_name -m "Release $$tag_name"; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to create tag"; \
+		exit 1; \
+	fi; \
+	echo "Building production binary with version $$tag_name..."; \
+	$(MAKE) build-prod; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Build failed, removing tag"; \
+		git tag -d $$tag_name; \
+		exit 1; \
+	fi; \
+	echo "Pushing tag to remote..."; \
+	git push origin $$tag_name; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to push tag, removing local tag"; \
+		git tag -d $$tag_name; \
+		exit 1; \
+	fi; \
+	echo "Release $$tag_name completed successfully!"
 
 # Clean build artifacts
 clean:
@@ -155,6 +186,7 @@ help:
 	@echo "  run         - Build and run the application"
 	@echo "  dev         - Quick development build"
 	@echo "  version     - Show version information"
+	@echo "  release     - Create tag, build production binary, and push to remote"
 	@echo "  fmt         - Format code"
 	@echo "  lint        - Lint code (requires golangci-lint)"
 	@echo "  help        - Show this help"
