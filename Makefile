@@ -159,6 +159,37 @@ release:
 	echo "✅ Package will appear on pkg.go.dev within a few minutes"; \
 	echo "✅ Consider creating a GitHub release at: https://github.com/nkien0204/lets-go/releases/new?tag=$$tag_name"
 
+# Release - tag, build production binary, and push to remote
+release:
+	@echo "Starting release process..."
+	@echo -n "Enter tag name (e.g., v1.2.3): "; \
+	read tag_name; \
+	if [ -z "$$tag_name" ]; then \
+		echo "Error: Tag name cannot be empty"; \
+		exit 1; \
+	fi; \
+	echo "Creating tag: $$tag_name"; \
+	git tag -a $$tag_name -m "Release $$tag_name"; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to create tag"; \
+		exit 1; \
+	fi; \
+	echo "Building production binary with version $$tag_name..."; \
+	$(MAKE) build-prod; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Build failed, removing tag"; \
+		git tag -d $$tag_name; \
+		exit 1; \
+	fi; \
+	echo "Pushing tag to remote..."; \
+	git push origin $$tag_name; \
+	if [ $$? -ne 0 ]; then \
+		echo "Error: Failed to push tag, removing local tag"; \
+		git tag -d $$tag_name; \
+		exit 1; \
+	fi; \
+	echo "Release $$tag_name completed successfully!"
+
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."
@@ -237,8 +268,11 @@ help:
 	@echo "  dev         - Quick development build"
 	@echo "  version     - Show version information"
 	@echo "  release     - Create tag, build production binary, and push to remote"
+<<<<<<< HEAD
 	@echo "  test-embed  - Test embedded version functionality"
 	@echo "  dev-mode    - Reset embedded files to development defaults"
+=======
+>>>>>>> 1bc9673 (remove update_template after gen)
 	@echo "  fmt         - Format code"
 	@echo "  lint        - Lint code (requires golangci-lint)"
 	@echo "  help        - Show this help"
