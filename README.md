@@ -201,24 +201,56 @@ For maintainers, to create a new release:
 make release
 
 # This will:
-# 1. Prompt you to enter a tag name (e.g., v1.9.0)
-# 2. Create an annotated git tag
-# 3. Build the production binary with embedded version info
-# 4. Push the tag to remote repository
+# 1. Generate embedded version files with actual commit hash and build time
+# 2. Commit the generated metadata files
+# 3. Create an annotated git tag
+# 4. Build the production binary with embedded metadata
+# 5. Push the commit and tag to remote repository
 ```
 
 **Example release workflow:**
 ```shell
 $ make release
-Starting release process...
+Starting embed-based release process...
 Enter tag name (e.g., v1.2.3): v1.9.0
+Generating embedded version files...
+Adding version files to git...
 Creating tag: v1.9.0
-Building production binary with version v1.9.0...
-Pushing tag to remote...
-Release v1.9.0 completed successfully!
+Building with embedded metadata...
+Pushing to remote...
+Release v1.9.0 completed!
 ```
 
-**Note:** The release process includes error handling - if any step fails, the tag will be automatically removed to keep the repository clean.
+**Key Benefits:**
+- **Real commit hashes** available to users who install via `go install`
+- **Actual build timestamps** from release time embedded in binary
+- **Comprehensive metadata** including git branch, commit date, etc.
+- **Error handling** - if any step fails, changes are automatically rolled back
+
+### Development vs Release Builds
+
+The version system automatically adapts based on available metadata:
+
+**Development Mode:**
+```shell
+make dev-mode    # Reset embedded files to development defaults
+make build       # Uses ldflags + VCS detection
+./lets-go version
+# Output shows: VCS commit info, runtime detection
+```
+
+**Release Mode:**
+```shell
+make release     # Generates embedded metadata files
+# After users install: go install github.com/nkien0204/lets-go@v1.9.0
+./lets-go version
+# Output shows: Real commit hash, actual build time from release
+```
+
+**Testing the Embed System:**
+```shell
+make test-embed  # Test embedded version functionality
+```
 
 ## Special dependencies
 - **[Rolling-logger](https://github.com/nkien0204/rolling-logger)**
