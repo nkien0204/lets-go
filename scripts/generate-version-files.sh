@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # Generate version files for Go embed
+# Usage: ./generate-version-files.sh [VERSION]
+# If VERSION is not provided, it will be detected from git tags
 set -e
 
-VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "dev")
+# Accept version as first parameter, fallback to git if not provided
+VERSION=${1:-$(git describe --tags --always --dirty 2>/dev/null || echo "dev")}
 COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
 COMMIT_SHORT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 COMMIT_DATE=$(git show -s --format=%ci HEAD 2>/dev/null || echo "unknown")
