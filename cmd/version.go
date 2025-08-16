@@ -18,8 +18,8 @@ This command displays detailed build information, including metadata embedded at
 		buildInfo := GetBuildInfo()
 
 		fmt.Printf("lets-go version %s\n", buildInfo.Version)
-		fmt.Printf("Build time: %s\n", buildInfo.BuildDate)
-		fmt.Printf("Git commit: %s\n", buildInfo.CommitShort)
+		fmt.Printf("Build date: %s\n", buildInfo.BuildDate)
+		fmt.Printf("Short commit: %s\n", buildInfo.CommitShort)
 
 		if buildInfo.IsRelease {
 			fmt.Printf("Full commit: %s\n", buildInfo.CommitHash)
@@ -61,7 +61,7 @@ This command displays detailed build information, including metadata embedded at
 
 		// Always show Go version (only once)
 		if info, ok := debug.ReadBuildInfo(); ok {
-			fmt.Printf("Go version: %s\n", info.GoVersion)
+			fmt.Printf("Go build version: %s\n", info.GoVersion)
 		}
 	},
 }
