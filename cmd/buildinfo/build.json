@@ -1,10 +1,10 @@
 {
-  "version": "v1.7.5-7-g8a0a74f-dirty",
-  "commitHash": "8a0a74f9d372f53aeac8681724a5c5d7d4c0c920",
-  "commitShort": "8a0a74f",
-  "commitDate": "2025-08-16 16:36:38 +0700",
-  "buildDate": "2025-08-16 09:39:12 UTC",
+  "version": "v1.8.0-3-g86e2f8a",
+  "commitHash": "86e2f8a1fb49ae668efede132029244747e729f9",
+  "commitShort": "86e2f8a",
+  "commitDate": "2025-08-16 16:59:35 +0700",
+  "buildDate": "2025-08-16 10:00:47 UTC",
   "tag": "none",
-  "branch": "feature_command_dev_mode",
+  "branch": "develop",
   "isRelease": true
 }
