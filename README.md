@@ -86,7 +86,7 @@ make build
 - `make build-prod` - Build optimized production binary
 - `make test` - Run tests
 - `make clean` - Clean build artifacts
-- `make release` - Create tag, build production binary, and push to remote
+- `make release` - Create release branch, tag, build production binary, and push to remote
 - `make dev-mode` - Reset embedded files to development defaults
 - `make test-embed` - Test embedded version functionality
 - `make help` - Show all available targets
@@ -135,38 +135,52 @@ cmd/
 - ✅ **Reliable** - metadata guaranteed to be available
 
 ### Creating a Release
-For maintainers, to create a new release:
+For maintainers, to create a new release with release branch workflow:
 
 ```shell
 # Create a new release (will prompt for tag name)
 make release
 
 # This will:
-# 1. Generate embedded version files with actual commit hash and build time
-# 2. Commit the generated metadata files
-# 3. Create an annotated git tag
-# 4. Build the production binary with embedded metadata
-# 5. Push the commit and tag to remote repository
+# 1. Create a new release branch from current branch with format "release_<tag_version>"
+# 2. Generate embedded version files with actual commit hash and build time
+# 3. Commit the generated metadata files to the release branch
+# 4. Create an annotated git tag on the release branch
+# 5. Build the production binary with embedded metadata
+# 6. Push the release branch and tag to remote repository
+# 7. Switch back to the original branch
 ```
 
 **Example release workflow:**
 ```shell
 $ make release
-Starting embed-based release process...
+Starting embed-based release process with branch workflow...
 Enter tag name (e.g., v1.2.3): v1.9.0
+Current branch: main
+Creating release branch: release_v1.9.0
 Generating embedded version files...
 Adding version files to git...
-Creating tag: v1.9.0
+Creating tag: v1.9.0 on release branch
 Building with embedded metadata...
-Pushing to remote...
-Release v1.9.0 completed!
+Pushing release branch and tag to remote...
+Switching back to original branch: main
+Release v1.9.0 completed on branch release_v1.9.0!
+
+✅ Release branch created: release_v1.9.0
+✅ Tag created: v1.9.0
+✅ Embedded metadata will be available via: go install github.com/nkien0204/lets-go@v1.9.0
+✅ Package will appear on pkg.go.dev within a few minutes
+✅ Consider creating a GitHub release at: https://github.com/nkien0204/lets-go/releases/new?tag=v1.9.0
+✅ To merge release branch: git checkout main && git merge release_v1.9.0
 ```
 
 **Key Benefits:**
+- **Release branch isolation** - each release gets its own branch for better tracking
 - **Real commit hashes** available to users who install via `go install`
 - **Actual build timestamps** from release time embedded in binary
 - **Comprehensive metadata** including git branch, commit date, etc.
 - **Error handling** - if any step fails, changes are automatically rolled back
+- **Branch workflow** - release branches can be merged to main after validation
 
 ### Development vs Release Builds
 
@@ -193,39 +207,39 @@ make release     # Generates embedded metadata files
 make test-embed  # Test embedded version functionality
 ```
 
-### Creating a Release
-For maintainers, to create a new release:
+### Release Branch Workflow
+
+The project uses a release branch workflow where each release gets its own dedicated branch:
+
+**Release Branch Pattern:** `release_<tag_version>`
+- Example: `release_v1.9.0`
+
+**Benefits of Release Branches:**
+- **Isolation**: Each release is isolated on its own branch
+- **Tracking**: Easy to track what changes went into each release
+- **Hotfixes**: Can apply hotfixes to specific release branches
+- **Validation**: Release branches can be tested before merging to main
+- **Rollback**: Easy to rollback problematic releases
+
+**Merging Release Branches:**
+After creating a release, you can merge the release branch back to main manually:
 
 ```shell
-# Create a new release (will prompt for tag name)
-make release
+# Switch to main branch
+git checkout main
 
-# This will:
-# 1. Generate embedded version files with actual commit hash and build time
-# 2. Commit the generated metadata files
-# 3. Create an annotated git tag
-# 4. Build the production binary with embedded metadata
-# 5. Push the commit and tag to remote repository
+# Merge the release branch
+git merge release_v1.9.0
+
+# Push the merged changes
+git push origin main
+
+# Optionally delete the release branch locally
+git branch -d release_v1.9.0
+
+# Optionally delete the release branch from remote
+git push origin --delete release_v1.9.0
 ```
-
-**Example release workflow:**
-```shell
-$ make release
-Starting embed-based release process...
-Enter tag name (e.g., v1.2.3): v1.9.0
-Generating embedded version files...
-Adding version files to git...
-Creating tag: v1.9.0
-Building with embedded metadata...
-Pushing to remote...
-Release v1.9.0 completed!
-```
-
-**Key Benefits:**
-- **Real commit hashes** available to users who install via `go install`
-- **Actual build timestamps** from release time embedded in binary
-- **Comprehensive metadata** including git branch, commit date, etc.
-- **Error handling** - if any step fails, changes are automatically rolled back
 
 ### Development vs Release Builds
 
