@@ -1,9 +1,9 @@
 {
-  "version": "v1.8.0-5-gdea4ee9",
-  "commitHash": "dea4ee9e36897f2d57e5064921fbf3eca5fbe4cb",
-  "commitShort": "dea4ee9",
-  "commitDate": "2025-08-16 17:20:06 +0700",
-  "buildDate": "2025-08-16 10:21:49 UTC",
+  "version": "v1.8.0-2-g5776d9d",
+  "commitHash": "5776d9d7188d2ee89eb671c9aa21a827e12c42fa",
+  "commitShort": "5776d9d",
+  "commitDate": "2025-08-16 17:38:31 +0700",
+  "buildDate": "2025-08-16 10:41:07 UTC",
   "tag": "none",
   "branch": "release_v1.8.1",
   "isRelease": true
